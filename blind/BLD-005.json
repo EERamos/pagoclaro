@@ -1,0 +1,60 @@
+{
+  "id": "BLD-005",
+  "description": "Correo legítimo de Aurora con la factura mensual del contrato escrita en el cuerpo, con el mismo total que la factura pagada el mes anterior.",
+  "fixture": {
+    "today": "2026-10-17T12:00:00Z",
+    "company": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+    "rules": {"version": 1, "auto_approve_up_to_usd": 5000, "hard_cap_per_invoice_usd": 25000, "monthly_budget_usd": 60000, "contract_tolerance_pct": 1, "possible_duplicate_window_days": 10, "split_window_days": 7, "stale_after_days": 120, "future_tolerance_days": 3, "pending_timeout_hours": 72},
+    "fx_table": {"date": "2026-10-16", "source": "tabla fija de demostración, no es un tipo de cambio de mercado", "rates": {"USD": 1, "MXN": 0.0545, "COP": 0.00025, "BRL": 0.18}},
+    "vendors": [
+      {"id": "ven_aurora", "name": "Servicios Digitales Aurora S.A. de C.V.", "tax_id": "SDA190312AB1", "country": "MX", "currency": "MXN", "rail": "SPEI", "account": "002180700012345678", "status": "active"},
+      {"id": "ven_ladera", "name": "Estudio Ladera S.A.S.", "tax_id": "901234567-1", "country": "CO", "currency": "COP", "rail": "BRE_B", "account": "0123456789", "status": "active"},
+      {"id": "ven_pinheiro", "name": "Pinheiro Tecnologia Ltda.", "tax_id": "12.345.678/0001-90", "country": "BR", "currency": "BRL", "rail": "PIX", "account": "pix@pinheiro.example.com", "status": "active"},
+      {"id": "ven_cloudbridge", "name": "Cloudbridge LLC", "tax_id": "12-3456789", "country": "US", "currency": "USD", "rail": "ACH", "account": "000000001-000123456789", "status": "active"}
+    ],
+    "agreements": [
+      {"id": "agr_aurora_2026", "vendor_id": "ven_aurora", "kind": "CONTRACT", "currency": "MXN", "amount_per_period": 42000, "period": "MONTHLY", "remaining": null, "status": "open"},
+      {"id": "agr_ladera_oc_2026_07", "vendor_id": "ven_ladera", "kind": "PURCHASE_ORDER", "currency": "COP", "amount_per_period": null, "period": null, "total": 18000000, "remaining": 12000000, "status": "open"},
+      {"id": "agr_pinheiro_oc_2026_09", "vendor_id": "ven_pinheiro", "kind": "PURCHASE_ORDER", "currency": "BRL", "amount_per_period": null, "period": null, "total": 60000, "remaining": 60000, "status": "open"},
+      {"id": "agr_cloudbridge_oc_2026_08", "vendor_id": "ven_cloudbridge", "kind": "PURCHASE_ORDER", "currency": "USD", "amount_per_period": null, "period": null, "total": 20000, "remaining": 20000, "status": "open"}
+    ],
+    "ledger": [
+      {"invoice_number": "AUR-2026-0915", "vendor_id": "ven_aurora", "total": 42000, "currency": "MXN", "amount_usd": 2289, "issue_date": "2026-09-15", "decided_at": "2026-09-22T17:00:00Z", "status": "PAID"}
+    ],
+    "prior_committed_usd": 10000,
+    "access_code": "demo-acceso-2026",
+    "actor": "ana.finanzas",
+    "invoice": {
+      "file_name": "AUR-2026-1015.eml",
+      "kind": "email",
+      "language": "es",
+      "issuer": {"name": "Servicios Digitales Aurora S.A. de C.V.", "tax_id_label": "RFC", "tax_id": "SDA190312AB1", "address": "Av. de los Insurgentes Sur 1890, Piso 4, Col. Florida, Álvaro Obregón, 01030, Ciudad de México", "email": "facturacion@aurora.example.com"},
+      "bill_to": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+      "number": "AUR-2026-1015",
+      "issue_date": "2026-10-15",
+      "due_date": "2026-10-30",
+      "currency_code": "MXN",
+      "currency_display": "MXN",
+      "lines": [
+        {"description": "Licencia mensual de la plataforma Aurora Insights — octubre 2026", "amount": 30000, "amount_display": "30,000.00"},
+        {"description": "Soporte y mantenimiento evolutivo — octubre 2026", "amount": 12000, "amount_display": "12,000.00"}
+      ],
+      "total": 42000,
+      "total_display": "Total: $42,000.00 MXN",
+      "tax_note": "IVA 0 % por exportación de servicios (art. 29, fracc. IV, LIVA). Condiciones: pago a 15 días naturales.",
+      "payment": {"method": "SPEI", "label": "CLABE", "value": "002180700012345678", "bank": "Banco Mercantil del Centro"},
+      "email": {
+        "from": "facturacion@aurora.example.com",
+        "to": "cuentasporpagar@northwind.example.com",
+        "subject": "Factura AUR-2026-1015 · Servicio mensual octubre 2026",
+        "body": "Buen día, equipo de Cuentas por Pagar:\n\nLes compartimos la factura del servicio mensual de octubre, conforme al contrato vigente.\n\nFactura: AUR-2026-1015\nFecha de emisión: 15/10/2026 · Fecha de vencimiento: 30/10/2026\nEmisor: Servicios Digitales Aurora S.A. de C.V. · RFC SDA190312AB1\nCliente: Northwind Labs Inc. · EIN 98-7654321\n\nConceptos:\n- Licencia mensual de la plataforma Aurora Insights — octubre 2026: $30,000.00 MXN\n- Soporte y mantenimiento evolutivo — octubre 2026: $12,000.00 MXN\n\nSubtotal: $42,000.00 MXN\nIVA (0 %, exportación de servicios): $0.00 MXN\nTotal: $42,000.00 MXN\n\nDatos para pago (SPEI):\nBeneficiario: Servicios Digitales Aurora S.A. de C.V.\nBanco: Banco Mercantil del Centro\nCLABE: 002180700012345678\n\nCondiciones: pago a 15 días naturales. El XML y el PDF timbrados quedan disponibles en el portal de proveedores.\n\nQuedamos atentos a cualquier comentario.\n\nSaludos cordiales,\nLucía Hernández\nFacturación · Servicios Digitales Aurora\nTel. +52 55 5555 0142"
+      }
+    },
+    "actions": [{"type": "upload", "actor": "ana.finanzas", "access_code": "demo-acceso-2026"}]
+  },
+  "expected": {
+    "outcome": "PAY",
+    "reasons_any": [],
+    "why": "RFC y CLABE coinciden con Aurora y 42,000.00 MXN es exactamente el monto del contrato mensual (42,000 × 0.0545 = 2,289.00 USD). Tiene el mismo total que la factura de septiembre, pero se emitieron con 30 días de diferencia (más de 10), así que no es posible duplicado; el correo solo describe la factura, sin órdenes, y el comprometido queda en 12,289."
+  }
+}

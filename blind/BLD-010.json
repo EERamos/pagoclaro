@@ -1,0 +1,55 @@
+{
+  "id": "BLD-010",
+  "description": "Factura mensual de Aurora en PDF que cuadra con su contrato, recibida cuando el presupuesto de octubre ya está casi consumido por pagos del libro.",
+  "fixture": {
+    "today": "2026-10-17T12:00:00Z",
+    "company": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+    "rules": {"version": 1, "auto_approve_up_to_usd": 5000, "hard_cap_per_invoice_usd": 25000, "monthly_budget_usd": 60000, "contract_tolerance_pct": 1, "possible_duplicate_window_days": 10, "split_window_days": 7, "stale_after_days": 120, "future_tolerance_days": 3, "pending_timeout_hours": 72},
+    "fx_table": {"date": "2026-10-16", "source": "tabla fija de demostración, no es un tipo de cambio de mercado", "rates": {"USD": 1, "MXN": 0.0545, "COP": 0.00025, "BRL": 0.18}},
+    "vendors": [
+      {"id": "ven_aurora", "name": "Servicios Digitales Aurora S.A. de C.V.", "tax_id": "SDA190312AB1", "country": "MX", "currency": "MXN", "rail": "SPEI", "account": "002180700012345678", "status": "active"},
+      {"id": "ven_ladera", "name": "Estudio Ladera S.A.S.", "tax_id": "901234567-1", "country": "CO", "currency": "COP", "rail": "BRE_B", "account": "0123456789", "status": "active"},
+      {"id": "ven_pinheiro", "name": "Pinheiro Tecnologia Ltda.", "tax_id": "12.345.678/0001-90", "country": "BR", "currency": "BRL", "rail": "PIX", "account": "pix@pinheiro.example.com", "status": "active"},
+      {"id": "ven_cloudbridge", "name": "Cloudbridge LLC", "tax_id": "12-3456789", "country": "US", "currency": "USD", "rail": "ACH", "account": "000000001-000123456789", "status": "active"}
+    ],
+    "agreements": [
+      {"id": "agr_aurora_2026", "vendor_id": "ven_aurora", "kind": "CONTRACT", "currency": "MXN", "amount_per_period": 42000, "period": "MONTHLY", "remaining": null, "status": "open"},
+      {"id": "agr_ladera_oc_2026_07", "vendor_id": "ven_ladera", "kind": "PURCHASE_ORDER", "currency": "COP", "amount_per_period": null, "period": null, "total": 18000000, "remaining": 12000000, "status": "open"},
+      {"id": "agr_pinheiro_oc_2026_09", "vendor_id": "ven_pinheiro", "kind": "PURCHASE_ORDER", "currency": "BRL", "amount_per_period": null, "period": null, "total": 60000, "remaining": 51500, "status": "open"},
+      {"id": "agr_cloudbridge_oc_2026_08", "vendor_id": "ven_cloudbridge", "kind": "PURCHASE_ORDER", "currency": "USD", "amount_per_period": null, "period": null, "total": 20000, "remaining": 16160, "status": "open"}
+    ],
+    "ledger": [
+      {"invoice_number": "INV-0010420", "vendor_id": "ven_cloudbridge", "total": 3840, "currency": "USD", "amount_usd": 3840, "issue_date": "2026-10-05", "decided_at": "2026-10-08T16:10:00Z", "status": "PAID"},
+      {"invoice_number": "NFSE-2026-00725", "vendor_id": "ven_pinheiro", "total": 8500, "currency": "BRL", "amount_usd": 1530, "issue_date": "2026-10-06", "decided_at": "2026-10-09T13:40:00Z", "status": "PAID"}
+    ],
+    "prior_committed_usd": 54000,
+    "access_code": "demo-acceso-2026",
+    "actor": "ana.finanzas",
+    "invoice": {
+      "file_name": "AUR-2026-1031.pdf",
+      "kind": "pdf",
+      "language": "es",
+      "issuer": {"name": "Servicios Digitales Aurora S.A. de C.V.", "tax_id_label": "RFC", "tax_id": "SDA190312AB1", "address": "Av. de los Insurgentes Sur 1890, Piso 4, Col. Florida, Álvaro Obregón, 01030, Ciudad de México", "email": "facturacion@aurora.example.com"},
+      "bill_to": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+      "number": "AUR-2026-1031",
+      "issue_date": "2026-10-16",
+      "due_date": "2026-10-31",
+      "currency_code": "MXN",
+      "currency_display": "MXN",
+      "lines": [
+        {"description": "Servicio administrado de analítica y tableros — octubre 2026", "amount": 36500, "amount_display": "36,500.00"},
+        {"description": "Bolsa de 10 horas de consultoría incluida en contrato — octubre 2026", "amount": 5500, "amount_display": "5,500.00"}
+      ],
+      "total": 42000,
+      "total_display": "Total: MXN 42,000.00",
+      "tax_note": "IVA 0 % por exportación de servicios (art. 29, fracc. IV, LIVA). Contrato de servicios 2026, mensualidad 10 de 12. Condiciones: 15 días naturales. Este documento es una representación impresa de un CFDI.",
+      "payment": {"method": "SPEI", "label": "CLABE", "value": "002180700012345678", "bank": "Banco Mercantil del Centro"}
+    },
+    "actions": [{"type": "upload", "actor": "ana.finanzas", "access_code": "demo-acceso-2026"}]
+  },
+  "expected": {
+    "outcome": "HOLD",
+    "reasons_any": ["BUDGET_EXCEEDED"],
+    "why": "La factura cuadra con Aurora y su contrato (42,000.00 MXN = 2,289.00 USD, RFC y CLABE del catálogo), pero el comprometido de octubre es 54,000 + 3,840 + 1,530 (pagos del libro en 2026-10) = 59,370, y con esta factura llega a 61,659 > 60,000: se frena por BUDGET_EXCEEDED."
+  }
+}

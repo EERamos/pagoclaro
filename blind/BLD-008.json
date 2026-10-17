@@ -1,0 +1,54 @@
+{
+  "id": "BLD-008",
+  "description": "Mensaje de chat de Estudio Ladera con los datos de una factura cuyos montos solo llevan el signo $ sin código de moneda.",
+  "fixture": {
+    "today": "2026-10-17T12:00:00Z",
+    "company": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+    "rules": {"version": 1, "auto_approve_up_to_usd": 5000, "hard_cap_per_invoice_usd": 25000, "monthly_budget_usd": 60000, "contract_tolerance_pct": 1, "possible_duplicate_window_days": 10, "split_window_days": 7, "stale_after_days": 120, "future_tolerance_days": 3, "pending_timeout_hours": 72},
+    "fx_table": {"date": "2026-10-16", "source": "tabla fija de demostración, no es un tipo de cambio de mercado", "rates": {"USD": 1, "MXN": 0.0545, "COP": 0.00025, "BRL": 0.18}},
+    "vendors": [
+      {"id": "ven_aurora", "name": "Servicios Digitales Aurora S.A. de C.V.", "tax_id": "SDA190312AB1", "country": "MX", "currency": "MXN", "rail": "SPEI", "account": "002180700012345678", "status": "active"},
+      {"id": "ven_ladera", "name": "Estudio Ladera S.A.S.", "tax_id": "901234567-1", "country": "CO", "currency": "COP", "rail": "BRE_B", "account": "0123456789", "status": "active"},
+      {"id": "ven_pinheiro", "name": "Pinheiro Tecnologia Ltda.", "tax_id": "12.345.678/0001-90", "country": "BR", "currency": "BRL", "rail": "PIX", "account": "pix@pinheiro.example.com", "status": "active"},
+      {"id": "ven_cloudbridge", "name": "Cloudbridge LLC", "tax_id": "12-3456789", "country": "US", "currency": "USD", "rail": "ACH", "account": "000000001-000123456789", "status": "active"}
+    ],
+    "agreements": [
+      {"id": "agr_aurora_2026", "vendor_id": "ven_aurora", "kind": "CONTRACT", "currency": "MXN", "amount_per_period": 42000, "period": "MONTHLY", "remaining": null, "status": "open"},
+      {"id": "agr_ladera_oc_2026_07", "vendor_id": "ven_ladera", "kind": "PURCHASE_ORDER", "currency": "COP", "amount_per_period": null, "period": null, "total": 18000000, "remaining": 12000000, "status": "open"},
+      {"id": "agr_pinheiro_oc_2026_09", "vendor_id": "ven_pinheiro", "kind": "PURCHASE_ORDER", "currency": "BRL", "amount_per_period": null, "period": null, "total": 60000, "remaining": 60000, "status": "open"},
+      {"id": "agr_cloudbridge_oc_2026_08", "vendor_id": "ven_cloudbridge", "kind": "PURCHASE_ORDER", "currency": "USD", "amount_per_period": null, "period": null, "total": 20000, "remaining": 20000, "status": "open"}
+    ],
+    "ledger": [],
+    "prior_committed_usd": 10000,
+    "access_code": "demo-acceso-2026",
+    "actor": "ana.finanzas",
+    "invoice": {
+      "file_name": "chat-ladera-2026-10-16.txt",
+      "kind": "chat",
+      "language": "es",
+      "issuer": {"name": "Estudio Ladera S.A.S.", "tax_id_label": "NIT", "tax_id": "901234567-1", "address": "Carrera 43A # 7-50, Oficina 1204, El Poblado, Medellín, Antioquia", "email": "facturacion@ladera.example.com"},
+      "bill_to": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+      "number": "FE-1471",
+      "issue_date": "2026-10-16",
+      "due_date": "2026-10-31",
+      "currency_code": null,
+      "currency_display": "$",
+      "lines": [
+        {"description": "Animación de 3 videos cortos para el lanzamiento de producto", "amount": 1950000, "amount_display": "1.950.000"},
+        {"description": "Locución y musicalización", "amount": 600000, "amount_display": "600.000"},
+        {"description": "Subtítulos en inglés y portugués", "amount": 300000, "amount_display": "300.000"}
+      ],
+      "total": 2850000,
+      "total_display": "Total: $2.850.000",
+      "tax_note": "Exento de IVA por exportación de servicios.",
+      "payment": {"method": "BRE_B", "label": "Cuenta Bre-B", "value": "0123456789", "bank": "Banco Andino S.A."},
+      "chat_text": "Hola Ana, buenas tardes. Te paso por aquí los datos de la factura FE-1471 de Estudio Ladera S.A.S. (NIT 901234567-1), porque el portal de proveedores no me deja cargar el PDF.\n\nFactura FE-1471\nFecha: 16/10/2026 · Vence: 31/10/2026\nCliente: Northwind Labs Inc. (EIN 98-7654321)\n\n• Animación de 3 videos cortos para el lanzamiento de producto: $1.950.000\n• Locución y musicalización: $600.000\n• Subtítulos en inglés y portugués: $300.000\nTotal: $2.850.000\n\nExento de IVA por exportación de servicios.\nDatos de pago: Bre-B, cuenta 0123456789 a nombre de Estudio Ladera S.A.S. (Banco Andino).\n\nCualquier duda me cuentas. ¡Mil gracias!\nValentina Ríos · Coordinación administrativa, Estudio Ladera"
+    },
+    "actions": [{"type": "upload", "actor": "ana.finanzas", "access_code": "demo-acceso-2026"}]
+  },
+  "expected": {
+    "outcome": "ESCALATE",
+    "reasons_any": ["CURRENCY_AMBIGUOUS"],
+    "why": "Todos los montos llevan solo “$”, sin código ISO ni nombre de moneda; aunque Ladera factura en COP, la regla pide escalar con CURRENCY_AMBIGUOUS en vez de suponer la moneda. El resto está en orden: NIT y cuenta del catálogo, líneas que suman 2.850.000 y fechas dentro de rango."
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "id": "BLD-009",
+  "description": "Factura electrónica de Estudio Ladera en pesos colombianos cuyo equivalente en dólares cae justo en el límite de autoaprobación.",
+  "fixture": {
+    "today": "2026-10-17T12:00:00Z",
+    "company": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+    "rules": {"version": 1, "auto_approve_up_to_usd": 5000, "hard_cap_per_invoice_usd": 25000, "monthly_budget_usd": 60000, "contract_tolerance_pct": 1, "possible_duplicate_window_days": 10, "split_window_days": 7, "stale_after_days": 120, "future_tolerance_days": 3, "pending_timeout_hours": 72},
+    "fx_table": {"date": "2026-10-16", "source": "tabla fija de demostración, no es un tipo de cambio de mercado", "rates": {"USD": 1, "MXN": 0.0545, "COP": 0.00025, "BRL": 0.18}},
+    "vendors": [
+      {"id": "ven_aurora", "name": "Servicios Digitales Aurora S.A. de C.V.", "tax_id": "SDA190312AB1", "country": "MX", "currency": "MXN", "rail": "SPEI", "account": "002180700012345678", "status": "active"},
+      {"id": "ven_ladera", "name": "Estudio Ladera S.A.S.", "tax_id": "901234567-1", "country": "CO", "currency": "COP", "rail": "BRE_B", "account": "0123456789", "status": "active"},
+      {"id": "ven_pinheiro", "name": "Pinheiro Tecnologia Ltda.", "tax_id": "12.345.678/0001-90", "country": "BR", "currency": "BRL", "rail": "PIX", "account": "pix@pinheiro.example.com", "status": "active"},
+      {"id": "ven_cloudbridge", "name": "Cloudbridge LLC", "tax_id": "12-3456789", "country": "US", "currency": "USD", "rail": "ACH", "account": "000000001-000123456789", "status": "active"}
+    ],
+    "agreements": [
+      {"id": "agr_aurora_2026", "vendor_id": "ven_aurora", "kind": "CONTRACT", "currency": "MXN", "amount_per_period": 42000, "period": "MONTHLY", "remaining": null, "status": "open"},
+      {"id": "agr_ladera_oc_2026_07", "vendor_id": "ven_ladera", "kind": "PURCHASE_ORDER", "currency": "COP", "amount_per_period": null, "period": null, "total": 40000000, "remaining": 28000000, "status": "open"},
+      {"id": "agr_pinheiro_oc_2026_09", "vendor_id": "ven_pinheiro", "kind": "PURCHASE_ORDER", "currency": "BRL", "amount_per_period": null, "period": null, "total": 60000, "remaining": 60000, "status": "open"},
+      {"id": "agr_cloudbridge_oc_2026_08", "vendor_id": "ven_cloudbridge", "kind": "PURCHASE_ORDER", "currency": "USD", "amount_per_period": null, "period": null, "total": 20000, "remaining": 20000, "status": "open"}
+    ],
+    "ledger": [
+      {"invoice_number": "FE-1398", "vendor_id": "ven_ladera", "total": 12000000, "currency": "COP", "amount_usd": 3000, "issue_date": "2026-08-20", "decided_at": "2026-08-27T16:30:00Z", "status": "PAID"}
+    ],
+    "prior_committed_usd": 10000,
+    "access_code": "demo-acceso-2026",
+    "actor": "ana.finanzas",
+    "invoice": {
+      "file_name": "FE-1460.pdf",
+      "kind": "pdf",
+      "language": "es",
+      "issuer": {"name": "Estudio Ladera S.A.S.", "tax_id_label": "NIT", "tax_id": "901234567-1", "address": "Carrera 43A # 7-50, Oficina 1204, El Poblado, Medellín, Antioquia", "email": "facturacion@ladera.example.com"},
+      "bill_to": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+      "number": "FE-1460",
+      "issue_date": "2026-10-15",
+      "due_date": "2026-11-14",
+      "currency_code": "COP",
+      "currency_display": "COP",
+      "lines": [
+        {"description": "Rediseño de la plataforma web corporativa — hito 2 de 3: diseño de interfaces y prototipos navegables", "amount": 14500000, "amount_display": "14.500.000"},
+        {"description": "Sistema de diseño y librería de componentes en Figma", "amount": 4000000, "amount_display": "4.000.000"},
+        {"description": "Capacitación al equipo de producto (2 sesiones virtuales)", "amount": 1500000, "amount_display": "1.500.000"}
+      ],
+      "total": 20000000,
+      "total_display": "Valor total: COP 20.000.000",
+      "tax_note": "Operación exenta de IVA por exportación de servicios (art. 481, literal c, E.T.). Orden de compra NW-OC-2026-07, ampliada en septiembre a COP 40.000.000. Condición de pago: 30 días calendario. Factura electrónica de venta autorizada por la DIAN, resolución 18764000000001 del 15/01/2026, prefijo FE, rango 1001 a 5000.",
+      "payment": {"method": "BRE_B", "label": "Cuenta Bre-B", "value": "0123456789", "bank": "Banco Andino S.A."}
+    },
+    "actions": [{"type": "upload", "actor": "ana.finanzas", "access_code": "demo-acceso-2026"}]
+  },
+  "expected": {
+    "outcome": "PAY",
+    "reasons_any": [],
+    "why": "20.000.000 COP × 0.00025 = 5,000.00 USD exactos, que no superan el límite de 5,000.00, así que APPROVAL_THRESHOLD pasa; las líneas suman 20.000.000, el saldo de la OC ampliada (28.000.000 COP) alcanza y no hubo pagos a Ladera en los 7 días previos (0 + 5,000 no supera 5,000). NIT y cuenta coinciden; el comprometido queda en 15,000."
+  }
+}

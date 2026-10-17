@@ -1,0 +1,54 @@
+{
+  "id": "BLD-004",
+  "description": "Recordatorio de pago vencido de Cloudbridge que reenvía en PDF una factura que el libro ya tiene pagada.",
+  "fixture": {
+    "today": "2026-10-17T12:00:00Z",
+    "company": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+    "rules": {"version": 1, "auto_approve_up_to_usd": 5000, "hard_cap_per_invoice_usd": 25000, "monthly_budget_usd": 60000, "contract_tolerance_pct": 1, "possible_duplicate_window_days": 10, "split_window_days": 7, "stale_after_days": 120, "future_tolerance_days": 3, "pending_timeout_hours": 72},
+    "fx_table": {"date": "2026-10-16", "source": "tabla fija de demostración, no es un tipo de cambio de mercado", "rates": {"USD": 1, "MXN": 0.0545, "COP": 0.00025, "BRL": 0.18}},
+    "vendors": [
+      {"id": "ven_aurora", "name": "Servicios Digitales Aurora S.A. de C.V.", "tax_id": "SDA190312AB1", "country": "MX", "currency": "MXN", "rail": "SPEI", "account": "002180700012345678", "status": "active"},
+      {"id": "ven_ladera", "name": "Estudio Ladera S.A.S.", "tax_id": "901234567-1", "country": "CO", "currency": "COP", "rail": "BRE_B", "account": "0123456789", "status": "active"},
+      {"id": "ven_pinheiro", "name": "Pinheiro Tecnologia Ltda.", "tax_id": "12.345.678/0001-90", "country": "BR", "currency": "BRL", "rail": "PIX", "account": "pix@pinheiro.example.com", "status": "active"},
+      {"id": "ven_cloudbridge", "name": "Cloudbridge LLC", "tax_id": "12-3456789", "country": "US", "currency": "USD", "rail": "ACH", "account": "000000001-000123456789", "status": "active"}
+    ],
+    "agreements": [
+      {"id": "agr_aurora_2026", "vendor_id": "ven_aurora", "kind": "CONTRACT", "currency": "MXN", "amount_per_period": 42000, "period": "MONTHLY", "remaining": null, "status": "open"},
+      {"id": "agr_ladera_oc_2026_07", "vendor_id": "ven_ladera", "kind": "PURCHASE_ORDER", "currency": "COP", "amount_per_period": null, "period": null, "total": 18000000, "remaining": 12000000, "status": "open"},
+      {"id": "agr_pinheiro_oc_2026_09", "vendor_id": "ven_pinheiro", "kind": "PURCHASE_ORDER", "currency": "BRL", "amount_per_period": null, "period": null, "total": 60000, "remaining": 60000, "status": "open"},
+      {"id": "agr_cloudbridge_oc_2026_08", "vendor_id": "ven_cloudbridge", "kind": "PURCHASE_ORDER", "currency": "USD", "amount_per_period": null, "period": null, "total": 20000, "remaining": 16784.6, "status": "open"}
+    ],
+    "ledger": [
+      {"invoice_number": "INV-0010402", "vendor_id": "ven_cloudbridge", "total": 3215.4, "currency": "USD", "amount_usd": 3215.4, "issue_date": "2026-09-30", "decided_at": "2026-10-07T14:30:00Z", "status": "PAID"}
+    ],
+    "prior_committed_usd": 10000,
+    "access_code": "demo-acceso-2026",
+    "actor": "ana.finanzas",
+    "invoice": {
+      "file_name": "INV-0010402-past-due.pdf",
+      "kind": "pdf",
+      "language": "en",
+      "issuer": {"name": "Cloudbridge LLC", "tax_id_label": "EIN", "tax_id": "12-3456789", "address": "1200 Harbor Point Ave, Suite 410, Seattle, WA 98101", "email": "billing@cloudbridge.example.com"},
+      "bill_to": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+      "number": "INV-0010402",
+      "issue_date": "2026-09-30",
+      "due_date": "2026-10-15",
+      "currency_code": "USD",
+      "currency_display": "USD",
+      "lines": [
+        {"description": "Managed cloud infrastructure — August 2026 compute overage (6,538.5 CPU-hours @ $0.40)", "amount": 2615.4, "amount_display": "2,615.40"},
+        {"description": "Incident response — Sev-2 on Aug 27, 8 hrs @ $75.00/hr", "amount": 600, "amount_display": "600.00"}
+      ],
+      "total": 3215.4,
+      "total_display": "Balance due: USD 3,215.40",
+      "tax_note": "PAST DUE — SECOND NOTICE (sent Oct 16, 2026). Our records show this invoice remains unpaid. Sales tax: $0.00. Terms: Net 15. A late fee of 1.5% may apply to balances more than 30 days past due.",
+      "payment": {"method": "ACH", "label": "ACH routing / account", "value": "000000001-000123456789", "bank": "First Harbor Bank, N.A."}
+    },
+    "actions": [{"type": "upload", "actor": "ana.finanzas", "access_code": "demo-acceso-2026"}]
+  },
+  "expected": {
+    "outcome": "HOLD",
+    "reasons_any": ["DUPLICATE"],
+    "why": "El libro ya tiene pagada la factura INV-0010402 de Cloudbridge (decidida el 2026-10-07); el aviso de vencido trae el mismo proveedor y el mismo número, así que se frena por DUPLICATE. También calzaría como posible duplicado (mismo total y misma fecha), pero frenar es más estricto que escalar."
+  }
+}

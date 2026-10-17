@@ -1,0 +1,55 @@
+{
+  "id": "BLD-002",
+  "description": "Captura de una factura de Cloudbridge en inglés, tercera parte de un proyecto cuyas dos partes anteriores se pagaron en la misma semana.",
+  "fixture": {
+    "today": "2026-10-17T12:00:00Z",
+    "company": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+    "rules": {"version": 1, "auto_approve_up_to_usd": 5000, "hard_cap_per_invoice_usd": 25000, "monthly_budget_usd": 60000, "contract_tolerance_pct": 1, "possible_duplicate_window_days": 10, "split_window_days": 7, "stale_after_days": 120, "future_tolerance_days": 3, "pending_timeout_hours": 72},
+    "fx_table": {"date": "2026-10-16", "source": "tabla fija de demostración, no es un tipo de cambio de mercado", "rates": {"USD": 1, "MXN": 0.0545, "COP": 0.00025, "BRL": 0.18}},
+    "vendors": [
+      {"id": "ven_aurora", "name": "Servicios Digitales Aurora S.A. de C.V.", "tax_id": "SDA190312AB1", "country": "MX", "currency": "MXN", "rail": "SPEI", "account": "002180700012345678", "status": "active"},
+      {"id": "ven_ladera", "name": "Estudio Ladera S.A.S.", "tax_id": "901234567-1", "country": "CO", "currency": "COP", "rail": "BRE_B", "account": "0123456789", "status": "active"},
+      {"id": "ven_pinheiro", "name": "Pinheiro Tecnologia Ltda.", "tax_id": "12.345.678/0001-90", "country": "BR", "currency": "BRL", "rail": "PIX", "account": "pix@pinheiro.example.com", "status": "active"},
+      {"id": "ven_cloudbridge", "name": "Cloudbridge LLC", "tax_id": "12-3456789", "country": "US", "currency": "USD", "rail": "ACH", "account": "000000001-000123456789", "status": "active"}
+    ],
+    "agreements": [
+      {"id": "agr_aurora_2026", "vendor_id": "ven_aurora", "kind": "CONTRACT", "currency": "MXN", "amount_per_period": 42000, "period": "MONTHLY", "remaining": null, "status": "open"},
+      {"id": "agr_ladera_oc_2026_07", "vendor_id": "ven_ladera", "kind": "PURCHASE_ORDER", "currency": "COP", "amount_per_period": null, "period": null, "total": 18000000, "remaining": 12000000, "status": "open"},
+      {"id": "agr_pinheiro_oc_2026_09", "vendor_id": "ven_pinheiro", "kind": "PURCHASE_ORDER", "currency": "BRL", "amount_per_period": null, "period": null, "total": 60000, "remaining": 60000, "status": "open"},
+      {"id": "agr_cloudbridge_oc_2026_08", "vendor_id": "ven_cloudbridge", "kind": "PURCHASE_ORDER", "currency": "USD", "amount_per_period": null, "period": null, "total": 20000, "remaining": 15570, "status": "open"}
+    ],
+    "ledger": [
+      {"invoice_number": "INV-0010451", "vendor_id": "ven_cloudbridge", "total": 2450, "currency": "USD", "amount_usd": 2450, "issue_date": "2026-10-12", "decided_at": "2026-10-13T17:20:00Z", "status": "PAID"},
+      {"invoice_number": "INV-0010458", "vendor_id": "ven_cloudbridge", "total": 1980, "currency": "USD", "amount_usd": 1980, "issue_date": "2026-10-13", "decided_at": "2026-10-14T15:05:00Z", "status": "PAID"}
+    ],
+    "prior_committed_usd": 10000,
+    "access_code": "demo-acceso-2026",
+    "actor": "ana.finanzas",
+    "invoice": {
+      "file_name": "INV-0010466.png",
+      "kind": "image",
+      "language": "en",
+      "issuer": {"name": "Cloudbridge LLC", "tax_id_label": "EIN", "tax_id": "12-3456789", "address": "1200 Harbor Point Ave, Suite 410, Seattle, WA 98101", "email": "billing@cloudbridge.example.com"},
+      "bill_to": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+      "number": "INV-0010466",
+      "issue_date": "2026-10-15",
+      "due_date": "2026-11-14",
+      "currency_code": "USD",
+      "currency_display": "USD",
+      "lines": [
+        {"description": "Data migration services — Part 3 of 3: cutover and validation (16 hrs @ $65.00/hr)", "amount": 1040, "amount_display": "1,040.00"},
+        {"description": "Post-migration data integrity report", "amount": 235, "amount_display": "235.00"}
+      ],
+      "total": 1275,
+      "total_display": "Amount due: USD 1,275.00",
+      "tax_note": "Sales tax: $0.00. Project: legacy CRM data migration. PO NW-PO-2026-0811. Terms: Net 30. Thank you for your business.",
+      "payment": {"method": "ACH", "label": "ACH routing / account", "value": "000000001-000123456789", "bank": "First Harbor Bank, N.A."}
+    },
+    "actions": [{"type": "upload", "actor": "ana.finanzas", "access_code": "demo-acceso-2026"}]
+  },
+  "expected": {
+    "outcome": "ESCALATE",
+    "reasons_any": ["SPLIT_SUSPECTED"],
+    "why": "La factura sola (1,275.00 USD) no pasa de 5,000, pero a Cloudbridge se le pagaron 2,450.00 y 1,980.00 USD el 13 y 14 de octubre, dentro de los 7 días anteriores: 4,430.00 + 1,275.00 = 5,705.00 > 5,000, así que se sospecha fraccionamiento. Los totales son distintos (no hay posible duplicado) y el saldo de la OC (15,570) y el presupuesto (10,000 + 4,430 + 1,275 = 15,705) alcanzan."
+  }
+}

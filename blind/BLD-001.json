@@ -1,0 +1,55 @@
+{
+  "id": "BLD-001",
+  "description": "Factura de servicios de Pinheiro en portugués con montos en formato 1.234,56, segunda medición dentro del saldo de su orden de compra.",
+  "fixture": {
+    "today": "2026-10-17T12:00:00Z",
+    "company": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+    "rules": {"version": 1, "auto_approve_up_to_usd": 5000, "hard_cap_per_invoice_usd": 25000, "monthly_budget_usd": 60000, "contract_tolerance_pct": 1, "possible_duplicate_window_days": 10, "split_window_days": 7, "stale_after_days": 120, "future_tolerance_days": 3, "pending_timeout_hours": 72},
+    "fx_table": {"date": "2026-10-16", "source": "tabla fija de demostración, no es un tipo de cambio de mercado", "rates": {"USD": 1, "MXN": 0.0545, "COP": 0.00025, "BRL": 0.18}},
+    "vendors": [
+      {"id": "ven_aurora", "name": "Servicios Digitales Aurora S.A. de C.V.", "tax_id": "SDA190312AB1", "country": "MX", "currency": "MXN", "rail": "SPEI", "account": "002180700012345678", "status": "active"},
+      {"id": "ven_ladera", "name": "Estudio Ladera S.A.S.", "tax_id": "901234567-1", "country": "CO", "currency": "COP", "rail": "BRE_B", "account": "0123456789", "status": "active"},
+      {"id": "ven_pinheiro", "name": "Pinheiro Tecnologia Ltda.", "tax_id": "12.345.678/0001-90", "country": "BR", "currency": "BRL", "rail": "PIX", "account": "pix@pinheiro.example.com", "status": "active"},
+      {"id": "ven_cloudbridge", "name": "Cloudbridge LLC", "tax_id": "12-3456789", "country": "US", "currency": "USD", "rail": "ACH", "account": "000000001-000123456789", "status": "active"}
+    ],
+    "agreements": [
+      {"id": "agr_aurora_2026", "vendor_id": "ven_aurora", "kind": "CONTRACT", "currency": "MXN", "amount_per_period": 42000, "period": "MONTHLY", "remaining": null, "status": "open"},
+      {"id": "agr_ladera_oc_2026_07", "vendor_id": "ven_ladera", "kind": "PURCHASE_ORDER", "currency": "COP", "amount_per_period": null, "period": null, "total": 18000000, "remaining": 12000000, "status": "open"},
+      {"id": "agr_pinheiro_oc_2026_09", "vendor_id": "ven_pinheiro", "kind": "PURCHASE_ORDER", "currency": "BRL", "amount_per_period": null, "period": null, "total": 60000, "remaining": 47400, "status": "open"},
+      {"id": "agr_cloudbridge_oc_2026_08", "vendor_id": "ven_cloudbridge", "kind": "PURCHASE_ORDER", "currency": "USD", "amount_per_period": null, "period": null, "total": 20000, "remaining": 20000, "status": "open"}
+    ],
+    "ledger": [
+      {"invoice_number": "NFSE-2026-00702", "vendor_id": "ven_pinheiro", "total": 12600, "currency": "BRL", "amount_usd": 2268, "issue_date": "2026-09-12", "decided_at": "2026-09-18T15:00:00Z", "status": "PAID"}
+    ],
+    "prior_committed_usd": 10000,
+    "access_code": "demo-acceso-2026",
+    "actor": "ana.finanzas",
+    "invoice": {
+      "file_name": "NFSE-2026-00731.pdf",
+      "kind": "pdf",
+      "language": "pt",
+      "issuer": {"name": "Pinheiro Tecnologia Ltda.", "tax_id_label": "CNPJ", "tax_id": "12.345.678/0001-90", "address": "Rua das Palmeiras Imperiais, 480, sala 712, Vila Olímpia, São Paulo - SP, 04547-000", "email": "financeiro@pinheiro.example.com"},
+      "bill_to": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+      "number": "NFSE-2026-00731",
+      "issue_date": "2026-10-08",
+      "due_date": "2026-11-07",
+      "currency_code": "BRL",
+      "currency_display": "R$ (BRL)",
+      "lines": [
+        {"description": "Desenvolvimento do módulo de conciliação bancária — sprint 14 (01/09 a 30/09/2026)", "amount": 9870, "amount_display": "9.870,00"},
+        {"description": "Testes automatizados e homologação com a equipe da Northwind", "amount": 3212.75, "amount_display": "3.212,75"},
+        {"description": "Sustentação e suporte nível 2 — setembro/2026", "amount": 1300, "amount_display": "1.300,00"}
+      ],
+      "total": 14382.75,
+      "total_display": "Valor total da nota (BRL): R$ 14.382,75",
+      "tax_note": "Exportação de serviços: não incidência de ISS (LC 116/2003, art. 2º, I) e de PIS/COFINS; sem retenções. Referência: pedido de compra Northwind NW-PO-2026-0914, medição 2 de 4. Condições de pagamento: 30 dias corridos a partir da emissão.",
+      "payment": {"method": "PIX", "label": "Chave Pix", "value": "pix@pinheiro.example.com", "bank": "Banco Atlântico S.A."}
+    },
+    "actions": [{"type": "upload", "actor": "ana.finanzas", "access_code": "demo-acceso-2026"}]
+  },
+  "expected": {
+    "outcome": "PAY",
+    "reasons_any": [],
+    "why": "CNPJ y chave Pix coinciden con Pinheiro; R$ 14.382,75 se lee 14,382.75 BRL (las líneas 9,870.00 + 3,212.75 + 1,300.00 suman el total) y equivale a 14,382.75 × 0.18 ≈ 2,588.90 USD, bajo 5,000; cabe en el saldo de la OC (47,400 BRL) y el comprometido queda en 10,000 + 2,588.90 = 12,588.90. El pago previo a Pinheiro es de septiembre y de otro monto, fuera de las ventanas de duplicado y fraccionamiento."
+  }
+}

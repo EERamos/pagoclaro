@@ -1,0 +1,55 @@
+{
+  "id": "BLD-007",
+  "description": "Factura mensual de Cloudbridge en inglés con impuesto en cero, centavos en una línea y orden de compra con saldo parcial.",
+  "fixture": {
+    "today": "2026-10-17T12:00:00Z",
+    "company": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+    "rules": {"version": 1, "auto_approve_up_to_usd": 5000, "hard_cap_per_invoice_usd": 25000, "monthly_budget_usd": 60000, "contract_tolerance_pct": 1, "possible_duplicate_window_days": 10, "split_window_days": 7, "stale_after_days": 120, "future_tolerance_days": 3, "pending_timeout_hours": 72},
+    "fx_table": {"date": "2026-10-16", "source": "tabla fija de demostración, no es un tipo de cambio de mercado", "rates": {"USD": 1, "MXN": 0.0545, "COP": 0.00025, "BRL": 0.18}},
+    "vendors": [
+      {"id": "ven_aurora", "name": "Servicios Digitales Aurora S.A. de C.V.", "tax_id": "SDA190312AB1", "country": "MX", "currency": "MXN", "rail": "SPEI", "account": "002180700012345678", "status": "active"},
+      {"id": "ven_ladera", "name": "Estudio Ladera S.A.S.", "tax_id": "901234567-1", "country": "CO", "currency": "COP", "rail": "BRE_B", "account": "0123456789", "status": "active"},
+      {"id": "ven_pinheiro", "name": "Pinheiro Tecnologia Ltda.", "tax_id": "12.345.678/0001-90", "country": "BR", "currency": "BRL", "rail": "PIX", "account": "pix@pinheiro.example.com", "status": "active"},
+      {"id": "ven_cloudbridge", "name": "Cloudbridge LLC", "tax_id": "12-3456789", "country": "US", "currency": "USD", "rail": "ACH", "account": "000000001-000123456789", "status": "active"}
+    ],
+    "agreements": [
+      {"id": "agr_aurora_2026", "vendor_id": "ven_aurora", "kind": "CONTRACT", "currency": "MXN", "amount_per_period": 42000, "period": "MONTHLY", "remaining": null, "status": "open"},
+      {"id": "agr_ladera_oc_2026_07", "vendor_id": "ven_ladera", "kind": "PURCHASE_ORDER", "currency": "COP", "amount_per_period": null, "period": null, "total": 18000000, "remaining": 12000000, "status": "open"},
+      {"id": "agr_pinheiro_oc_2026_09", "vendor_id": "ven_pinheiro", "kind": "PURCHASE_ORDER", "currency": "BRL", "amount_per_period": null, "period": null, "total": 60000, "remaining": 60000, "status": "open"},
+      {"id": "agr_cloudbridge_oc_2026_08", "vendor_id": "ven_cloudbridge", "kind": "PURCHASE_ORDER", "currency": "USD", "amount_per_period": null, "period": null, "total": 20000, "remaining": 16400, "status": "open"}
+    ],
+    "ledger": [
+      {"invoice_number": "INV-0010371", "vendor_id": "ven_cloudbridge", "total": 3600, "currency": "USD", "amount_usd": 3600, "issue_date": "2026-09-08", "decided_at": "2026-09-15T18:00:00Z", "status": "PAID"}
+    ],
+    "prior_committed_usd": 10000,
+    "access_code": "demo-acceso-2026",
+    "actor": "ana.finanzas",
+    "invoice": {
+      "file_name": "INV-0010417.pdf",
+      "kind": "pdf",
+      "language": "en",
+      "issuer": {"name": "Cloudbridge LLC", "tax_id_label": "EIN", "tax_id": "12-3456789", "address": "1200 Harbor Point Ave, Suite 410, Seattle, WA 98101", "email": "billing@cloudbridge.example.com"},
+      "bill_to": {"name": "Northwind Labs Inc.", "tax_id_label": "EIN", "tax_id": "98-7654321", "address": "200 Market St, Wilmington, DE"},
+      "number": "INV-0010417",
+      "issue_date": "2026-10-09",
+      "due_date": "2026-11-08",
+      "currency_code": "USD",
+      "currency_display": "USD",
+      "lines": [
+        {"description": "Managed cloud infrastructure — September 2026 (3 production clusters)", "amount": 2940, "amount_display": "2,940.00"},
+        {"description": "24x7 on-call support retainer — September 2026", "amount": 750, "amount_display": "750.00"},
+        {"description": "Additional object storage — 4.2 TB-month @ $40.55", "amount": 170.31, "amount_display": "170.31"}
+      ],
+      "total": 3860.31,
+      "total_display": "Total due: USD 3,860.31",
+      "tax_note": "Subtotal $3,860.31 · Sales tax (0.00%) $0.00 · Total due $3,860.31. Services billed to an out-of-state business customer; no sales tax charged. PO NW-PO-2026-0811. Terms: Net 30. Balances unpaid after 30 days accrue 1% per month.",
+      "payment": {"method": "ACH", "label": "ACH routing / account", "value": "000000001-000123456789", "bank": "First Harbor Bank, N.A."}
+    },
+    "actions": [{"type": "upload", "actor": "ana.finanzas", "access_code": "demo-acceso-2026"}]
+  },
+  "expected": {
+    "outcome": "PAY",
+    "reasons_any": [],
+    "why": "EIN y cuenta ACH coinciden con Cloudbridge; las líneas 2,940.00 + 750.00 + 170.31 suman 3,860.31 USD con impuesto en cero, bajo 5,000 y dentro del saldo de la OC (16,400 USD); el comprometido queda en 13,860.31. El pago previo a Cloudbridge es de septiembre y de otro monto, fuera de las ventanas de duplicado y fraccionamiento."
+  }
+}
