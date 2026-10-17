@@ -18,7 +18,8 @@
     "probe": "tsx scripts/probe-model.ts",
     "seed": "tsx scripts/seed-demo.ts",
     "demo:static": "tsx scripts/build-static-demo.ts",
-    "render:samples": "tsx scripts/render-samples.ts"
+    "render:samples": "tsx scripts/render-samples.ts",
+    "video:prep": "tsx scripts/seed-demo.ts --readers=replay --out=data/video --no-approvals && tsx scripts/video-prep.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.135.0",

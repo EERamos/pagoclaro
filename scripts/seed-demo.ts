@@ -18,7 +18,11 @@ import { renderInvoice, type FixtureInvoice } from '../runner/render';
 
 const mode = (process.argv.find((a) => a.startsWith('--readers='))?.split('=')[1] ?? 'record') as 'record' | 'replay' | 'oracle';
 const config = loadConfig();
-const outDir = mode === 'oracle' ? join('tmp', 'demo-oracle') : join('data', 'demo');
+// --out=<dir> writes the state elsewhere; --no-approvals leaves PIN-0415 and AUR-2026-0923 pending
+// so the video can approve them live (npm run video:prep).
+const outArg = process.argv.find((a) => a.startsWith('--out='))?.split('=')[1];
+const withApprovals = !process.argv.includes('--no-approvals');
+const outDir = outArg ?? (mode === 'oracle' ? join('tmp', 'demo-oracle') : join('data', 'demo'));
 
 const fromCase = (id: string, patch: Partial<FixtureInvoice> = {}): FixtureInvoice => {
   const dir = id.startsWith('ADV') ? 'adversarial' : 'golden';
@@ -124,10 +128,11 @@ async function main() {
   }
   const byNumber = (n: string) => Object.values(store.read().invoices).find((i) => i.invoice_number?.replace(/[^A-Z0-9]/gi, '') === n.replace(/[^A-Z0-9]/gi, ''));
   clock += 3 * 3_600_000;
-  for (const [n, note] of [
+  const approvals: (readonly [string, string])[] = [
     ['PIN-0415', 'Fase 2 aprobada en el comité del 15 de octubre.'],
     ['AUR-2026-0923', 'El proveedor dice que cambió de banco.'],
-  ] as const) {
+  ];
+  for (const [n, note] of withApprovals ? approvals : []) {
     const inv = byNumber(n);
     if (!inv || inv.status !== 'PENDING') continue;
     const r = await agent.approve(inv.id, 'luis.tesoreria', note);
