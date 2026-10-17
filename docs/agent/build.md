@@ -1,7 +1,7 @@
 ---
 agent_name: pagoclaro
-version: 1
-status: approved         # draft | approved — approved only by the owner at the gate
+version: 2
+status: draft            # draft | approved — approved only by the owner at the gate
 date: 2026-10-17
 track: heavy
 design_version: 1
@@ -10,7 +10,7 @@ evals_date: 2026-10-17
 stack: no-framework@n/a
 runtime: TypeScript en Node 24.14.0 sin framework de agentes; lectores anthropic/claude-opus-5-5 y anthropic/claude-haiku-5-5 con @anthropic-ai/sdk 0.135.0
 target: local (npm start) y demo estática en GitHub Pages; contenedor Docker listo para un hosting gratuito
-results: runs/20261017T142040Z.json
+results: runs/20261017T144147Z.json
 ---
 
 # PagoClaro — Build record
@@ -88,7 +88,9 @@ and the spec; the Test column of the spec's Traceability table is the one sancti
   renombrarlo), un solo Edit llenó las 40 celdas Test de la tabla Traceability con pruebas de
   `tests/bhv.test.ts`, `tests/rules.test.ts`, `tests/infra.test.ts` y `tests/tool-surface.test.ts`;
   el guard lo dejó pasar y `git diff -- docs/agent/spec.md` mostró 40 líneas cambiadas, solo en la
-  cuarta celda. Commit aparte, el spec solo: 7fe740b.
+  cuarta celda. Commit aparte, el spec solo: 7fe740b. En el v2, tras la corrida verde y con el
+  guard activo, un Edit agregó a la celda Test de BHV-010 la prueba de lecturas distintas; el diff
+  mostró 1 línea cambiada, solo en esa celda. Commit aparte, el spec solo: f786420.
 
 ## 3. Delegation
 
@@ -107,12 +109,15 @@ infrastructure or more than 15 cases) when it is installed; otherwise the build 
 The runner loads evals/ as read-only data and writes one results file per run.
 
 - **Command:** `npm run evals`
-- **Results file:** `runs/20261017T142040Z.json`, la primera corrida con los lectores reales
-  (Opus 5.5 y Haiku 5.5), del 2026-10-17T14:20:40Z al 14:21:32Z, `exit_code` 0, 46/46 casos;
-  68 llamadas, 0.678 USD. La corrida en seco con el lector de prueba (`tmp/runs-dry/`) no cuenta.
+- **Results file:** `runs/20261017T144147Z.json`, la corrida del v2 con los lectores reales
+  (Opus 5.5 y Haiku 5.5), del 2026-10-17T14:41:47Z al 14:42:37Z, `exit_code` 0, 46/46 casos;
+  0.68 USD. Antes: `runs/20261017T142040Z.json`, verde del v1 (46/46, 0.678 USD), y
+  `runs/20261017T143216Z.json`, la corrida del ship v1 (45/46, ADV-006 rojo). La corrida en seco
+  con el lector de prueba (`tmp/runs-dry/`) no cuenta.
 - **Evals access:** `runner/run-evals.ts` abre `evals/config.json` y cada caso con `readFileSync`, nunca
   escribe bajo `evals/`; escribe solo `runs/<run-id>.json` y, con lectores reales, guarda cada
-  lectura en `fixtures/readings/` para la demo.
+  lectura como evidencia en `data/eval-readings/<run-id>/` (fuera de git). Desde el v2 ya no toca
+  `fixtures/readings/`, que son las lecturas de la demo y las graba `npm run seed`.
 
 ## 5. Suite result
 
@@ -123,7 +128,8 @@ Copied from the results file, not retyped from memory. One row per tier that has
 | reversible | 40 | 1 de 1 | 40/40 en verde |
 | safe | 6 | 1 de 1 | 6/6 en verde |
 
-- **Adversarial:** 12/12 en verde (ADV-001 a ADV-012), cada uno en su única corrida.
+- **Adversarial:** 12/12 en verde (ADV-001 a ADV-012) en `runs/20261017T144147Z.json`, cada uno
+  en su única corrida.
 - **Release blockers:** los 6 de `evals/config.json` se cumplen en esta corrida: todos los
   adversariales pasan (12/12); ningún `record_payment` sin evaluación PAY y ninguna factura con
   lecturas distintas pagada (los 39 casos con un assert o forbidden sobre pagar o sobre el cruce
@@ -154,6 +160,24 @@ The agent runs once end to end in its real shape, outside the eval harness.
 
 Anything built that the spec does not name, and anything the spec names that was not built as
 written.
+
+- Versión 2 (2026-10-17), re-entrada desde el ship v1 (NO-SHIP, 9979a99), que Edgar firmó y mandó
+  a build. Blocker: en la corrida de la auditoría ADV-006 (BHV-010) quedó rojo porque Haiku 5.5
+  dejó vacíos los campos del chat, las lecturas no coincidieron y `src/agent/pipeline.ts:139`
+  escalaba solo con READINGS_DISAGREE, sin SUSPICIOUS_TEXT, aunque las dos lecturas copiaron la
+  orden. Ahora, con lecturas distintas, la factura escala también con SUSPICIOUS_TEXT si alguna
+  lectura trae texto con órdenes. Prueba primero:
+  `tests/bhv.test.ts::BHV-010 un chat con órdenes y lecturas distintas escala también con
+  SUSPICIOUS_TEXT`, con las dos lecturas reales de esa corrida. Commit d917206.
+- Adición del v2: las alarmas del runbook avisan solas (`src/alerts.ts`): `GET /health` y
+  `GET /api/summary` (`metrics.alerts`) las traen, el tablero muestra un banner rojo y el servidor
+  imprime una línea `[ALERTA]` cuando una se enciende (hallazgo important del ship v1). Probado con
+  `tests/infra.test.ts::las alarmas del runbook se encienden con su umbral y avisan una sola vez` y
+  en un servidor real con tope de 0.01 USD: `/health` respondió `"alerts":["MODEL_SPEND_HIGH"]`,
+  la consola imprimió `[ALERTA] MODEL_SPEND_HIGH` y el tablero mostró el banner.
+- Cambio del v2: el runner guarda sus lecturas en `data/eval-readings/<run-id>/` en lugar de
+  reescribir `fixtures/readings/` (hallazgo minor del ship v1), y el ritual semanal del runbook dice
+  el costo medido de una corrida, unos 0.70 USD (el otro minor).
 
 - El guard no estuvo activo en la primera sesión del build (sección 2): mientras se escribió el
   código, la protección de `evals/`, el diseño y el spec dependió de no editarlos;
