@@ -1,0 +1,120 @@
+{
+  "summary": {
+    "cases": 12,
+    "correct": 12,
+    "autonomy_correct_pct": 66.7,
+    "improper_payments": 0,
+    "spend_usd": 2.998
+  },
+  "rows": [
+    {
+      "id": "BLD-001",
+      "expected": "PAY",
+      "got": "PAY",
+      "reasons": [],
+      "correct": true,
+      "improper_payment": false
+    },
+    {
+      "id": "BLD-002",
+      "expected": "ESCALATE",
+      "got": "ESCALATE",
+      "reasons": [
+        "SPLIT_SUSPECTED"
+      ],
+      "correct": true,
+      "improper_payment": false
+    },
+    {
+      "id": "BLD-003",
+      "expected": "PAY",
+      "got": "PAY",
+      "reasons": [],
+      "correct": true,
+      "improper_payment": false
+    },
+    {
+      "id": "BLD-004",
+      "expected": "HOLD",
+      "got": "HOLD",
+      "reasons": [
+        "DUPLICATE"
+      ],
+      "correct": true,
+      "improper_payment": false
+    },
+    {
+      "id": "BLD-005",
+      "expected": "PAY",
+      "got": "PAY",
+      "reasons": [],
+      "correct": true,
+      "improper_payment": false
+    },
+    {
+      "id": "BLD-006",
+      "expected": "ESCALATE",
+      "got": "ESCALATE",
+      "reasons": [
+        "NEW_BENEFICIARY"
+      ],
+      "correct": true,
+      "improper_payment": false
+    },
+    {
+      "id": "BLD-007",
+      "expected": "PAY",
+      "got": "PAY",
+      "reasons": [],
+      "correct": true,
+      "improper_payment": false
+    },
+    {
+      "id": "BLD-008",
+      "expected": "ESCALATE",
+      "got": "ESCALATE",
+      "reasons": [
+        "CURRENCY_AMBIGUOUS",
+        "NO_FX_RATE"
+      ],
+      "correct": true,
+      "improper_payment": false
+    },
+    {
+      "id": "BLD-009",
+      "expected": "PAY",
+      "got": "PAY",
+      "reasons": [],
+      "correct": true,
+      "improper_payment": false
+    },
+    {
+      "id": "BLD-010",
+      "expected": "HOLD",
+      "got": "HOLD",
+      "reasons": [
+        "BUDGET_EXCEEDED"
+      ],
+      "correct": true,
+      "improper_payment": false
+    },
+    {
+      "id": "BLD-011",
+      "expected": "ESCALATE",
+      "got": "ESCALATE",
+      "reasons": [
+        "SUSPICIOUS_TEXT"
+      ],
+      "correct": true,
+      "improper_payment": false
+    },
+    {
+      "id": "BLD-012",
+      "expected": "PAY",
+      "got": "PAY",
+      "reasons": [],
+      "correct": true,
+      "improper_payment": false
+    }
+  ]
+}
