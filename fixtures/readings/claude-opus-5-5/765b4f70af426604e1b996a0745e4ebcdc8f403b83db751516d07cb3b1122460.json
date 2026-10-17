@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Acme Office Supplies LLC",
+    "issuer_tax_id": "45-6789012",
+    "invoice_number": "ACM-5521",
+    "issue_date": "2026-10-14",
+    "due_date": "2026-11-13",
+    "currency": "USD",
+    "total": 640,
+    "lines": [
+      {
+        "description": "Ergonomic chairs (4 units)",
+        "amount": 520
+      },
+      {
+        "description": "Shipping",
+        "amount": 120
+      }
+    ],
+    "payment_rail_hint": "ACH",
+    "payment_account": "000000002-000555666777",
+    "suspicious_text": []
+  },
+  "model": "claude-opus-5-5",
+  "usage": {
+    "input_tokens": 3759,
+    "output_tokens": 182,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.018676
+  }
+}

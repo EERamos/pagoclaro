@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Tradu Pro Serviços Linguísticos Ltda.",
+    "issuer_tax_id": "98.765.432/0001-10",
+    "invoice_number": "TRP-220",
+    "issue_date": "2026-10-11",
+    "due_date": "2026-10-26",
+    "currency": "BRL",
+    "total": 6300,
+    "lines": [
+      {
+        "description": "Tradução de documentação técnica (42 mil palavras)",
+        "amount": 6300
+      }
+    ],
+    "payment_rail_hint": "PIX",
+    "payment_account": "financeiro@tradupro.example.com",
+    "suspicious_text": []
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3509,
+    "output_tokens": 193,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.00044740000000000003
+  }
+}

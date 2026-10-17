@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Nubecontable S.A. de C.V.",
+    "issuer_tax_id": "NCO200814QK5",
+    "invoice_number": "NUB-1043",
+    "issue_date": "2026-10-12",
+    "due_date": "2026-10-27",
+    "currency": "MXN",
+    "total": 18500,
+    "lines": [
+      {
+        "description": "Contabilidad mensual y cumplimiento fiscal, octubre 2026",
+        "amount": 18500
+      },
+      {
+        "description": "IVA 0% (exportación de servicios)",
+        "amount": 0
+      }
+    ],
+    "payment_rail_hint": "SPEI",
+    "payment_account": "012180001987654321",
+    "suspicious_text": []
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3797,
+    "output_tokens": 214,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.00048670000000000007
+  }
+}

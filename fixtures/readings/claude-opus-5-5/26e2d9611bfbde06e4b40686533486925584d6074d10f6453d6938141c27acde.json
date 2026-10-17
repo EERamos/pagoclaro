@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Estudio Ladera S.A.S.",
+    "issuer_tax_id": "901234567-1",
+    "invoice_number": "LAD-121",
+    "issue_date": "2026-10-15",
+    "due_date": "2026-10-30",
+    "currency": "COP",
+    "total": 7000000,
+    "lines": [
+      {
+        "description": "Diseño de identidad visual, entrega final",
+        "amount": 7000000
+      }
+    ],
+    "payment_rail_hint": "BRE_B",
+    "payment_account": "0123456789",
+    "suspicious_text": []
+  },
+  "model": "claude-opus-5-5",
+  "usage": {
+    "input_tokens": 3768,
+    "output_tokens": 165,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.018372
+  }
+}
