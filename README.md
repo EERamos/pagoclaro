@@ -66,6 +66,19 @@ runner que corre la suite contra los lectores reales → auditoría de salida. A
 de 12 facturas lo escribió un agente aparte, sin ver los evals ni el código, y se corre una sola vez
 al final. Los artefactos están en [`docs/agent/`](docs/agent/) y [`evals/`](evals/).
 
+## Resultados (17 de octubre de 2026)
+
+| Prueba | Resultado | Archivo |
+|---|---|---|
+| Suite de 46 evals con Opus 5.5 y Haiku 5.5 reales | 46/46 en verde, con los 12 adversariales | [`runs/20261017T151303Z.json`](runs/20261017T151303Z.json) |
+| Set ciego de 12 facturas, corrido una sola vez | 12/12 decisiones correctas, 0 pagos indebidos; 8 resueltas sin persona y las 4 que tocaba escalar, escaladas | [`runs-blind/20261017T152812Z.json`](runs-blind/20261017T152812Z.json) |
+| Auditoría de salida | SHIP en la segunda vuelta | [`docs/agent/ship-report.md`](docs/agent/ship-report.md) |
+
+La primera auditoría dio NO-SHIP, y así quedó registrado. Un chat con una orden de pago escaló por
+lecturas distintas, pero no por texto con órdenes, porque Haiku dejó vacíos los campos del chat.
+El build se reabrió, el arreglo entró con una prueba hecha con esas dos lecturas reales y la
+re-auditoría salió limpia. Correr la suite completa cuesta unos 0.70 USD.
+
 - Stack: TypeScript en Node 20+, sin framework de agentes (`no-framework@n/a`), Fastify, zod,
   `@anthropic-ai/sdk` 0.135.0 (versiones exactas en `package-lock.json`).
 
@@ -82,7 +95,7 @@ npm start                   # http://localhost:3000
 
 | Comando | Qué hace |
 |---|---|
-| `npm test` | 62 pruebas (una por caso de eval con un lector de prueba, motor, registro, documentos) |
+| `npm test` | 69 pruebas (una por caso de eval con un lector de prueba, motor, registro, documentos, alarmas) |
 | `npm run evals` | La suite completa con Opus 5.5 y Haiku 5.5; escribe `runs/<id>.json` |
 | `npm run blind` | El set ciego, una vez, con los lectores reales |
 | `npm run probe` | Prueba de un solo llamado a cada modelo (capacidades y costo) |
@@ -90,8 +103,10 @@ npm start                   # http://localhost:3000
 | `npm run demo:static` | Exporta la demo estática a `docs/` (GitHub Pages) |
 
 Gasto en modelos: un medidor suma el costo de cada lectura y **ninguna llamada arranca al llegar al
-tope** (`MODEL_SPEND_CAP_USD`, 50 USD por defecto). Una factura cuesta del orden de 0.03 a 0.05 USD
-con las dos lecturas.
+tope** (`MODEL_SPEND_CAP_USD`, 50 USD por defecto). Una factura cuesta unos 0.02 USD con las dos
+lecturas (medido: 0.0195 USD por un PDF de una página). Al llegar al 80 % del tope, con un pago
+fuera de reglas, con la cadena del registro rota o con 3 lecturas fallidas seguidas, el servidor
+avisa: banner en el tablero, `alerts` en `/health` y una línea `[ALERTA]` en la consola.
 
 ## Lo construido y lo documentado
 
@@ -107,7 +122,10 @@ tools); a deterministic rule engine decides PAY, HOLD or ESCALATE (strictest win
 is explained rule by rule in Spanish and English, with provenance and a hash-chained audit log.
 Text inside an invoice is data, never an instruction. Payments are simulated per rail (SPEI, Pix,
 Bre-B, ACH). Built evals-first with a 46-case suite, a blind set authored separately, and a
-property test showing that PAY implies every hard rule passed.
+property test showing that PAY implies every hard rule passed. Results on October 17, 2026: 46/46
+evals with the real readers (12/12 adversarial), 12/12 correct decisions on the blind set with no
+improper payment, and a SHIP verdict on the second exit audit (the first one caught a real bug,
+fixed with a new test).
 
 ## Licencia
 

@@ -24,7 +24,7 @@ Ningún modelo decide un pago. Cuando una persona aprueba, el agente vuelve a ev
 
 Cada decisión muestra todas las reglas evaluadas con su porqué en español e inglés, la versión de reglas, el tipo de cambio con fecha y fuente, los modelos que leyeron, de dónde sale cada cifra y un registro encadenado con hash que delata cualquier alteración. El tablero pone las dos lecturas lado a lado, marca el texto sospechoso como dato y deja simular qué pasaría con otras reglas.
 
-Lo construí con un proceso de ingeniería de agentes: diseño, spec con 40 escenarios, 46 evals escritos antes del código (34 golden y 12 adversariales, en español e inglés), un runner que corre la suite contra los lectores reales y un set ciego de 12 facturas que escribió un agente aparte. Resultados de la corrida: RESULTADO_EVALS. Set ciego: RESULTADO_CIEGO. Está hecho en TypeScript con Fastify, zod y el SDK oficial de Anthropic.
+Lo construí con un proceso de ingeniería de agentes: diseño, spec con 40 escenarios, 46 evals escritos antes del código (34 golden y 12 adversariales, en español e inglés), un runner que corre la suite contra los lectores reales y un set ciego de 12 facturas que escribió un agente aparte. En la corrida final con los lectores reales pasaron los 46 evals, con los 12 adversariales incluidos. La primera auditoría de salida no lo dejó pasar: un chat con una orden de pago escaló por "lecturas distintas" pero no por "texto con órdenes", porque uno de los lectores dejó campos vacíos. Lo corregí con una prueba nueva y la re-auditoría salió limpia. En el set ciego acertó 12 de 12 decisiones y no hizo ningún pago indebido: resolvió 8 facturas sin persona y escaló las 4 que tocaba escalar. Correr la suite completa cuesta unos 0.70 USD y leer una factura, unos 0.02 USD. Está hecho en TypeScript con Fastify, zod y el SDK oficial de Anthropic.
 
 ## Enlaces
 
@@ -42,4 +42,4 @@ Lo construí con un proceso de ingeniería de agentes: diseño, spec con 40 esce
 
 ## Pasos de Edgar antes de enviar
 
-Ver la nota final del agente en el chat o `docs/agent/build.md`. Resumen: poner la API key en `.env`, correr `npm run probe`, `npm run evals`, `npm run blind`, `npm run seed` y `npm run demo:static`; revisar; hacer público el repo; activar GitHub Pages desde `docs/` en main; grabar y subir el video; llenar el formulario.
+Ya está hecho: la prueba del modelo, la suite con los lectores reales (`runs/20261017T151303Z.json`), el pipeline aprobado de punta a punta con veredicto SHIP (`docs/agent/ship-report.md`), el set ciego (`runs-blind/20261017T152812Z.json`) y la demo con lecturas reales en `docs/`. Falta: hacer público el repo, activar GitHub Pages desde `docs/` en main, grabar y subir el video y llenar el formulario.
