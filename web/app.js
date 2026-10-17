@@ -10,7 +10,10 @@
       inbox: 'Facturas', upload: 'Subir factura', uploadHint: 'PDF, foto, correo .eml o chat .txt · hasta 10 MB',
       colInvoice: 'Factura', colAmount: 'Monto', colStatus: 'Decisión', pickOne: 'Elige una factura para ver por qué se decidió así.',
       all: 'Todas', PAID: 'Pagada', HELD: 'Frenada', PENDING: 'Pendiente', REJECTED: 'Rechazada', EXPIRED: 'Vencida', VOIDED: 'Anulada', ERROR: 'Sin decisión', PROCESSING: 'Procesando',
-      kProcessed: 'Procesadas', kPaid: 'Pagadas', kHeld: 'Frenadas', kPending: 'Pendientes', kAutonomy: 'Sin persona', kOut: 'Pagos fuera de reglas', kChain: 'Registro', kSpend: 'Gasto en modelos',
+      fall: 'Todas', fPAID: 'Pagadas', fHELD: 'Frenadas', fPENDING: 'Pendientes', fREJECTED: 'Rechazadas', fEXPIRED: 'Vencidas', fVOIDED: 'Anuladas', fERROR: 'Sin decisión', emptyFilter: 'No hay facturas en este filtro.', na: 'n/d',
+      reading: 'Leyendo con Opus 5.5 y Haiku 5.5…', approving: 'Reevaluando con las reglas vigentes…', approvedToast: 'Aprobación registrada', rejectedToast: 'Rechazo registrado', voidedToast: 'Instrucción anulada', savedToast: 'Reglas guardadas como nueva versión',
+      vPAIDby: 'Pagada con la aprobación de {who}: la reevaluación con las reglas vigentes lo permitió.',
+      kProcessed: 'Procesadas', kPaid: 'Pagadas', kHeld: 'Frenadas', kPending: 'Pendientes', kAutonomy: 'Resueltas sin persona', kOut: 'Pagos fuera de reglas', kChain: 'Registro', kSpend: 'Gasto en modelos',
       chainOk: 'íntegro', chainBad: 'roto', of: 'de',
       vPAID: 'Pagada dentro de las reglas: se emitió una instrucción de pago simulada.', vHELD: 'Frenada: una regla dura lo impide.', vPENDING: 'Escalada: necesita a una persona.', vREJECTED: 'Rechazada por una persona.', vEXPIRED: 'Venció sin aprobación y quedó frenada.', vVOIDED: 'Pagada y después anulada por una persona.', vERROR: 'Sin decisión final: se puede volver a procesar.',
       why: 'Por qué', readings: 'Las dos lecturas', field: 'Campo', primary: 'Principal', check: 'Verificación', orders: 'Texto con órdenes, tratado como dato', payment: 'Instrucción de pago', simulated: 'SIMULADA · no mueve dinero', rail: 'Riel', amount: 'Monto', usd: 'En USD', rate: 'Tasa', beneficiary: 'Beneficiario', account: 'Cuenta', provenance: 'Procedencia', audit: 'Registro de esta factura', approveTitle: 'Decisión humana', note: 'Nota (se guarda como texto)', approve: 'Aprobar', reject: 'Rechazar', voidPay: 'Anular instrucción', chooseReading: 'Lectura que vale', reason: 'Motivo',
@@ -27,7 +30,10 @@
       inbox: 'Invoices', upload: 'Upload invoice', uploadHint: 'PDF, photo, .eml email or .txt chat · up to 10 MB',
       colInvoice: 'Invoice', colAmount: 'Amount', colStatus: 'Decision', pickOne: 'Pick an invoice to see why it was decided that way.',
       all: 'All', PAID: 'Paid', HELD: 'Held', PENDING: 'Pending', REJECTED: 'Rejected', EXPIRED: 'Expired', VOIDED: 'Voided', ERROR: 'No decision', PROCESSING: 'Processing',
-      kProcessed: 'Processed', kPaid: 'Paid', kHeld: 'Held', kPending: 'Pending', kAutonomy: 'No human', kOut: 'Payments outside rules', kChain: 'Audit log', kSpend: 'Model spend',
+      fall: 'All', fPAID: 'Paid', fHELD: 'Held', fPENDING: 'Pending', fREJECTED: 'Rejected', fEXPIRED: 'Expired', fVOIDED: 'Voided', fERROR: 'No decision', emptyFilter: 'No invoices in this filter.', na: 'n/a',
+      reading: 'Reading with Opus 5.5 and Haiku 5.5…', approving: 'Re-running the current rules…', approvedToast: 'Approval recorded', rejectedToast: 'Rejection recorded', voidedToast: 'Instruction voided', savedToast: 'Rules saved as a new version',
+      vPAIDby: 'Paid with the approval of {who}: re-running the current rules allowed it.',
+      kProcessed: 'Processed', kPaid: 'Paid', kHeld: 'Held', kPending: 'Pending', kAutonomy: 'Decided without a person', kOut: 'Payments outside rules', kChain: 'Audit log', kSpend: 'Model spend',
       chainOk: 'intact', chainBad: 'broken', of: 'of',
       vPAID: 'Paid within the rules: a simulated payment instruction was issued.', vHELD: 'Held: a hard rule blocks it.', vPENDING: 'Escalated: needs a person.', vREJECTED: 'Rejected by a person.', vEXPIRED: 'Expired without approval and was held.', vVOIDED: 'Paid, then voided by a person.', vERROR: 'No final decision: it can be processed again.',
       why: 'Why', readings: 'The two readings', field: 'Field', primary: 'Primary', check: 'Check', orders: 'Text giving orders, kept as data', payment: 'Payment instruction', simulated: 'SIMULATED · moves no money', rail: 'Rail', amount: 'Amount', usd: 'In USD', rate: 'Rate', beneficiary: 'Beneficiary', account: 'Account', provenance: 'Provenance', audit: 'Audit log for this invoice', approveTitle: 'Human decision', note: 'Note (kept as text)', approve: 'Approve', reject: 'Reject', voidPay: 'Void instruction', chooseReading: 'Reading that holds', reason: 'Reason',
@@ -52,8 +58,17 @@
   const t = (k) => (T[S.lang] && T[S.lang][k]) || T.es[k] || k;
   const $ = (s, r = document) => r.querySelector(s);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-  const fmt = (n, cur) => (n === null || n === undefined ? '—' : `${Number(n).toLocaleString(S.lang === 'es' ? 'es-MX' : 'en-US', { minimumFractionDigits: cur === 'COP' ? 0 : 2, maximumFractionDigits: 2 })}${cur ? ` ${cur}` : ''}`);
-  const when = (iso) => (iso ? new Date(iso).toLocaleString(S.lang === 'es' ? 'es-MX' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '—');
+  const fmt = (n, cur) => (n === null || n === undefined ? t('na') : `${Number(n).toLocaleString(S.lang === 'es' ? 'es-MX' : 'en-US', { minimumFractionDigits: cur === 'COP' ? 0 : 2, maximumFractionDigits: 2 })}${cur ? ` ${cur}` : ''}`);
+  const when = (iso) => (iso ? new Date(iso).toLocaleString(S.lang === 'es' ? 'es-MX' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }) : t('na'));
+  /** Marks a button busy (spinner, disabled) while an async action runs. */
+  async function busy(btn, label, fn) {
+    if (!btn) return fn();
+    const prev = btn.textContent;
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+    if (label) btn.textContent = label;
+    try { return await fn(); } finally { btn.disabled = false; btn.removeAttribute('aria-busy'); btn.textContent = prev; }
+  }
 
   function toast(msg, bad) {
     const el = $('#toast');
@@ -122,15 +137,16 @@
     const inv = S.summary.invoices;
     const count = (f) => (f === 'all' ? inv.length : inv.filter((i) => i.status === f).length);
     $('#filters').innerHTML = ORDER.filter((f) => f === 'all' || count(f) > 0)
-      .map((f) => `<button type="button" class="chip" data-f="${f}" aria-pressed="${S.filter === f}">${esc(t(f))}<span class="n">${count(f)}</span></button>`)
+      .map((f) => `<button type="button" class="chip" data-f="${f}" aria-pressed="${S.filter === f}">${esc(t(f === 'all' ? 'fall' : `f${f}`))}<span class="n">${count(f)}</span></button>`)
       .join('');
   }
 
   function renderRows() {
     const inv = S.summary.invoices.filter((i) => S.filter === 'all' || i.status === S.filter);
+    if (inv.length === 0) { $('#rows').innerHTML = `<tr class="list-empty"><td colspan="3">${esc(t('emptyFilter'))}</td></tr>`; return; }
     $('#rows').innerHTML = inv
       .map((i) => `<tr class="row" tabindex="0" data-id="${esc(i.id)}" aria-selected="${S.selected === i.id}">
-        <td><div class="inv-name">${esc(i.invoice_number || i.filename)}</div><div class="inv-sub">${esc(i.issuer_name || '—')} · ${esc(i.kind)}</div></td>
+        <td><div class="inv-name">${esc(i.invoice_number || i.filename)}</div><div class="inv-sub">${esc(i.issuer_name || t('na'))} · ${esc(i.kind)}</div></td>
         <td><div class="amount">${fmt(i.total, i.currency === 'AMBIGUOUS' ? '$?' : i.currency)}</div><div class="amount-usd">${i.amount_usd !== null && i.amount_usd !== undefined ? fmt(i.amount_usd, 'USD') : ''}</div></td>
         <td><span class="badge b-${esc(i.status)}">${esc(t(i.status))}</span><div class="reasons">${i.reasons.slice(0, 3).map((r) => `<span class="code">${esc(r)}</span>`).join('')}</div></td>
       </tr>`)
@@ -149,28 +165,33 @@
     const norm = (v) => String(v ?? '').toUpperCase().replace(/[^A-Z0-9@]/g, '');
     const susp = [...new Set([...(p?.reading.suspicious_text || []), ...(c?.reading.suspicious_text || [])])];
     const rules = ev ? ev.rules : [];
-    const sortedRules = [...rules].sort((a, b) => (a.result === b.result ? 0 : a.result === 'FAIL' ? -1 : 1));
+    const rank = (r) => (r.result === 'FAIL' ? 0 : r.lifted_by ? 1 : 2);
+    const sortedRules = [...rules].sort((a, b) => rank(a) - rank(b));
     const provenance = i.provenance || null;
     const pend = i.pending && !i.pending.resolved_at ? i.pending : null;
     const html = [];
     html.push(`<div class="d-head"><div><div class="d-title">${esc(i.invoice_number || i.document.filename)}</div>
-      <div class="d-meta"><span>${esc(i.issuer_name || '—')}</span><span>${esc(i.document.filename)}</span><span>${esc(when(i.received_at))}</span><span class="mono">${esc(i.id)}</span></div></div>
+      <div class="d-meta"><span>${esc(i.issuer_name || t('na'))}</span><span>${esc(i.document.filename)}</span><span>${esc(when(i.received_at))}</span><span class="mono">${esc(i.id)}</span></div></div>
       <div class="d-amount"><div class="big">${fmt(i.total, i.currency === 'AMBIGUOUS' ? '$?' : i.currency)}</div><div class="muted small">${i.amount_usd !== null && i.amount_usd !== undefined ? fmt(i.amount_usd, 'USD') : ''}</div><span class="badge b-${esc(i.status)}">${esc(t(i.status))}</span></div></div>`);
-    html.push(`<div class="section"><div class="verdict ${esc(i.status)}">${esc(t(`v${i.status}`))}${i.reasons.length ? ` <span class="mono">(${i.reasons.map(esc).join(', ')})</span>` : ''}</div></div>`);
+    const verdict = i.status === 'PAID' && ev && ev.approval ? t('vPAIDby').replace('{who}', ev.approval.approver) : t(`v${i.status}`);
+    html.push(`<div class="section"><div class="verdict ${esc(i.status)}">${esc(verdict)}${i.reasons.length ? ` <span class="mono">(${i.reasons.map(esc).join(', ')})</span>` : ''}</div></div>`);
     if (susp.length) html.push(`<div class="section"><h3>${esc(t('orders'))}</h3><div class="suspicious">${susp.map((s) => `<q>${esc(s)}</q>`).join('')}</div></div>`);
     if (sortedRules.length) {
-      html.push(`<div class="section"><h3>${esc(t('why'))} · v${esc(ev.policy_version)}${ev.approval ? ` · ${esc(ev.approval.approver)}` : ''}</h3><ul class="rules">${sortedRules
-        .map((r) => `<li class="rule ${r.result === 'PASS' ? (r.lifted_by ? 'pass lifted' : 'pass') : `fail ${r.outcome_if_fail}`}"><span class="g" aria-hidden="true">${r.result === 'PASS' ? (r.lifted_by ? '↑' : '✓') : r.outcome_if_fail === 'HOLD' ? '×' : '!'}</span><div><div class="name">${esc(r.rule)} · ${r.result === 'PASS' ? 'PASS' : `FAIL → ${r.outcome_if_fail}`}</div><div class="msg">${esc(msg(r))}</div></div></li>`)
-        .join('')}</ul></div>`);
+      const li = (r) => `<li class="rule ${r.result === 'PASS' ? (r.lifted_by ? 'pass lifted' : 'pass') : `fail ${r.outcome_if_fail}`}"><span class="g" aria-hidden="true">${r.result === 'PASS' ? (r.lifted_by ? '↑' : '✓') : r.outcome_if_fail === 'HOLD' ? '×' : '!'}</span><div><div class="name">${esc(r.rule)} · ${r.result === 'PASS' ? (r.lifted_by ? `PASS (${esc(r.lifted_by)})` : 'PASS') : `FAIL → ${r.outcome_if_fail}`}</div><div class="msg">${esc(msg(r))}</div></div></li>`;
+      const top = sortedRules.filter((r) => rank(r) < 2);
+      const passes = sortedRules.filter((r) => rank(r) === 2);
+      const passLabel = S.lang === 'es' ? `${passes.length} reglas en PASS` : `${passes.length} rules passed`;
+      html.push(`<div class="section"><h3>${esc(t('why'))} · v${esc(ev.policy_version)}${ev.approval ? ` · ${esc(ev.approval.approver)}` : ''}</h3>${top.length ? `<ul class="rules">${top.map(li).join('')}</ul>` : ''}${passes.length ? `<details class="passes"${top.length ? '' : ' open'}><summary>${esc(passLabel)}</summary><ul class="rules">${passes.map(li).join('')}</ul></details>` : ''}</div>`);
     }
     if (p || c) {
       const row = ([k, label]) => {
         const a = p ? p.reading[k] : null;
         const b = c ? c.reading[k] : null;
-        const diff = p && c && k !== 'issue_date' && norm(a) !== norm(b);
-        return `<tr><th scope="row">${esc(label)}</th><td>${esc(a ?? '—')}</td><td class="${diff ? 'diff' : ''}">${esc(b ?? '—')}</td></tr>`;
+        const diff = p && c && k !== 'issue_date' && (k === 'total' ? Math.round(Number(a) * 100) !== Math.round(Number(b) * 100) : norm(a) !== norm(b));
+        const show = (v) => (v === null || v === undefined || v === '' ? t('na') : k === 'total' ? fmt(v) : v);
+        return `<tr><th scope="row">${esc(label)}</th><td>${esc(show(a))}</td><td class="${diff ? 'diff' : ''}">${esc(show(b))}${diff ? ' ≠' : ''}</td></tr>`;
       };
-      html.push(`<div class="section"><h3>${esc(t('readings'))}</h3><table class="readings"><thead><tr><th>${esc(t('field'))}</th><th>${esc(t('primary'))} · ${esc(p?.model || '—')}</th><th>${esc(t('check'))} · ${esc(c?.model || '—')}</th></tr></thead><tbody>${FIELDS.map(row).join('')}</tbody></table></div>`);
+      html.push(`<div class="section"><h3>${esc(t('readings'))}</h3><table class="readings"><thead><tr><th>${esc(t('field'))}</th><th>${esc(t('primary'))} · ${esc(p?.model || t('na'))}</th><th>${esc(t('check'))} · ${esc(c?.model || t('na'))}</th></tr></thead><tbody>${FIELDS.map(row).join('')}</tbody></table></div>`);
     }
     if (i.payment) {
       const pay = i.payment;
@@ -272,32 +293,41 @@
     let bin = '';
     const bytes = new Uint8Array(buf);
     for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-    try {
-      const r = await api('/api/invoices', { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ file_name: file.name, content_base64: btoa(bin), actor: $('#actor').value.trim() }) });
-      toast(`${t('uploaded')}: ${t(r.status)}`);
-      S.selected = r.invoice_id;
-      await refresh();
-    } catch (e) {
-      toast(`${t('failed')}: ${e.message}`, true);
-    }
+    await busy($('#pickBtn'), t('reading'), async () => {
+      try {
+        const r = await api('/api/invoices', { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ file_name: file.name, content_base64: btoa(bin), actor: $('#actor').value.trim() }) });
+        toast(`${t('uploaded')}: ${t(r.status)}${r.reasons.length ? ` (${r.reasons.join(', ')})` : ''}`);
+        S.selected = r.invoice_id;
+        S.filter = 'all';
+        await refresh();
+      } catch (e) {
+        toast(`${t('failed')}: ${e.message}`, true);
+      }
+    });
   }
-  async function act(kind, payId) {
+  async function act(kind, payId, btn) {
     if (!canWrite()) return;
     const id = S.selected;
     const note = $('#note')?.value.trim();
-    try {
-      if (kind === 'approve') {
-        const confirm = $('#confirmReading')?.value;
-        await api(`/api/invoices/${id}/approve`, { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ actor: $('#actor').value.trim(), ...(note ? { note } : {}), ...(confirm ? { confirm_reading: confirm } : {}) }) });
-      } else if (kind === 'reject') {
-        await api(`/api/invoices/${id}/reject`, { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ actor: $('#actor').value.trim(), reason: note || 'rechazada en el tablero' }) });
-      } else if (kind === 'void') {
-        await api(`/api/payments/${payId}/void`, { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ actor: $('#actor').value.trim(), reason: 'anulada en el tablero' }) });
+    await busy(btn, kind === 'approve' ? t('approving') : null, async () => {
+      try {
+        let r;
+        if (kind === 'approve') {
+          const confirm = $('#confirmReading')?.value;
+          r = await api(`/api/invoices/${id}/approve`, { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ actor: $('#actor').value.trim(), ...(note ? { note } : {}), ...(confirm ? { confirm_reading: confirm } : {}) }) });
+          toast(`${t('approvedToast')}: ${t(r.status)}${r.reasons.length ? ` (${r.reasons.join(', ')})` : ''}`);
+        } else if (kind === 'reject') {
+          await api(`/api/invoices/${id}/reject`, { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ actor: $('#actor').value.trim(), reason: note || (S.lang === 'es' ? 'rechazada en el tablero' : 'rejected in the dashboard') }) });
+          toast(t('rejectedToast'));
+        } else if (kind === 'void') {
+          await api(`/api/payments/${payId}/void`, { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ actor: $('#actor').value.trim(), reason: S.lang === 'es' ? 'anulada en el tablero' : 'voided in the dashboard' }) });
+          toast(t('voidedToast'));
+        }
+        await refresh();
+      } catch (e) {
+        toast(`${t('failed')}: ${e.message}`, true);
       }
-      await refresh();
-    } catch (e) {
-      toast(`${t('failed')}: ${e.message}`, true);
-    }
+    });
   }
   async function showTab(tab) {
     S.tab = tab;
@@ -318,7 +348,7 @@
     const tab = e.target.closest('.tab');
     if (tab) { showTab(tab.dataset.tab); return; }
     const a = e.target.closest('[data-act]');
-    if (a) { act(a.dataset.act, a.dataset.pay); return; }
+    if (a) { act(a.dataset.act, a.dataset.pay, a); return; }
     if (e.target.id === 'pickBtn') { if (canWrite()) $('#file').click(); return; }
     if (e.target.id === 'langBtn') { S.lang = S.lang === 'es' ? 'en' : 'es'; store.set('pc.lang', S.lang); applyI18n(); await refresh(); await showTab(S.tab); return; }
     if (e.target.id === 'whatIfBtn') {
@@ -330,7 +360,7 @@
     }
     if (e.target.id === 'saveRules') {
       if (!canWrite()) return;
-      try { await api('/api/rules', { method: 'PUT', headers: writeHeaders(), body: JSON.stringify({ actor: $('#actor').value.trim(), rules: readRulesForm() }) }); toast('OK'); await renderRules(); await refresh(); } catch (err) { toast(`${t('failed')}: ${err.message}`, true); }
+      try { await api('/api/rules', { method: 'PUT', headers: writeHeaders(), body: JSON.stringify({ actor: $('#actor').value.trim(), rules: readRulesForm() }) }); toast(t('savedToast')); await renderRules(); await refresh(); } catch (err) { toast(`${t('failed')}: ${err.message}`, true); }
     }
   });
   document.addEventListener('keydown', (e) => {

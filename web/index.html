@@ -38,14 +38,14 @@
     <section class="kpis" aria-label="Métricas" id="kpis"></section>
 
     <nav class="tabs" role="tablist" aria-label="Secciones">
-      <button role="tab" class="tab" data-tab="inbox" aria-selected="true" data-i18n="tabInbox">Bandeja</button>
-      <button role="tab" class="tab" data-tab="rules" aria-selected="false" data-i18n="tabRules">Reglas</button>
-      <button role="tab" class="tab" data-tab="catalog" aria-selected="false" data-i18n="tabCatalog">Catálogo</button>
-      <button role="tab" class="tab" data-tab="audit" aria-selected="false" data-i18n="tabAudit">Registro</button>
-      <button role="tab" class="tab" data-tab="how" aria-selected="false" data-i18n="tabHow">Cómo decide</button>
+      <button role="tab" class="tab" id="tab-inbox" aria-controls="view-inbox" data-tab="inbox" aria-selected="true" data-i18n="tabInbox">Bandeja</button>
+      <button role="tab" class="tab" id="tab-rules" aria-controls="view-rules" data-tab="rules" aria-selected="false" data-i18n="tabRules">Reglas</button>
+      <button role="tab" class="tab" id="tab-catalog" aria-controls="view-catalog" data-tab="catalog" aria-selected="false" data-i18n="tabCatalog">Catálogo</button>
+      <button role="tab" class="tab" id="tab-audit" aria-controls="view-audit" data-tab="audit" aria-selected="false" data-i18n="tabAudit">Registro</button>
+      <button role="tab" class="tab" id="tab-how" aria-controls="view-how" data-tab="how" aria-selected="false" data-i18n="tabHow">Cómo decide</button>
     </nav>
 
-    <section class="view" id="view-inbox">
+    <section class="view" role="tabpanel" aria-labelledby="tab-inbox" id="view-inbox">
       <div class="workspace">
         <div class="panel list-panel">
           <div class="panel-head">
@@ -71,10 +71,10 @@
       </div>
     </section>
 
-    <section class="view" id="view-rules" hidden></section>
-    <section class="view" id="view-catalog" hidden></section>
-    <section class="view" id="view-audit" hidden></section>
-    <section class="view" id="view-how" hidden></section>
+    <section class="view" role="tabpanel" aria-labelledby="tab-rules" id="view-rules" hidden></section>
+    <section class="view" role="tabpanel" aria-labelledby="tab-catalog" id="view-catalog" hidden></section>
+    <section class="view" role="tabpanel" aria-labelledby="tab-audit" id="view-audit" hidden></section>
+    <section class="view" role="tabpanel" aria-labelledby="tab-how" id="view-how" hidden></section>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
