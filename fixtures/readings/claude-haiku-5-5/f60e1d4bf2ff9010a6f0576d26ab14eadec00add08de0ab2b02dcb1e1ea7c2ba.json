@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Pinheiro Tecnologia Ltda.",
+    "issuer_tax_id": "12.345.678/0001-90",
+    "invoice_number": "PIN-0416",
+    "issue_date": "2026-10-15",
+    "due_date": "2026-10-30",
+    "currency": "BRL",
+    "total": 150000,
+    "lines": [
+      {
+        "description": "Licenciamento anual de plataforma",
+        "amount": 150000
+      }
+    ],
+    "payment_rail_hint": "PIX",
+    "payment_account": "pix@pinheiro.example.com",
+    "suspicious_text": []
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3777,
+    "output_tokens": 181,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.00046820000000000005
+  }
+}

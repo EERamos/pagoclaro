@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Servicios Digitales Aurora S.A. de C.V.",
+    "issuer_tax_id": "SDA190312AB1",
+    "invoice_number": "AUR-2026-0920",
+    "issue_date": "2026-10-15",
+    "due_date": "2026-10-30",
+    "currency": "AMBIGUOUS",
+    "total": 42000,
+    "lines": [
+      {
+        "description": "Servicio mensual de desarrollo de software",
+        "amount": 42000
+      }
+    ],
+    "payment_rail_hint": "SPEI",
+    "payment_account": "002180700012345678",
+    "suspicious_text": []
+  },
+  "model": "claude-opus-5-5",
+  "usage": {
+    "input_tokens": 3786,
+    "output_tokens": 185,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.018844
+  }
+}

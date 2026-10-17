@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Cloudbridge LLC",
+    "issuer_tax_id": "12-3456789",
+    "invoice_number": "CB-7795",
+    "issue_date": "2026-10-15",
+    "due_date": "2026-10-30",
+    "currency": "EUR",
+    "total": 900,
+    "lines": [
+      {
+        "description": "EU region data transfer, October 2026",
+        "amount": 900
+      }
+    ],
+    "payment_rail_hint": "ACH",
+    "payment_account": "000000001-000123456789",
+    "suspicious_text": []
+  },
+  "model": "claude-opus-5-5",
+  "usage": {
+    "input_tokens": 3724,
+    "output_tokens": 161,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.018116
+  }
+}

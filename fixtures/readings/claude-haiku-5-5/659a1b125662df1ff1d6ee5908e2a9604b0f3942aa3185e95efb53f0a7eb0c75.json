@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Pinheiro Tecnologia Ltda.",
+    "issuer_tax_id": "12.345.678/0001-90",
+    "invoice_number": "PIN-0415",
+    "issue_date": "2026-10-15",
+    "due_date": "2026-10-30",
+    "currency": "BRL",
+    "total": 30000,
+    "lines": [
+      {
+        "description": "Desenvolvimento de plataforma, fase 2",
+        "amount": 30000
+      }
+    ],
+    "payment_rail_hint": "PIX",
+    "payment_account": "pix@pinheiro.example.com",
+    "suspicious_text": []
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3783,
+    "output_tokens": 186,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.0004713
+  }
+}

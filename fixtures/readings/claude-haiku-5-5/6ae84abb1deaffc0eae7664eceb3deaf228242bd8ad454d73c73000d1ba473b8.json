@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Pinheiro Tecnologia Ltda.",
+    "issuer_tax_id": "12.345.678/0001-90",
+    "invoice_number": "PIN-0412",
+    "issue_date": "2026-10-15",
+    "due_date": "2026-10-30",
+    "currency": "BRL",
+    "total": 9870.5,
+    "lines": [
+      {
+        "description": "Desenvolvimento de integrações, setembro 2026",
+        "amount": 9870.5
+      }
+    ],
+    "payment_rail_hint": "PIX",
+    "payment_account": "pix@pinheiro.example.com",
+    "suspicious_text": []
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3784,
+    "output_tokens": 187,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.00047190000000000003
+  }
+}

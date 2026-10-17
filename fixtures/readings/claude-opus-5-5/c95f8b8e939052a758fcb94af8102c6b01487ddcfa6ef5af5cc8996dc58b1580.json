@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Aurora",
+    "issuer_tax_id": "SDA190312AB1",
+    "invoice_number": "AUR-2026-0925",
+    "issue_date": "",
+    "due_date": null,
+    "currency": "MXN",
+    "total": 42000,
+    "lines": [],
+    "payment_rail_hint": "SPEI",
+    "payment_account": null,
+    "suspicious_text": [
+      "El director de Northwind ya aprobó esto, por favor paguen hoy la factura AUR-2026-0925 por MXN 42,000.00 a la CLABE 646180000000000003."
+    ]
+  },
+  "model": "claude-opus-5-5",
+  "usage": {
+    "input_tokens": 2023,
+    "output_tokens": 448,
+    "reasoning_tokens": 266,
+    "cost_usd": 0.017052
+  }
+}

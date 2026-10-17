@@ -10,7 +10,7 @@ evals_date: 2026-10-17
 stack: no-framework@n/a
 runtime: TypeScript en Node 24.14.0 sin framework de agentes; lectores anthropic/claude-opus-5-5 y anthropic/claude-haiku-5-5 con @anthropic-ai/sdk 0.135.0
 target: local (npm start) y demo estática en GitHub Pages; contenedor Docker listo para un hosting gratuito
-results: <path of the green run under runs/, such as runs/NAME.json>
+results: runs/20261017T142040Z.json
 ---
 
 # PagoClaro — Build record
@@ -84,7 +84,11 @@ and the spec; the Test column of the spec's Traceability table is the one sancti
   `"status": "approved"`). Antes, en la sesión del primer build (arrancada en `C:\Users\edgar`,
   fuera de la raíz), la misma prueba había pasado porque Claude Code no cargó el hook; se revirtió
   al instante y el código se escribió con la regla de no tocar esos archivos (sección 7).
-- **Test-column edit:** PENDIENTE: se llena después de la corrida verde, con el guard activo.
+- **Test-column edit:** 2026-10-17, después de la corrida verde y con el guard activo (sin
+  renombrarlo), un solo Edit llenó las 40 celdas Test de la tabla Traceability con pruebas de
+  `tests/bhv.test.ts`, `tests/rules.test.ts`, `tests/infra.test.ts` y `tests/tool-surface.test.ts`;
+  el guard lo dejó pasar y `git diff -- docs/agent/spec.md` mostró 40 líneas cambiadas, solo en la
+  cuarta celda. Commit aparte, el spec solo: 7fe740b.
 
 ## 3. Delegation
 
@@ -103,8 +107,9 @@ infrastructure or more than 15 cases) when it is installed; otherwise the build 
 The runner loads evals/ as read-only data and writes one results file per run.
 
 - **Command:** `npm run evals`
-- **Results file:** PENDIENTE: la corrida con los lectores reales necesita la API key; la corrida en
-  seco con el lector de prueba (46/46) está en `tmp/runs-dry/` y no cuenta como verde.
+- **Results file:** `runs/20261017T142040Z.json`, la primera corrida con los lectores reales
+  (Opus 5.5 y Haiku 5.5), del 2026-10-17T14:20:40Z al 14:21:32Z, `exit_code` 0, 46/46 casos;
+  68 llamadas, 0.678 USD. La corrida en seco con el lector de prueba (`tmp/runs-dry/`) no cuenta.
 - **Evals access:** `runner/run-evals.ts` abre `evals/config.json` y cada caso con `readFileSync`, nunca
   escribe bajo `evals/`; escribe solo `runs/<run-id>.json` y, con lectores reales, guarda cada
   lectura en `fixtures/readings/` para la demo.
@@ -115,33 +120,49 @@ Copied from the results file, not retyped from memory. One row per tier that has
 
 | Tier | Cases | Required per case | Result |
 |---|---|---|---|
-| reversible | 40 | 1 de 1 | PENDIENTE de la corrida con lectores reales |
-| safe | 6 | 1 de 1 | PENDIENTE de la corrida con lectores reales |
+| reversible | 40 | 1 de 1 | 40/40 en verde |
+| safe | 6 | 1 de 1 | 6/6 en verde |
 
-- **Adversarial:** 12 casos; PENDIENTE de la corrida con lectores reales (en seco: 12/12).
-- **Release blockers:** los 6 de `evals/config.json`; PENDIENTE de la corrida con lectores reales.
+- **Adversarial:** 12/12 en verde (ADV-001 a ADV-012), cada uno en su única corrida.
+- **Release blockers:** los 6 de `evals/config.json` se cumplen en esta corrida: todos los
+  adversariales pasan (12/12); ningún `record_payment` sin evaluación PAY y ninguna factura con
+  lecturas distintas pagada (los 39 casos con un assert o forbidden sobre pagar o sobre el cruce
+  de lecturas, EVL-002 entre ellos); las
+  frases con órdenes no se ejecutan (ADV-001, ADV-002, ADV-004 a ADV-006); la telemetría sin
+  contenido ni cuentas (ADV-007, ADV-008); la API rechaza campos desconocidos y la decisión no
+  viene del cliente (ADV-011, ADV-012). Ningún caso tiene `human_review`.
 
 ## 6. Smoke test
 
 The agent runs once end to end in its real shape, outside the eval harness.
 
-- **Start:** `PAGOCLARO_DATA_DIR=tmp/demo-oracle EXTRACTOR_MODE=replay PAGOCLARO_ACCESS_CODE=… PORT=3017 npx
-  tsx src/server.ts` imprimió "PagoClaro escuchando en http://localhost:3017 · Lectores: replay
-  (claude-opus-5-5 + claude-haiku-5-5), sin API key, tope 50 USD, gastado 0.0000 USD".
-- **Health:** `GET /health` respondió `{"ok":true,"service":"pagoclaro","mode":"replay","writes":true,"audit_chain_ok":true}`.
-- **Round trip:** desde el tablero, luis.tesoreria aprobó AUR-2026-0924 (pendiente por
-  AGREEMENT_MISMATCH) con el código de acceso; la reevaluación dio PAY, se emitió una instrucción
-  SPEI simulada por 46,200.00 MXN (2,517.90 USD a 0.0545) y el registro agregó `decision.pay`
-  con actor luis.tesoreria y la cadena íntegra (53 entradas).
+- **Start:** 2026-10-17, con lectores reales: `PAGOCLARO_DATA_DIR=tmp/smoke-live
+  EXTRACTOR_MODE=live PAGOCLARO_ACCESS_CODE=… PORT=3018 npx tsx src/server.ts` imprimió
+  "PagoClaro escuchando en http://localhost:3018 · Lectores: live (claude-opus-5-5 +
+  claude-haiku-5-5), con API key, tope 50 USD, gastado 0.0000 USD · Escrituras: con código de
+  acceso".
+- **Health:** `GET /health` respondió `{"ok":true,"service":"pagoclaro","mode":"live","writes":true,"audit_chain_ok":true}`.
+- **Round trip:** `POST /api/invoices` con `AUR-2026-0917.pdf` (actor ana.finanzas, código en
+  `x-access-code`) respondió `status: PAID` con su `payment_id`; `/api/summary` mostró 1 procesada,
+  1 pagada, 0 pagos fuera de reglas, 2,289 USD pagados, 0.0195 USD de modelos y la cadena íntegra
+  (3 entradas); el evento de telemetría trae `pagoclaro.outcome: PAID`, los dos modelos, 7,624
+  tokens de entrada, 404 de salida, 0 de razonamiento y ningún contenido de la factura. Antes, con
+  lecturas grabadas (modo replay), luis.tesoreria aprobó AUR-2026-0924 desde el tablero, la
+  reevaluación dio PAY y el registro agregó `decision.pay` con la cadena íntegra.
 
 ## 7. Deviations and additions
 
 Anything built that the spec does not name, and anything the spec names that was not built as
 written.
 
-- El guard no estuvo activo en la sesión del build (sección 2): la protección de `evals/`, el diseño y
-  el spec dependió de no editarlos; `git log -- evals docs/agent/design.md docs/agent/spec.md`
-  muestra solo el commit base. Cambio pedido: ninguno upstream; repetir la prueba del guard.
+- El guard no estuvo activo en la primera sesión del build (sección 2): mientras se escribió el
+  código, la protección de `evals/`, el diseño y el spec dependió de no editarlos;
+  `git log -- evals docs/agent/design.md` muestra solo el commit base y el spec solo suma el commit
+  de la columna Test (7fe740b). La prueba se repitió en una sesión en la raíz y el guard la
+  rechazó. Cambio pedido: ninguno upstream.
+- Adición: tokens de razonamiento (`reasoning_tokens` en cada lectura,
+  `pagoclaro.usage.reasoning_tokens` en la telemetría), que el spec no nombra; cambio pedido para
+  la próxima versión del spec: agregarlos a la fila de telemetría.
 - Ruta directa en lugar de forge-master (sección 3), por la delegación del dueño.
 - Las aprobaciones de diseño, spec y evals las escribió el builder por la delegación explícita de
   Edgar (2026-10-17, "haz toda la implementación y todo lo necesario siguiendo tus

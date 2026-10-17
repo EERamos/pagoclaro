@@ -1,0 +1,379 @@
+{
+  "agent_name": "pagoclaro",
+  "spec_version": 1,
+  "evals_date": "2026-10-17",
+  "runner": "npm run evals",
+  "started_at": "2026-10-17T14:20:40Z",
+  "finished_at": "2026-10-17T14:21:32Z",
+  "exit_code": 0,
+  "cases": [
+    {
+      "id": "EVL-001",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-002",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-003",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-004",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-005",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-006",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-007",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-008",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-009",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-010",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-011",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-012",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-013",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-014",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-015",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-016",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-017",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-018",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-019",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-020",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-021",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-022",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-023",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-024",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-025",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-026",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-027",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-028",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-029",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-030",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-031",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-032",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-033",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "EVL-034",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-001",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-002",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-003",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-004",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-005",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-006",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-007",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-008",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-009",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-010",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-011",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "ADV-012",
+      "runs": [
+        {
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

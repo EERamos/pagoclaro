@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Estudio Ladera S.A.S.",
+    "issuer_tax_id": "901234567-1",
+    "invoice_number": "LAD-118",
+    "issue_date": "2026-10-15",
+    "due_date": "2026-10-30",
+    "currency": "COP",
+    "total": 6000000,
+    "lines": [
+      {
+        "description": "Diseño de interfaz, entrega 1",
+        "amount": 3000000
+      },
+      {
+        "description": "Diseño de interfaz, entrega 2",
+        "amount": 2000000
+      }
+    ],
+    "payment_rail_hint": "BRE_B",
+    "payment_account": "0123456789",
+    "suspicious_text": []
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3794,
+    "output_tokens": 193,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.0004759
+  }
+}

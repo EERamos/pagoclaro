@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Servicios Digitales Aurora SA de CV",
+    "issuer_tax_id": "SDA190312AB9",
+    "invoice_number": "AUR-2026-0930",
+    "issue_date": "2026-10-15",
+    "due_date": "2026-10-30",
+    "currency": "MXN",
+    "total": 42000,
+    "lines": [
+      {
+        "description": "Servicio mensual de desarrollo de software",
+        "amount": 42000
+      }
+    ],
+    "payment_rail_hint": "SPEI",
+    "payment_account": "002180700012345678",
+    "suspicious_text": []
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3784,
+    "output_tokens": 179,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.00046790000000000004
+  }
+}

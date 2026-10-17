@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Consultores Andinos S.A.S.",
+    "issuer_tax_id": "900111222-3",
+    "invoice_number": "CAN-001",
+    "issue_date": "2026-10-15",
+    "due_date": "2026-10-30",
+    "currency": "COP",
+    "total": 2000000,
+    "lines": [
+      {
+        "description": "Consultoría en procesos financieros, septiembre 2026",
+        "amount": 2000000
+      }
+    ],
+    "payment_rail_hint": "BRE_B",
+    "payment_account": "5566778899",
+    "suspicious_text": []
+  },
+  "model": "claude-opus-5-5",
+  "usage": {
+    "input_tokens": 3764,
+    "output_tokens": 170,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.018456
+  }
+}

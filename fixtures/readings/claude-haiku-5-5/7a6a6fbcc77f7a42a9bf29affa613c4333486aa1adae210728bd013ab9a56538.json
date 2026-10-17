@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Cloudbridge LLC",
+    "issuer_tax_id": "12-3456789",
+    "invoice_number": "CB-7781",
+    "issue_date": "2026-10-15",
+    "due_date": "2026-10-30",
+    "currency": "USD",
+    "total": 1200,
+    "lines": [
+      {
+        "description": "Managed hosting, September 2026",
+        "amount": 1200
+      }
+    ],
+    "payment_rail_hint": "ACH",
+    "payment_account": "000000001-000123456789",
+    "suspicious_text": []
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3725,
+    "output_tokens": 161,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.000453
+  }
+}
