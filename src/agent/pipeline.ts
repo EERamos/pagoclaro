@@ -84,7 +84,13 @@ export class PagoClaro {
     });
     this.tools.ctx.currentInvoiceId = id;
     try {
-      const result = await this.decide(id, det.ok ? det.doc : null, det.ok ? null : det.why);
+      let result: UploadResult;
+      try {
+        result = await this.decide(id, det.ok ? det.doc : null, det.ok ? null : det.why);
+      } catch (e) {
+        // Anything unexpected ends with no decision, never with a half-written one.
+        result = this.markError(id, 'UNEXPECTED', e instanceof Error ? e.message : String(e));
+      }
       this.emit(id, 'upload', started);
       return result;
     } finally {

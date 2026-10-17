@@ -1,7 +1,7 @@
 // Spend meter for the paid readers: every call's cost is added from the provider's usage, and no
 // call starts once the cap is reached (design §3: hard cap in code, 50 USD of the owner's credits).
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { atomicWrite } from '../util/atomic';
 
 /** USD per million tokens (input, output), Anthropic first-party prices as of 2026-10. */
 export const PRICES: Record<string, { input: number; output: number }> = {
@@ -60,11 +60,7 @@ export class SpendMeter {
     m.calls += 1;
     m.input_tokens += inputTokens;
     m.output_tokens += outputTokens;
-    if (this.file) {
-      mkdirSync(dirname(this.file), { recursive: true });
-      writeFileSync(`${this.file}.tmp`, JSON.stringify(this.state, null, 2));
-      renameSync(`${this.file}.tmp`, this.file);
-    }
+    if (this.file) atomicWrite(this.file, JSON.stringify(this.state, null, 2));
     return usd;
   }
 }

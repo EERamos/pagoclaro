@@ -102,9 +102,10 @@ export function evaluate(facts: Facts, rules: Rules, approval: ApprovalInput | n
       }),
     );
 
-    // What was agreed.
+    // What was agreed: looked up only for a currency the invoice states (an ambiguous one already
+    // escalates on its own rule).
     const a = facts.agreement;
-    out.push(rule('NO_AGREEMENT', a !== null, { ref: a?.id ?? '', cur }));
+    if (cur !== 'AMBIGUOUS' && cur !== 'OTHER') out.push(rule('NO_AGREEMENT', a !== null, { ref: a?.id ?? '', cur }));
     if (a) {
       if (a.kind === 'CONTRACT' && a.amount_per_period !== null) {
         const dev = (Math.abs(r.total - a.amount_per_period) / a.amount_per_period) * 100;

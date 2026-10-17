@@ -59,6 +59,7 @@ export function publicInvoice(i: InvoiceRecord, s: State) {
     agreement: i.facts?.agreement ?? null,
     fx: i.facts?.fx ?? null,
     ledger: i.facts?.ledger ?? null,
+    provenance: i.facts?.provenance ?? null,
     evaluation: ev,
     payment: pay ? { ...pay, account: undefined } : null,
     pending,

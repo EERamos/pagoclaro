@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PagoClaro · cuentas por pagar con reglas claras</title>
+  <meta name="description" content="Agente de cuentas por pagar: lee cada factura dos veces, decide pagar, frenar o escalar con reglas deterministas y explica cada decisión.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="skip">Saltar al contenido</a>
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">P</span>
+      <div>
+        <div class="brand-name">PagoClaro</div>
+        <div class="brand-tag" data-i18n="tagline">Cuentas por pagar con reglas claras</div>
+      </div>
+    </div>
+    <div class="top-meta">
+      <span class="pill" id="modePill">—</span>
+      <span class="pill company">Northwind Labs Inc.</span>
+    </div>
+    <div class="top-actions">
+      <label class="field inline"><span data-i18n="actingAs">Actúa como</span><input id="actor" autocomplete="off" value="luis.tesoreria" maxlength="60"></label>
+      <label class="field inline"><span data-i18n="accessCode">Código</span><input id="accessCode" type="password" autocomplete="off" maxlength="80"></label>
+      <button class="btn ghost" id="langBtn" type="button" aria-label="Cambiar idioma">EN</button>
+    </div>
+  </header>
+
+  <div class="banner" id="staticBanner" hidden></div>
+
+  <main id="main">
+    <section class="kpis" aria-label="Métricas" id="kpis"></section>
+
+    <nav class="tabs" role="tablist" aria-label="Secciones">
+      <button role="tab" class="tab" data-tab="inbox" aria-selected="true" data-i18n="tabInbox">Bandeja</button>
+      <button role="tab" class="tab" data-tab="rules" aria-selected="false" data-i18n="tabRules">Reglas</button>
+      <button role="tab" class="tab" data-tab="catalog" aria-selected="false" data-i18n="tabCatalog">Catálogo</button>
+      <button role="tab" class="tab" data-tab="audit" aria-selected="false" data-i18n="tabAudit">Registro</button>
+      <button role="tab" class="tab" data-tab="how" aria-selected="false" data-i18n="tabHow">Cómo decide</button>
+    </nav>
+
+    <section class="view" id="view-inbox">
+      <div class="workspace">
+        <div class="panel list-panel">
+          <div class="panel-head">
+            <h2 data-i18n="inbox">Facturas</h2>
+            <div class="filters" id="filters" role="group" aria-label="Filtrar"></div>
+          </div>
+          <form class="drop" id="drop">
+            <input type="file" id="file" accept=".pdf,.png,.jpg,.jpeg,.eml,.txt" hidden>
+            <button class="btn primary" type="button" id="pickBtn" data-i18n="upload">Subir factura</button>
+            <span class="muted small" data-i18n="uploadHint">PDF, foto, correo .eml o chat .txt · hasta 10 MB</span>
+          </form>
+          <div class="table-wrap">
+            <table class="list" aria-describedby="listCaption">
+              <caption id="listCaption" class="sr" data-i18n="inbox">Facturas</caption>
+              <thead><tr><th data-i18n="colInvoice">Factura</th><th data-i18n="colAmount">Monto</th><th data-i18n="colStatus">Decisión</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </div>
+        <aside class="panel detail" id="detail" aria-live="polite">
+          <div class="empty" data-i18n="pickOne">Elige una factura para ver por qué se decidió así.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view" id="view-rules" hidden></section>
+    <section class="view" id="view-catalog" hidden></section>
+    <section class="view" id="view-audit" hidden></section>
+    <section class="view" id="view-how" hidden></section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script src="app.js" defer></script>
+</body>
+</html>

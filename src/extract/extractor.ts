@@ -1,7 +1,8 @@
 // The Extractor seam (design §5): one interface, three implementations — Anthropic (live), recorded
 // readings (tests and the public demo, no key) and local Ollama (text documents only, no cost).
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { atomicWrite } from '../util/atomic';
 import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import PostalMime from 'postal-mime';
@@ -136,11 +137,7 @@ export class RecordedExtractor implements Extractor {
       return { ok: false, error: 'PROVIDER_ERROR', message: 'no hay lectura guardada para este archivo y la demo no tiene API key' };
     }
     const res = await this.inner.read(doc);
-    if (res.ok) {
-      mkdirSync(dirname(p), { recursive: true });
-      writeFileSync(`${p}.tmp`, JSON.stringify(res, null, 2));
-      renameSync(`${p}.tmp`, p);
-    }
+    if (res.ok) atomicWrite(p, JSON.stringify(res, null, 2));
     return res;
   }
 }

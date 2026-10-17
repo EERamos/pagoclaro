@@ -1,8 +1,8 @@
 // Persistence boundary (design §5 sessions seam). JSON with atomic writes now; another backend
 // (Postgres) implements the same interface without touching the domain.
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { existsSync, readFileSync, renameSync } from 'node:fs';
 import { makeEntry, type AuditEntry } from '../domain/audit';
+import { atomicWrite } from '../util/atomic';
 import type {
   Agreement,
   DocumentKind,
@@ -149,10 +149,7 @@ export class JsonStore implements Store {
   protected persist(next: State): void {
     if (!this.file) return;
     try {
-      mkdirSync(dirname(this.file), { recursive: true });
-      const tmp = `${this.file}.tmp`;
-      writeFileSync(tmp, JSON.stringify(next, null, 2));
-      renameSync(tmp, this.file);
+      atomicWrite(this.file, JSON.stringify(next, null, 2));
     } catch (e) {
       throw new StoreError(`no se pudo guardar: ${e instanceof Error ? e.message : String(e)}`);
     }
