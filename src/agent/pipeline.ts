@@ -409,7 +409,13 @@ export class PagoClaro {
       failed_rules: inv.reasons,
       policy_version: inv.evaluation_id ? this.store.read().evaluations[inv.evaluation_id]?.policy_version ?? null : null,
       latency_ms: Date.now() - startedMs,
-      models: models.map((m) => ({ model: m.model, input_tokens: m.usage.input_tokens, output_tokens: m.usage.output_tokens, cost_usd: m.usage.cost_usd })),
+      models: models.map((m) => ({
+        model: m.model,
+        input_tokens: m.usage.input_tokens,
+        output_tokens: m.usage.output_tokens,
+        reasoning_tokens: m.usage.reasoning_tokens ?? 0,
+        cost_usd: m.usage.cost_usd,
+      })),
     });
   }
 }

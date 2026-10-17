@@ -28,6 +28,8 @@ export interface InvoiceReading {
 export interface ReadUsage {
   input_tokens: number;
   output_tokens: number;
+  /** Part of output_tokens the model spent thinking (billed as output); absent in older readings. */
+  reasoning_tokens?: number;
   cost_usd: number;
 }
 

@@ -93,7 +93,12 @@ export class AnthropicExtractor implements Extractor {
         { timeout: this.opts.timeoutMs, maxRetries: 0 },
       );
       const cost = this.spend.add(this.model, resp.usage.input_tokens, resp.usage.output_tokens);
-      const usage = { input_tokens: resp.usage.input_tokens, output_tokens: resp.usage.output_tokens, cost_usd: cost };
+      const usage = {
+        input_tokens: resp.usage.input_tokens,
+        output_tokens: resp.usage.output_tokens,
+        reasoning_tokens: resp.usage.output_tokens_details?.thinking_tokens ?? 0,
+        cost_usd: cost,
+      };
       if (resp.stop_reason === 'refusal') return { ok: false, error: 'PROVIDER_ERROR', message: 'el modelo se negó a leer el documento' };
       if (resp.stop_reason === 'max_tokens') return { ok: false, error: 'PROVIDER_ERROR', message: 'la respuesta se cortó' };
       const parsed = resp.parsed_output;

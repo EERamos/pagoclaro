@@ -6,8 +6,10 @@ import { makeEntry, verifyChain, type AuditEntry } from '../src/domain/audit';
 import { compareReadings } from '../src/domain/reconcile';
 import type { InvoiceReading } from '../src/domain/types';
 import { detectDocument } from '../src/extract/document';
-import { documentBlocks, RecordedExtractor } from '../src/extract/extractor';
+import type Anthropic from '@anthropic-ai/sdk';
+import { AnthropicExtractor, documentBlocks, RecordedExtractor } from '../src/extract/extractor';
 import { SpendMeter } from '../src/extract/spend';
+import { toEvent } from '../src/telemetry';
 import { renderEml, type FixtureInvoice } from '../runner/render';
 
 const reading: InvoiceReading = {
@@ -82,6 +84,26 @@ describe('lectores', () => {
     const det = detectDocument('a.txt', Buffer.from('hola'));
     const res = await r.read(det.ok ? det.doc : (null as never));
     expect(res.ok).toBe(false);
+  });
+  test('el lector registra los tokens de razonamiento junto a los de entrada y salida', async () => {
+    const fake = {
+      messages: {
+        parse: async () => ({
+          stop_reason: 'end_turn',
+          usage: { input_tokens: 3800, output_tokens: 320, output_tokens_details: { thinking_tokens: 120 } },
+          parsed_output: { ...reading, due_date: null, payment_account: null },
+        }),
+      },
+    } as unknown as Anthropic;
+    const ex = new AnthropicExtractor(fake, 'claude-opus-5-5', new SpendMeter(50, null));
+    const det = detectDocument('a.txt', Buffer.from('hola'));
+    const res = await ex.read(det.ok ? det.doc : (null as never));
+    expect(res.ok && res.usage).toMatchObject({ input_tokens: 3800, output_tokens: 320, reasoning_tokens: 120 });
+    const ev = toEvent(
+      { op: 'upload', invoice_id: 'i', kind: 'chat', outcome: 'PAID', failed_rules: [], policy_version: 1, latency_ms: 1, models: [{ model: 'claude-opus-5-5', input_tokens: 3800, output_tokens: 320, reasoning_tokens: 120, cost_usd: 0.02 }] },
+      '2026-10-17T00:00:00Z',
+    );
+    expect(ev['pagoclaro.usage.reasoning_tokens']).toBe(120);
   });
   test('el medidor bloquea al llegar al tope', () => {
     const m = new SpendMeter(0.0001, null);

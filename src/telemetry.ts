@@ -11,7 +11,7 @@ export interface TelemetryInput {
   failed_rules: string[];
   policy_version: number | null;
   latency_ms: number;
-  models: { model: string; input_tokens: number; output_tokens: number; cost_usd: number }[];
+  models: { model: string; input_tokens: number; output_tokens: number; reasoning_tokens?: number; cost_usd: number }[];
 }
 
 export type TelemetryEvent = Record<string, string | number | string[] | null>;
@@ -39,6 +39,7 @@ export function toEvent(e: TelemetryInput, at: string): TelemetryEvent {
     'gen_ai.request.model': e.models.map((m) => m.model),
     'gen_ai.usage.input_tokens': e.models.reduce((s, m) => s + m.input_tokens, 0),
     'gen_ai.usage.output_tokens': e.models.reduce((s, m) => s + m.output_tokens, 0),
+    'pagoclaro.usage.reasoning_tokens': e.models.reduce((s, m) => s + (m.reasoning_tokens ?? 0), 0),
     'pagoclaro.cost_usd': Math.round(e.models.reduce((s, m) => s + m.cost_usd, 0) * 1e6) / 1e6,
   };
   return ev;
