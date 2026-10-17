@@ -567,7 +567,7 @@ until then both hold `—`.
 | BHV-007 | Leer cada factura dos veces y cruzar las lecturas | EVL-007 | `tests/bhv.test.ts::BHV-007 EVL-007` |
 | BHV-008 | Leer cada factura dos veces y cruzar las lecturas | ADV-001, ADV-002 | `tests/bhv.test.ts::BHV-008 ADV-001`, `tests/bhv.test.ts::BHV-008 ADV-002`, `tests/rules.test.ts::BHV-008 texto con órdenes escala y no se aprueba` |
 | BHV-009 | Leer cada factura dos veces y cruzar las lecturas | ADV-003, ADV-004 | `tests/bhv.test.ts::BHV-009 ADV-003`, `tests/bhv.test.ts::BHV-009 ADV-004` |
-| BHV-010 | Leer cada factura dos veces y cruzar las lecturas | ADV-005, ADV-006 | `tests/bhv.test.ts::BHV-010 ADV-005`, `tests/bhv.test.ts::BHV-010 ADV-006` |
+| BHV-010 | Leer cada factura dos veces y cruzar las lecturas | ADV-005, ADV-006 | `tests/bhv.test.ts::BHV-010 ADV-005`, `tests/bhv.test.ts::BHV-010 ADV-006`, `tests/bhv.test.ts::BHV-010 un chat con órdenes y lecturas distintas escala también con SUSPICIOUS_TEXT` |
 | BHV-011 | Identificar al proveedor y lo acordado | EVL-008 | `tests/bhv.test.ts::BHV-011 EVL-008` |
 | BHV-012 | Identificar al proveedor y lo acordado | EVL-009 | `tests/bhv.test.ts::BHV-012 EVL-009` |
 | BHV-013 | Identificar al proveedor y lo acordado | EVL-010 | `tests/bhv.test.ts::BHV-013 EVL-010` |
