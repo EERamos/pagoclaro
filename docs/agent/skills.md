@@ -1,11 +1,11 @@
 ---
 agent_name: pagoclaro
-version: 1
+version: 2
 status: approved         # draft | approved — approved only by the owner at the gate
 date: 2026-10-17
 track: heavy
 spec_version: 1
-build_version: 1
+build_version: 2
 ---
 
 # PagoClaro — Skills decision
@@ -42,7 +42,9 @@ skill added while we are at it. With no skill authored, the Loader line is —.
 - **Why:** PagoClaro es un flujo fijo en código con un solo punto de modelo, el lector, que no
   tiene herramientas y cuyo saber cabe completo en un bloque fijo de 10 reglas; identificar,
   decidir, registrar y resolver pendientes son código determinista. No hay un tipo de tarea que
-  varíe por caso o por cliente y que inflaría las instrucciones fijas.
+  varíe por caso o por cliente y que inflaría las instrucciones fijas. Revisado contra el build v2:
+  el escalamiento con SUSPICIOUS_TEXT cuando las lecturas no coinciden y las alarmas que avisan
+  son código; el bloque fijo del lector no cambió (10 reglas), así que la prueba da lo mismo.
 - **Loader:** —
 
 ## 3. Skills
