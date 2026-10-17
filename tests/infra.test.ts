@@ -1,0 +1,92 @@
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { describe, expect, test } from 'vitest';
+import { makeEntry, verifyChain, type AuditEntry } from '../src/domain/audit';
+import { compareReadings } from '../src/domain/reconcile';
+import type { InvoiceReading } from '../src/domain/types';
+import { detectDocument } from '../src/extract/document';
+import { documentBlocks, RecordedExtractor } from '../src/extract/extractor';
+import { SpendMeter } from '../src/extract/spend';
+import { renderEml, type FixtureInvoice } from '../runner/render';
+
+const reading: InvoiceReading = {
+  issuer_name: 'A',
+  issuer_tax_id: 'SDA-190312-AB1',
+  invoice_number: 'AUR 2026 0917',
+  issue_date: '2026-10-15',
+  due_date: null,
+  currency: 'MXN',
+  total: 42000,
+  lines: [],
+  payment_rail_hint: 'SPEI',
+  payment_account: '0021 8070 0012 345678',
+  suspicious_text: [],
+};
+
+describe('registro encadenado', () => {
+  test('BHV-032 editar una entrada rompe la cadena en esa entrada', () => {
+    const log: AuditEntry[] = [];
+    for (let i = 1; i <= 5; i++) log.push(makeEntry(log.at(-1), { at: `t${i}`, invoice_id: null, type: 'x', actor: 'a', data: { amount: i } }));
+    expect(verifyChain(log).ok).toBe(true);
+    (log[2].data as { amount: number }).amount = 99999;
+    const v = verifyChain(log);
+    expect(v.ok).toBe(false);
+    expect(v.ok === false && v.broken_at).toBe(3);
+  });
+});
+
+describe('cruce de lecturas', () => {
+  test('BHV-001 normaliza separadores antes de comparar', () => {
+    expect(compareReadings(reading, { ...reading, issuer_tax_id: 'SDA190312AB1', invoice_number: 'AUR-2026-0917', payment_account: '002180700012345678' })).toEqual([]);
+  });
+  test('BHV-002 un total distinto se detecta', () => {
+    expect(compareReadings(reading, { ...reading, total: 4200 })).toEqual(['total']);
+  });
+});
+
+describe('documentos', () => {
+  test('BHV-003 bytes que no son PDF se rechazan antes de leer', () => {
+    const d = detectDocument('factura-rota.pdf', Buffer.from('no es un pdf'));
+    expect(d.ok).toBe(false);
+  });
+  test('un correo trae su cuerpo como texto y el PDF adjunto como documento', async () => {
+    const inv: FixtureInvoice = {
+      file_name: 'X.eml',
+      kind: 'email',
+      language: 'es',
+      issuer: { name: 'Aurora', tax_id_label: 'RFC', tax_id: 'SDA190312AB1', address: 'CDMX' },
+      bill_to: { name: 'Northwind', tax_id_label: 'EIN', tax_id: '98-7654321', address: 'DE' },
+      number: 'AUR-1',
+      issue_date: '2026-10-15',
+      currency_code: 'MXN',
+      lines: [{ description: 'Servicio', amount: 1, amount_display: '1.00' }],
+      total: 1,
+      total_display: 'MXN 1.00',
+      payment: { method: 'SPEI', label: 'CLABE', value: '002180700012345678' },
+      email: { from: 'a@aurora.example.com', to: 'b@northwind.example.com', subject: 'Factura', body: 'Adjunto la factura.' },
+    };
+    const bytes = await renderEml(inv);
+    const det = detectDocument('X.eml', bytes);
+    expect(det.ok).toBe(true);
+    const blocks = await documentBlocks(det.ok ? det.doc : (null as never));
+    expect(blocks[0].type).toBe('text');
+    expect(blocks.some((b) => b.type === 'document')).toBe(true);
+  });
+});
+
+describe('lectores', () => {
+  test('sin lectura guardada, la demo sin llave no llama a ningún modelo', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'pc-'));
+    const r = new RecordedExtractor('claude-opus-5-5', dir, 'replay');
+    const det = detectDocument('a.txt', Buffer.from('hola'));
+    const res = await r.read(det.ok ? det.doc : (null as never));
+    expect(res.ok).toBe(false);
+  });
+  test('el medidor bloquea al llegar al tope', () => {
+    const m = new SpendMeter(0.0001, null);
+    expect(m.exhausted()).toBe(false);
+    m.add('claude-opus-5-5', 10_000, 1_000);
+    expect(m.exhausted()).toBe(true);
+  });
+});
