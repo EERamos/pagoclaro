@@ -1,11 +1,11 @@
 ---
 agent_name: pagoclaro
-version: 1
+version: 2
 status: approved         # draft | approved — approved only by the owner at the gate
 date: 2026-10-17
 track: heavy
 spec_version: 1
-build_version: 1
+build_version: 2
 ---
 
 # PagoClaro — Interop decision
@@ -40,7 +40,9 @@ future; the future has a re-visit trigger.
 - **Why:** ninguna contraparte toma responsabilidad: los lectores, el almacén, el canal, los
   proveedores y el registro de npm devuelven un resultado a una petición, y las personas de
   finanzas son una compuerta humana que el spec ya gobierna. El diseño lo dice igual: "A2A: no; el
-  agente no habla con otros agentes. Otros sistemas lo llaman por su API HTTP".
+  agente no habla con otros agentes. Otros sistemas lo llaman por su API HTTP". Revisado contra el
+  build v2: las alarmas nuevas salen por `/health`, `/api/summary`, el tablero y la consola del
+  servidor, todos ya en la tabla o locales; no aparece ninguna contraparte nueva.
 
 ## 3. A2A
 
