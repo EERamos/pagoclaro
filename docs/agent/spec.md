@@ -558,46 +558,46 @@ until then both hold `—`.
 
 | BHV | Capability | Eval (filled by /evals) | Test (filled by /build) |
 |---|---|---|---|
-| BHV-001 | Leer cada factura dos veces y cruzar las lecturas | EVL-001 | — |
-| BHV-002 | Leer cada factura dos veces y cruzar las lecturas | EVL-002 | — |
-| BHV-003 | Leer cada factura dos veces y cruzar las lecturas | EVL-003 | — |
-| BHV-004 | Leer cada factura dos veces y cruzar las lecturas | EVL-004 | — |
-| BHV-005 | Leer cada factura dos veces y cruzar las lecturas | EVL-005 | — |
-| BHV-006 | Leer cada factura dos veces y cruzar las lecturas | EVL-006 | — |
-| BHV-007 | Leer cada factura dos veces y cruzar las lecturas | EVL-007 | — |
-| BHV-008 | Leer cada factura dos veces y cruzar las lecturas | ADV-001, ADV-002 | — |
-| BHV-009 | Leer cada factura dos veces y cruzar las lecturas | ADV-003, ADV-004 | — |
-| BHV-010 | Leer cada factura dos veces y cruzar las lecturas | ADV-005, ADV-006 | — |
-| BHV-011 | Identificar al proveedor y lo acordado | EVL-008 | — |
-| BHV-012 | Identificar al proveedor y lo acordado | EVL-009 | — |
-| BHV-013 | Identificar al proveedor y lo acordado | EVL-010 | — |
-| BHV-014 | Identificar al proveedor y lo acordado | EVL-011 | — |
-| BHV-015 | Identificar al proveedor y lo acordado | EVL-012 | — |
-| BHV-016 | Decidir pagar, frenar o escalar según las reglas | EVL-013 | — |
-| BHV-017 | Decidir pagar, frenar o escalar según las reglas | EVL-014 | — |
-| BHV-018 | Decidir pagar, frenar o escalar según las reglas | EVL-015 | — |
-| BHV-019 | Decidir pagar, frenar o escalar según las reglas | EVL-016 | — |
-| BHV-020 | Decidir pagar, frenar o escalar según las reglas | EVL-017 | — |
-| BHV-021 | Decidir pagar, frenar o escalar según las reglas | EVL-018 | — |
-| BHV-022 | Decidir pagar, frenar o escalar según las reglas | EVL-019 | — |
-| BHV-023 | Decidir pagar, frenar o escalar según las reglas | EVL-020 | — |
-| BHV-024 | Decidir pagar, frenar o escalar según las reglas | EVL-021 | — |
-| BHV-025 | Decidir pagar, frenar o escalar según las reglas | EVL-022 | — |
-| BHV-026 | Decidir pagar, frenar o escalar según las reglas | EVL-023 | — |
-| BHV-027 | Decidir pagar, frenar o escalar según las reglas | EVL-024 | — |
-| BHV-028 | Decidir pagar, frenar o escalar según las reglas | EVL-025 | — |
-| BHV-029 | Registrar cada decisión con su explicación | EVL-026 | — |
-| BHV-030 | Registrar cada decisión con su explicación | EVL-027 | — |
-| BHV-031 | Registrar cada decisión con su explicación | EVL-028 | — |
-| BHV-032 | Registrar cada decisión con su explicación | EVL-029 | — |
-| BHV-033 | Registrar cada decisión con su explicación | ADV-007, ADV-008 | — |
-| BHV-034 | Resolver un pendiente con aprobación humana | EVL-030 | — |
-| BHV-035 | Resolver un pendiente con aprobación humana | EVL-031 | — |
-| BHV-036 | Resolver un pendiente con aprobación humana | EVL-032 | — |
-| BHV-037 | Resolver un pendiente con aprobación humana | EVL-033 | — |
-| BHV-038 | Resolver un pendiente con aprobación humana | ADV-009, ADV-010 | — |
-| BHV-039 | Resolver un pendiente con aprobación humana | ADV-011, ADV-012 | — |
-| BHV-040 | Resolver un pendiente con aprobación humana | EVL-034 | — |
+| BHV-001 | Leer cada factura dos veces y cruzar las lecturas | EVL-001 | `tests/bhv.test.ts::BHV-001 EVL-001`, `tests/infra.test.ts::BHV-001 normaliza separadores antes de comparar` |
+| BHV-002 | Leer cada factura dos veces y cruzar las lecturas | EVL-002 | `tests/bhv.test.ts::BHV-002 EVL-002`, `tests/infra.test.ts::BHV-002 un total distinto se detecta` |
+| BHV-003 | Leer cada factura dos veces y cruzar las lecturas | EVL-003 | `tests/bhv.test.ts::BHV-003 EVL-003`, `tests/infra.test.ts::BHV-003 bytes que no son PDF se rechazan antes de leer` |
+| BHV-004 | Leer cada factura dos veces y cruzar las lecturas | EVL-004 | `tests/bhv.test.ts::BHV-004 EVL-004` |
+| BHV-005 | Leer cada factura dos veces y cruzar las lecturas | EVL-005 | `tests/bhv.test.ts::BHV-005 EVL-005` |
+| BHV-006 | Leer cada factura dos veces y cruzar las lecturas | EVL-006 | `tests/bhv.test.ts::BHV-006 EVL-006` |
+| BHV-007 | Leer cada factura dos veces y cruzar las lecturas | EVL-007 | `tests/bhv.test.ts::BHV-007 EVL-007` |
+| BHV-008 | Leer cada factura dos veces y cruzar las lecturas | ADV-001, ADV-002 | `tests/bhv.test.ts::BHV-008 ADV-001`, `tests/bhv.test.ts::BHV-008 ADV-002`, `tests/rules.test.ts::BHV-008 texto con órdenes escala y no se aprueba` |
+| BHV-009 | Leer cada factura dos veces y cruzar las lecturas | ADV-003, ADV-004 | `tests/bhv.test.ts::BHV-009 ADV-003`, `tests/bhv.test.ts::BHV-009 ADV-004` |
+| BHV-010 | Leer cada factura dos veces y cruzar las lecturas | ADV-005, ADV-006 | `tests/bhv.test.ts::BHV-010 ADV-005`, `tests/bhv.test.ts::BHV-010 ADV-006` |
+| BHV-011 | Identificar al proveedor y lo acordado | EVL-008 | `tests/bhv.test.ts::BHV-011 EVL-008` |
+| BHV-012 | Identificar al proveedor y lo acordado | EVL-009 | `tests/bhv.test.ts::BHV-012 EVL-009` |
+| BHV-013 | Identificar al proveedor y lo acordado | EVL-010 | `tests/bhv.test.ts::BHV-013 EVL-010` |
+| BHV-014 | Identificar al proveedor y lo acordado | EVL-011 | `tests/bhv.test.ts::BHV-014 EVL-011` |
+| BHV-015 | Identificar al proveedor y lo acordado | EVL-012 | `tests/bhv.test.ts::BHV-015 EVL-012` |
+| BHV-016 | Decidir pagar, frenar o escalar según las reglas | EVL-013 | `tests/bhv.test.ts::BHV-016 EVL-013`, `tests/rules.test.ts::BHV-016 una factura dentro de las reglas da PAY con todo en PASS` |
+| BHV-017 | Decidir pagar, frenar o escalar según las reglas | EVL-014 | `tests/bhv.test.ts::BHV-017 EVL-014` |
+| BHV-018 | Decidir pagar, frenar o escalar según las reglas | EVL-015 | `tests/bhv.test.ts::BHV-018 EVL-015`, `tests/rules.test.ts::BHV-018 HOLD gana sobre ESCALATE` |
+| BHV-019 | Decidir pagar, frenar o escalar según las reglas | EVL-016 | `tests/bhv.test.ts::BHV-019 EVL-016` |
+| BHV-020 | Decidir pagar, frenar o escalar según las reglas | EVL-017 | `tests/bhv.test.ts::BHV-020 EVL-017` |
+| BHV-021 | Decidir pagar, frenar o escalar según las reglas | EVL-018 | `tests/bhv.test.ts::BHV-021 EVL-018` |
+| BHV-022 | Decidir pagar, frenar o escalar según las reglas | EVL-019 | `tests/bhv.test.ts::BHV-022 EVL-019` |
+| BHV-023 | Decidir pagar, frenar o escalar según las reglas | EVL-020 | `tests/bhv.test.ts::BHV-023 EVL-020` |
+| BHV-024 | Decidir pagar, frenar o escalar según las reglas | EVL-021 | `tests/bhv.test.ts::BHV-024 EVL-021`, `tests/rules.test.ts::BHV-024 el límite de autoaprobación es inclusivo` |
+| BHV-025 | Decidir pagar, frenar o escalar según las reglas | EVL-022 | `tests/bhv.test.ts::BHV-025 EVL-022` |
+| BHV-026 | Decidir pagar, frenar o escalar según las reglas | EVL-023 | `tests/bhv.test.ts::BHV-026 EVL-023` |
+| BHV-027 | Decidir pagar, frenar o escalar según las reglas | EVL-024 | `tests/bhv.test.ts::BHV-027 EVL-024` |
+| BHV-028 | Decidir pagar, frenar o escalar según las reglas | EVL-025 | `tests/bhv.test.ts::BHV-028 EVL-025` |
+| BHV-029 | Registrar cada decisión con su explicación | EVL-026 | `tests/bhv.test.ts::BHV-029 EVL-026` |
+| BHV-030 | Registrar cada decisión con su explicación | EVL-027 | `tests/bhv.test.ts::BHV-030 EVL-027` |
+| BHV-031 | Registrar cada decisión con su explicación | EVL-028 | `tests/bhv.test.ts::BHV-031 EVL-028` |
+| BHV-032 | Registrar cada decisión con su explicación | EVL-029 | `tests/bhv.test.ts::BHV-032 EVL-029`, `tests/infra.test.ts::BHV-032 editar una entrada rompe la cadena en esa entrada` |
+| BHV-033 | Registrar cada decisión con su explicación | ADV-007, ADV-008 | `tests/bhv.test.ts::BHV-033 ADV-007`, `tests/bhv.test.ts::BHV-033 ADV-008` |
+| BHV-034 | Resolver un pendiente con aprobación humana | EVL-030 | `tests/bhv.test.ts::BHV-034 EVL-030`, `tests/rules.test.ts::BHV-034 una aprobación levanta el umbral y paga` |
+| BHV-035 | Resolver un pendiente con aprobación humana | EVL-031 | `tests/bhv.test.ts::BHV-035 EVL-031`, `tests/rules.test.ts::BHV-035 una aprobación no levanta reglas de frenar` |
+| BHV-036 | Resolver un pendiente con aprobación humana | EVL-032 | `tests/bhv.test.ts::BHV-036 EVL-032` |
+| BHV-037 | Resolver un pendiente con aprobación humana | EVL-033 | `tests/bhv.test.ts::BHV-037 EVL-033` |
+| BHV-038 | Resolver un pendiente con aprobación humana | ADV-009, ADV-010 | `tests/bhv.test.ts::BHV-038 ADV-009`, `tests/bhv.test.ts::BHV-038 ADV-010` |
+| BHV-039 | Resolver un pendiente con aprobación humana | ADV-011, ADV-012 | `tests/bhv.test.ts::BHV-039 ADV-011`, `tests/bhv.test.ts::BHV-039 ADV-012`, `tests/tool-surface.test.ts::BHV-039 los esquemas de entrada rechazan campos desconocidos` |
+| BHV-040 | Resolver un pendiente con aprobación humana | EVL-034 | `tests/bhv.test.ts::BHV-040 EVL-034`, `tests/rules.test.ts::BHV-040 una aprobación no levanta una cuenta que no coincide` |
 
 ## 7. Open questions → /evals & /build
 
