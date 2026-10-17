@@ -15,6 +15,7 @@
       vPAIDby: 'Pagada con la aprobación de {who}: la reevaluación con las reglas vigentes lo permitió.',
       kProcessed: 'Procesadas', kPaid: 'Pagadas', kHeld: 'Frenadas', kPending: 'Pendientes', kAutonomy: 'Resueltas sin persona', kOut: 'Pagos fuera de reglas', kChain: 'Registro', kSpend: 'Gasto en modelos',
       chainOk: 'íntegro', chainBad: 'roto', of: 'de',
+      alarm: 'Alarma', aPAYMENT_OUT_OF_RULES: 'hay instrucciones de pago sin una evaluación PAY: detén el agente y anúlalas.', aAUDIT_CHAIN_BROKEN: 'la cadena del registro está rota: detén las escrituras y compara con el respaldo.', aMODEL_SPEND_HIGH: 'el gasto en modelos llegó al 80 % del tope.', aREADERS_FAILING: 'varias facturas seguidas no se pudieron leer: revisa la llave y status.anthropic.com.',
       vPAID: 'Pagada dentro de las reglas: se emitió una instrucción de pago simulada.', vHELD: 'Frenada: una regla dura lo impide.', vPENDING: 'Escalada: necesita a una persona.', vREJECTED: 'Rechazada por una persona.', vEXPIRED: 'Venció sin aprobación y quedó frenada.', vVOIDED: 'Pagada y después anulada por una persona.', vERROR: 'Sin decisión final: se puede volver a procesar.',
       why: 'Por qué', readings: 'Las dos lecturas', field: 'Campo', primary: 'Principal', check: 'Verificación', orders: 'Texto con órdenes, tratado como dato', payment: 'Instrucción de pago', simulated: 'SIMULADA · no mueve dinero', rail: 'Riel', amount: 'Monto', usd: 'En USD', rate: 'Tasa', beneficiary: 'Beneficiario', account: 'Cuenta', provenance: 'Procedencia', audit: 'Registro de esta factura', approveTitle: 'Decisión humana', note: 'Nota (se guarda como texto)', approve: 'Aprobar', reject: 'Rechazar', voidPay: 'Anular instrucción', chooseReading: 'Lectura que vale', reason: 'Motivo',
       approvable: 'Una aprobación puede levantar: umbral, posible duplicado, fraccionamiento, acuerdo, beneficiario nuevo y fecha. Nunca: cuenta distinta, texto con órdenes, moneda ambigua o sin tasa, líneas que no suman ni archivos ilegibles. Las reglas de frenar siguen valiendo.',
@@ -35,6 +36,7 @@
       vPAIDby: 'Paid with the approval of {who}: re-running the current rules allowed it.',
       kProcessed: 'Processed', kPaid: 'Paid', kHeld: 'Held', kPending: 'Pending', kAutonomy: 'Decided without a person', kOut: 'Payments outside rules', kChain: 'Audit log', kSpend: 'Model spend',
       chainOk: 'intact', chainBad: 'broken', of: 'of',
+      alarm: 'Alarm', aPAYMENT_OUT_OF_RULES: 'there are payment instructions without a PAY evaluation: stop the agent and void them.', aAUDIT_CHAIN_BROKEN: 'the audit chain is broken: stop writes and compare with the backup.', aMODEL_SPEND_HIGH: 'model spend reached 80% of the cap.', aREADERS_FAILING: 'several invoices in a row could not be read: check the key and status.anthropic.com.',
       vPAID: 'Paid within the rules: a simulated payment instruction was issued.', vHELD: 'Held: a hard rule blocks it.', vPENDING: 'Escalated: needs a person.', vREJECTED: 'Rejected by a person.', vEXPIRED: 'Expired without approval and was held.', vVOIDED: 'Paid, then voided by a person.', vERROR: 'No final decision: it can be processed again.',
       why: 'Why', readings: 'The two readings', field: 'Field', primary: 'Primary', check: 'Check', orders: 'Text giving orders, kept as data', payment: 'Payment instruction', simulated: 'SIMULATED · moves no money', rail: 'Rail', amount: 'Amount', usd: 'In USD', rate: 'Rate', beneficiary: 'Beneficiary', account: 'Account', provenance: 'Provenance', audit: 'Audit log for this invoice', approveTitle: 'Human decision', note: 'Note (kept as text)', approve: 'Approve', reject: 'Reject', voidPay: 'Void instruction', chooseReading: 'Reading that holds', reason: 'Reason',
       approvable: 'An approval can lift: threshold, possible duplicate, split charge, agreement, new beneficiary and date. Never: a different account, text giving orders, an ambiguous or unrated currency, lines that do not add up or unreadable files. Hold rules still apply.',
@@ -127,6 +129,10 @@
       k(t('kChain'), m.audit_chain_ok ? '✓' : '×', `${m.audit_entries} ${t('entries')} · ${m.audit_chain_ok ? t('chainOk') : t('chainBad')}`, m.audit_chain_ok ? 'good' : 'bad'),
       k(t('kSpend'), `$${Number(m.model_spend_usd).toFixed(2)}`, `${t('of')} $${m.model_spend_cap_usd}`),
     ].join('');
+    const alerts = m.alerts || [];
+    const ab = $('#alertBanner');
+    ab.hidden = alerts.length === 0;
+    ab.innerHTML = alerts.map((a) => `<div><strong>${esc(t('alarm'))} · ${esc(a.code)}</strong> ${esc(t(`a${a.code}`))}</div>`).join('');
     const mp = $('#modePill');
     mp.textContent = S.mode === 'static' ? 'DEMO' : `API · ${S.summary.mode}`;
     mp.className = `pill${S.mode === 'static' ? '' : ' live'}`;

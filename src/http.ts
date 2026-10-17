@@ -5,6 +5,7 @@ import { extname, join } from 'node:path';
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import type { PagoClaro } from './agent/pipeline';
+import { alertNotifier, type Alert } from './alerts';
 import { maskAccount } from './domain/normalize';
 import { RulesSchema } from './domain/rules';
 import type { ReadResult } from './domain/types';
@@ -20,6 +21,8 @@ export interface HttpDeps {
   mode: string;
   webDir?: string;
   logger?: boolean;
+  /** Receives the firing alarms after each API call; prints "[ALERTA]" lines by default. */
+  notify?: (alerts: Alert[]) => void;
 }
 
 const Actor = z.string().trim().min(2).max(60).regex(/^[\p{L}0-9._@ -]+$/u, 'nombre de actor inválido');
@@ -92,7 +95,23 @@ export async function buildHttp(deps: HttpDeps): Promise<FastifyInstance> {
     return true;
   };
 
-  app.get('/health', async () => ({ ok: true, service: 'pagoclaro', mode: deps.mode, writes: !!deps.accessCode, audit_chain_ok: agent.verifyAudit().ok }));
+  const alerts = () => {
+    const sp = deps.spend();
+    return metrics(store.read(), sp.usd, sp.cap).alerts;
+  };
+  const notify = deps.notify ?? alertNotifier();
+  app.addHook('onResponse', async (req) => {
+    if (req.url === '/health' || req.url.startsWith('/api/')) notify(alerts());
+  });
+
+  app.get('/health', async () => ({
+    ok: true,
+    service: 'pagoclaro',
+    mode: deps.mode,
+    writes: !!deps.accessCode,
+    audit_chain_ok: agent.verifyAudit().ok,
+    alerts: alerts().map((a) => a.code),
+  }));
 
   app.get('/api/summary', async () => {
     await agent.sweepExpired();

@@ -114,7 +114,7 @@ export async function materialize(c: CaseFile, readers: Readers): Promise<RunCtx
   seedWorld(store, fx, fx.today);
   const overrides = bindHarness(fx.harness_condition);
   const { agent, tools, telemetry } = createPagoClaro({ store, primary: readers.primary, check: readers.check, now, overrides });
-  const http = await buildHttp({ agent, accessCode: fx.access_code, spend: () => ({ usd: 0, cap: 50 }), telemetry, mode: 'eval' });
+  const http = await buildHttp({ agent, accessCode: fx.access_code, spend: () => ({ usd: 0, cap: 50 }), telemetry, mode: 'eval', notify: () => {} });
 
   // Pending items that already exist when the case starts (their readings were taken before).
   for (const p of fx.store ?? []) {

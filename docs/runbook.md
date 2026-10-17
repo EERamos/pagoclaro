@@ -45,14 +45,16 @@ One row per alarm, each with a first response.
 
 | Alarm | Threshold | Source | First response |
 |---|---|---|---|
-| Pago fuera de reglas | 1 (`metrics.payments_out_of_rules` > 0) | `GET /api/summary` | Detener el agente, anular la instrucción en el tablero, revisar la evaluación en el registro |
-| Cadena del registro rota | `audit_chain_ok` = false | `GET /api/audit/verify` | Detener escrituras, comparar `data/state.json` con el respaldo, identificar la entrada editada |
-| Gasto en modelos | Assumption: 80 % del tope (40 USD) | `data/model-spend.json` | Revisar facturas reprocesadas; subir o bajar el tope con el dueño |
-| Lectores fallando | Assumption: 3 READER_FAILED seguidas | `data/telemetry.jsonl` | Revisar la llave y status.anthropic.com |
+| Pago fuera de reglas | 1 (`metrics.payments_out_of_rules` > 0) | `PAYMENT_OUT_OF_RULES` en `GET /health` y `GET /api/summary` (`metrics.alerts`), banner rojo en el tablero y una línea `[ALERTA]` en la consola de `npm start` (`src/alerts.ts`) | Detener el agente, anular la instrucción en el tablero, revisar la evaluación en el registro |
+| Cadena del registro rota | `audit_chain_ok` = false | `AUDIT_CHAIN_BROKEN`, por los mismos cuatro avisos; detalle en `GET /api/audit/verify` | Detener escrituras, comparar `data/state.json` con el respaldo, identificar la entrada editada |
+| Gasto en modelos | Assumption: 80 % del tope (40 USD) | `MODEL_SPEND_HIGH`, por los mismos cuatro avisos; detalle en `data/model-spend.json` | Revisar facturas reprocesadas; subir o bajar el tope con el dueño |
+| Lectores fallando | Assumption: 3 READER_FAILED seguidas | `READERS_FAILING`, por los mismos cuatro avisos; detalle en `data/telemetry.jsonl` | Revisar la llave y status.anthropic.com |
 
 ## Weekly ritual
 
-- **Re-run the suite:** `npm run evals` (unos 2 a 3 USD de créditos); una falla nueva la investiga el dueño.
+- **Re-run the suite:** `npm run evals` (unos 0.70 USD de créditos, medido el 2026-10-17); una
+  falla nueva la investiga el dueño. Las lecturas de cada corrida quedan en
+  `data/eval-readings/<run-id>/`.
 - **Check the judge:** none judged (la suite no usa jueces; todo es determinista).
 - **Mine corrections:** las facturas que una persona aprobó o rechazó en la semana son candidatas a casos
   nuevos; entran por `agent-engineering:evals`, nunca editando `evals/` a mano.

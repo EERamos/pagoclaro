@@ -1,4 +1,5 @@
 // Dashboard metrics, all derived from the store (nothing stored twice).
+import { activeAlerts } from './alerts';
 import { verifyChain } from './domain/audit';
 import { evaluate } from './domain/rules';
 import type { Rules } from './domain/types';
@@ -17,6 +18,7 @@ export function metrics(s: State, spendUsd: number, capUsd: number) {
   const ruleHits: Record<string, number> = {};
   for (const i of inv) for (const r of i.reasons) ruleHits[r] = (ruleHits[r] ?? 0) + 1;
   const chain = verifyChain(s.audit);
+  const modelSpend = Math.round(spendUsd * 10000) / 10000;
   return {
     processed: inv.length,
     paid: count('PAID'),
@@ -30,12 +32,13 @@ export function metrics(s: State, spendUsd: number, capUsd: number) {
     autonomy_pct: inv.length ? Math.round((byAgent / inv.length) * 1000) / 10 : 0,
     payments_out_of_rules: outOfRules,
     usd_paid: Math.round(payments.filter((p) => !p.voided_at).reduce((a, p) => a + p.amount_usd, 0) * 100) / 100,
-    model_spend_usd: Math.round(spendUsd * 10000) / 10000,
+    model_spend_usd: modelSpend,
     model_spend_cap_usd: capUsd,
     rule_hits: ruleHits,
     audit_chain_ok: chain.ok,
     audit_entries: s.audit.length,
     policy_version: s.rules_versions.length ? currentRules(s).version : null,
+    alerts: activeAlerts(s, { payments_out_of_rules: outOfRules, audit_chain_ok: chain.ok, model_spend_usd: modelSpend, model_spend_cap_usd: capUsd }),
   };
 }
 

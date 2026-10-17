@@ -21,7 +21,10 @@ const RUNNER = 'npm run evals';
 const mode = process.env.PAGOCLARO_EVAL_READERS === 'oracle' ? 'oracle' : 'live';
 const config = loadConfig();
 
-/** Live reader that also keeps each reading for the demo's replay (it never replays itself). */
+/**
+ * Live reader that also keeps each reading as the run's evidence, in data/eval-readings/RUN_ID/
+ * (git-ignored), never in fixtures/readings/: the demo's readings are `npm run seed`'s (ship v1).
+ */
 class TeeExtractor implements Extractor {
   constructor(private readonly inner: Extractor, private readonly dir: string) {}
   get model() {
@@ -38,7 +41,7 @@ class TeeExtractor implements Extractor {
   }
 }
 
-function readersFor(spend: SpendMeter | null): Readers {
+function readersFor(spend: SpendMeter | null, readingsOut: string): Readers {
   if (mode === 'oracle') {
     const p = new OracleExtractor(config.primaryModel);
     const c = new OracleExtractor(config.checkModel);
@@ -47,8 +50,8 @@ function readersFor(spend: SpendMeter | null): Readers {
   const client = new Anthropic();
   const opts = { timeoutMs: config.readerTimeoutMs, effort: 'low' as const };
   return {
-    primary: new TeeExtractor(new AnthropicExtractor(client, config.primaryModel, spend!, opts), config.readingsDir),
-    check: new TeeExtractor(new AnthropicExtractor(client, config.checkModel, spend!, opts), config.readingsDir),
+    primary: new TeeExtractor(new AnthropicExtractor(client, config.primaryModel, spend!, opts), readingsOut),
+    check: new TeeExtractor(new AnthropicExtractor(client, config.checkModel, spend!, opts), readingsOut),
   };
 }
 
@@ -64,11 +67,11 @@ function loadCases(): CaseFile[] {
   return out;
 }
 
-async function runOnce(c: CaseFile, spend: SpendMeter | null): Promise<{ passed: boolean; detail?: string }> {
+async function runOnce(c: CaseFile, spend: SpendMeter | null, readingsOut: string): Promise<{ passed: boolean; detail?: string }> {
   const b = BINDINGS[c.id];
   if (!b) return { passed: false, detail: 'el caso no tiene verificaciones ligadas en el runner' };
   try {
-    const ctx = await materialize(c, readersFor(spend));
+    const ctx = await materialize(c, readersFor(spend, readingsOut));
     const problems: string[] = [];
     const t = checkTrajectory(c, ctx);
     if (t) problems.push(t);
@@ -109,6 +112,7 @@ async function main() {
   const spend = mode === 'live' ? new SpendMeter(config.spendCapUsd, join(config.dataDir, 'model-spend.json')) : null;
   const started = new Date();
   const runId = started.toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+  const readingsOut = join(config.dataDir, 'eval-readings', runId);
   const results: { id: string; runs: { passed: boolean; detail?: string }[] }[] = [];
   const concurrency = mode === 'live' ? 4 : 8;
   const queue = [...cases];
@@ -119,7 +123,7 @@ async function main() {
         const c = queue.shift()!;
         const th = cfg.thresholds[c.tier];
         const runs: { passed: boolean; detail?: string }[] = [];
-        for (let k = 0; k < th.runs; k++) runs.push(await runOnce(c, spend));
+        for (let k = 0; k < th.runs; k++) runs.push(await runOnce(c, spend, readingsOut));
         byId.set(c.id, { id: c.id, runs });
         const ok = runs.filter((r) => r.passed).length;
         console.log(`${ok >= th.passes_required && (c.method !== 'adversarial' || ok === runs.length) ? 'PASS' : 'FAIL'} ${c.id} (${c.bhv_ref}, ${c.tier}) ${ok}/${runs.length}${runs.find((r) => !r.passed)?.detail ? `  ${runs.find((r) => !r.passed)!.detail}` : ''}`);

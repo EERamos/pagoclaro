@@ -10,6 +10,8 @@ import type Anthropic from '@anthropic-ai/sdk';
 import { AnthropicExtractor, documentBlocks, RecordedExtractor } from '../src/extract/extractor';
 import { SpendMeter } from '../src/extract/spend';
 import { toEvent } from '../src/telemetry';
+import { activeAlerts, alertNotifier } from '../src/alerts';
+import type { State } from '../src/store/store';
 import { renderEml, type FixtureInvoice } from '../runner/render';
 
 const reading: InvoiceReading = {
@@ -104,6 +106,24 @@ describe('lectores', () => {
       '2026-10-17T00:00:00Z',
     );
     expect(ev['pagoclaro.usage.reasoning_tokens']).toBe(120);
+  });
+  test('las alarmas del runbook se encienden con su umbral y avisan una sola vez', () => {
+    const inv = (n: number, reasons: string[]) => ({ status: 'PENDING', received_at: `2026-10-17T10:0${n}:00Z`, reasons });
+    const quiet = { payments_out_of_rules: 0, audit_chain_ok: true, model_spend_usd: 39.99, model_spend_cap_usd: 50 };
+    const twoFailed = { invoices: { a: inv(1, ['READER_FAILED']), b: inv(2, ['READER_FAILED']), c: inv(0, []) } } as unknown as State;
+    expect(activeAlerts(twoFailed, quiet)).toEqual([]);
+    const threeFailed = { invoices: { ...twoFailed.invoices, d: inv(3, ['READER_FAILED']) } } as unknown as State;
+    const loud = { payments_out_of_rules: 1, audit_chain_ok: false, model_spend_usd: 40, model_spend_cap_usd: 50 };
+    expect(activeAlerts(threeFailed, loud).map((a) => a.code)).toEqual(['PAYMENT_OUT_OF_RULES', 'AUDIT_CHAIN_BROKEN', 'MODEL_SPEND_HIGH', 'READERS_FAILING']);
+    const said: string[] = [];
+    const notify = alertNotifier((line) => said.push(line));
+    notify(activeAlerts(threeFailed, loud));
+    notify(activeAlerts(threeFailed, loud));
+    expect(said).toHaveLength(4);
+    expect(said[0]).toMatch(/^\[ALERTA\] PAYMENT_OUT_OF_RULES/);
+    notify([]);
+    notify(activeAlerts(threeFailed, loud).slice(0, 1));
+    expect(said).toHaveLength(5);
   });
   test('el medidor bloquea al llegar al tope', () => {
     const m = new SpendMeter(0.0001, null);

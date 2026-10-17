@@ -136,7 +136,13 @@ export class PagoClaro {
     const check = (c.res as Extract<ReadResult, { ok: true }>).reading;
 
     const diff = compareReadings(primary, check);
-    if (diff.length > 0) return this.escalateOrError(id, ['READINGS_DISAGREE'], { fields: diff.join(', ') });
+    if (diff.length > 0) {
+      // An order copied by either reader escalates on its own, even when the readings disagree
+      // (spec BHV-010): SUSPICIOUS_TEXT is never approvable, READINGS_DISAGREE is.
+      const suspicious = suspiciousUnion(primary, check).length > 0;
+      const reasons: RuleCode[] = suspicious ? ['READINGS_DISAGREE', 'SUSPICIOUS_TEXT'] : ['READINGS_DISAGREE'];
+      return this.escalateOrError(id, reasons, { fields: diff.join(', ') });
+    }
     this.store.tx((d) => {
       d.invoices[id].reading_used = 'primary';
     });

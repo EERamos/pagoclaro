@@ -61,6 +61,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .topbar .btn.ghost:hover { background: var(--night-2); }
 
 .banner { margin: 16px 24px 0; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--info-soft); color: var(--info); font-size: 13.5px; border: 1px solid oklch(85% 0.05 255); }
+.banner.alert { background: var(--hold-soft); color: var(--hold); border-color: oklch(85% 0.07 25); display: grid; gap: 4px; }
+.banner.alert[hidden] { display: none; }
 
 main { max-width: 1520px; margin: 0 auto; padding: 16px 24px 48px; }
 
