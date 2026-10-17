@@ -8,8 +8,8 @@ design_version: 1
 spec_version: 1
 evals_date: 2026-10-17
 stack: no-framework@n/a
-runtime: <language, framework and model route>
-target: <deployment target>
+runtime: TypeScript en Node 24.14.0 sin framework de agentes; lectores anthropic/claude-opus-5-5 y anthropic/claude-haiku-5-5 con @anthropic-ai/sdk 0.135.0
+target: local (npm start) y demo estática en GitHub Pages; contenedor Docker listo para un hosting gratuito
 results: <path of the green run under runs/, such as runs/NAME.json>
 ---
 
@@ -22,18 +22,42 @@ the tool contracts in the spec). What they leave open (language and framework wh
 no stack, a light agent's target) the owner chooses, recorded in Pinned by as an assumption.
 Changing what they do fix is a re-entry.
 
-- **Runtime:** <language, framework and model route>
-- **Stack binding:** <the binding followed, catalog/bindings/ and the card id, and each of its
-  spikes run, with its result — or "not applicable:" and why, when the spec pins no stack or one
-  off the catalog>
-- **Model capabilities:** <tool calling native or prompted (and the parser); reasoning off, native
-  (budget) or prompted; samples per turn; context window; the probe that confirmed it — or
-  "not applicable:" and why, when no model is in the route>
-- **MCP servers:** <none, or name@version for each server the tools come through, with the date
-  its tool descriptions were reviewed>
-- **Target:** <deployment target>
-- **Pinned by:** <the sections that fix each choice, or the owner's choice as an assumption>
-- **Dependencies:** <lockfile in place, and how each package was checked to exist before install>
+- **Runtime:** TypeScript (tsc 7.0.2, tsx 4.23.15) en Node 24.14.0 (`engines` ≥ 20.12), sin
+  framework de agentes; flujo fijo en código; lectores `anthropic/claude-opus-5-5` (principal) y
+  `anthropic/claude-haiku-5-5` (verificación) vía `@anthropic-ai/sdk` 0.135.0, salida estructurada
+  con `output_config.format` y esfuerzo `low`; API HTTP con Fastify 5.12.7; esquemas con zod 4.6.7.
+- **Stack binding:** catalog/bindings/no-framework.md (card no-framework), seguido en sus
+  equivalentes en TypeScript porque sus spikes están escritos para Python. Spike 1 (store): JSON con
+  escritura atómica y reintentos en Windows, round trip y duplicado cubiertos por las pruebas, pasó
+  2026-10-17. Spike 2 (commit atómico): `tx` todo o nada; BHV-030 con STORE_ERROR inyectado no deja
+  instrucción, pasó 2026-10-17. Spike 3 (instalación con lockfile): `package-lock.json` con
+  `integrity` por paquete, `npm ci`, pasó 2026-10-17. Spike 4 (conversión de rutas): no aplica, no
+  hay bucle de herramientas ni historial que convertir. Spikes 5 y 6 (pausa, reanudación, rechazo y
+  vencimiento): el gate es la cola de pendientes; aprobar, rechazar, aprobación propia y
+  vencimiento a 72 h cubiertos por EVL-030 a EVL-034, pasaron con el lector de prueba 2026-10-17.
+  Spike 7 (topes): 2 llamadas por factura más 1 reintento por lector (EVL-004), pasó. Spike 8
+  (aborto y reparación): un error inesperado deja la factura en ERROR sin decisión y reprocesable
+  (EVL-027), pasó. Spike 9 (doble del modelo y verificación de superficie): lector de prueba
+  `runner/oracle.ts` y `tests/tool-surface.test.ts` con control negativo, pasó 2026-10-17.
+  Spike 10 (telemetría y egreso): eventos JSONL con nombres de atributos OTel GenAI y sin contenido
+  (ADV-007, ADV-008), pasó con el lector de prueba; sin exportador OTLP conectado (sección 7).
+  Spikes 11 y 12: no aplican, sin MCP ni A2A.
+- **Model capabilities:** PENDIENTE de la prueba del modelo (`npm run probe`), que necesita la API
+  key de Edgar; diseño: tool calling no se usa (cada lectura es una llamada con salida
+  estructurada y sin herramientas), reasoning native (pensamiento adaptativo, esfuerzo low), una
+  muestra por modelo y dos por factura, contexto de 1M tokens según la tabla del proveedor.
+- **MCP servers:** none
+- **Target:** local con `npm start` (puerto 3000, solo localhost) y demo estática en GitHub Pages
+  desde `docs/` en main; `Dockerfile` listo para un hosting gratuito si Edgar lo elige.
+- **Pinned by:** design §3 y §5 (lectores, seams, demo pública sin llave), spec `stack:
+  no-framework@n/a`; los IDs de modelo de Anthropic no llevan sufijo de fecha (son el id fijo del
+  proveedor); Assumption: TypeScript y la demo estática, decididos por delegación de Edgar
+  (2026-10-17).
+- **Dependencies:** `package-lock.json` con `integrity` por paquete; cada paquete se verificó en el
+  registro de npm con `npm view <paquete> version` el 2026-10-17 antes de instalarlo
+  (@anthropic-ai/sdk 0.135.0, zod 4.6.7, fastify 5.12.7, pdf-lib 1.17.1, @resvg/resvg-js 2.6.2,
+  postal-mime 4.0.7, vitest 5.0.5, tsx 4.23.15, typescript 7.0.2, @types/node 26.6.5); versiones
+  exactas (`save-exact`) e `ignore-scripts=true` en `.npmrc`; `npm audit`: 0 vulnerabilidades.
 
 ## 2. Anti-gaming rail
 
@@ -41,25 +65,36 @@ The guard is installed before the first source file. It blocks edits to evals/ a
 and the spec; the Test column of the spec's Traceability table is the one sanctioned edit.
 
 - **Installed:** baseline 799beb7 (design, spec y evals aprobados), luego el guard en 18f0f4c
-- **Verified:** <the dummy edit tried before any source file, and the block it got>
-- **Test-column edit:** <Test cells only, guard on (no rename), the diff checked, the commit>
+- **Verified:** la edición de prueba sobre `evals/config.json` (status a `guard-probe`) PASÓ en esta
+  sesión porque la sesión arrancó en `C:\Users\edgar`, fuera de la raíz del repositorio, y Claude
+  Code no cargó el hook; se revirtió de inmediato y `git status -- evals/` quedó limpio. El mismo
+  llamado enviado directo al script con `CLAUDE_PROJECT_DIR` en la raíz del repo salió con código
+  2: "BLOCKED by the agent-engineering anti-gaming guard: …evals\config.json is a frozen pipeline
+  artifact." Pendiente: que Edgar abra una sesión en la raíz del repo y repita la prueba.
+- **Test-column edit:** PENDIENTE: se llena después de la corrida verde, con el guard activo.
 
 ## 3. Delegation
 
 Forge-master takes a non-trivial build (more than 3 tools, any non-safe tier, channel
 infrastructure or more than 15 cases) when it is installed; otherwise the build is direct TDD.
 
-- **Route:** <forge or direct>
-- **Reason:** <the counts and the installed state that decided the route>
-- **PRD and plan:** <PRD path and plan id when forge; or —>
+- **Route:** direct
+- **Reason:** el build es no trivial (10 herramientas, 3 reversibles, 46 casos) y forge-master está
+  instalado, pero su `/forge-master:prd-import` lo teclea el dueño y sus dos compuertas son del
+  dueño; Edgar dormía y delegó la implementación completa, así que se construyó directo con TDD
+  (las pruebas por BHV primero, luego el código hasta verde con el lector de prueba).
+- **PRD and plan:** —
 
 ## 4. Runner
 
 The runner loads evals/ as read-only data and writes one results file per run.
 
-- **Command:** <the exact command that runs the suite and writes the results file>
-- **Results file:** <path under runs/ of the run recorded in section 5>
-- **Evals access:** <how the runner reads evals/ and where it writes, so it never writes there>
+- **Command:** `npm run evals`
+- **Results file:** PENDIENTE: la corrida con los lectores reales necesita la API key; la corrida en
+  seco con el lector de prueba (46/46) está en `tmp/runs-dry/` y no cuenta como verde.
+- **Evals access:** `runner/run-evals.ts` abre `evals/config.json` y cada caso con `readFileSync`, nunca
+  escribe bajo `evals/`; escribe solo `runs/<run-id>.json` y, con lectores reales, guarda cada
+  lectura en `fixtures/readings/` para la demo.
 
 ## 5. Suite result
 
@@ -67,22 +102,45 @@ Copied from the results file, not retyped from memory. One row per tier that has
 
 | Tier | Cases | Required per case | Result |
 |---|---|---|---|
-| <safe, reversible, destructive> | <cases> | <runs and passes needed> | <met or not met> |
+| reversible | 40 | 1 de 1 | PENDIENTE de la corrida con lectores reales |
+| safe | 6 | 1 de 1 | PENDIENTE de la corrida con lectores reales |
 
-- **Adversarial:** <how many adversarial cases ran and how many passed>
-- **Release blockers:** <each blocker from evals/config.json and its status in this run>
+- **Adversarial:** 12 casos; PENDIENTE de la corrida con lectores reales (en seco: 12/12).
+- **Release blockers:** los 6 de `evals/config.json`; PENDIENTE de la corrida con lectores reales.
 
 ## 6. Smoke test
 
 The agent runs once end to end in its real shape, outside the eval harness.
 
-- **Start:** <the command that starts the agent, and what it printed>
-- **Health:** <the health check and its answer>
-- **Round trip:** <one simulated input through the real ingress, its visible effect and log line>
+- **Start:** `PAGOCLARO_DATA_DIR=tmp/demo-oracle EXTRACTOR_MODE=replay PAGOCLARO_ACCESS_CODE=… PORT=3017 npx
+  tsx src/server.ts` imprimió "PagoClaro escuchando en http://localhost:3017 · Lectores: replay
+  (claude-opus-5-5 + claude-haiku-5-5), sin API key, tope 50 USD, gastado 0.0000 USD".
+- **Health:** `GET /health` respondió `{"ok":true,"service":"pagoclaro","mode":"replay","writes":true,"audit_chain_ok":true}`.
+- **Round trip:** desde el tablero, luis.tesoreria aprobó AUR-2026-0924 (pendiente por
+  AGREEMENT_MISMATCH) con el código de acceso; la reevaluación dio PAY, se emitió una instrucción
+  SPEI simulada por 46,200.00 MXN (2,517.90 USD a 0.0545) y el registro agregó `decision.pay`
+  con actor luis.tesoreria y la cadena íntegra (53 entradas).
 
 ## 7. Deviations and additions
 
 Anything built that the spec does not name, and anything the spec names that was not built as
 written.
 
-- <A deviation or addition and the upstream change it calls for; or "none">
+- El guard no estuvo activo en la sesión del build (sección 2): la protección de `evals/`, el diseño y
+  el spec dependió de no editarlos; `git log -- evals docs/agent/design.md docs/agent/spec.md`
+  muestra solo el commit base. Cambio pedido: ninguno upstream; repetir la prueba del guard.
+- Ruta directa en lugar de forge-master (sección 3), por la delegación del dueño.
+- Las aprobaciones de diseño, spec y evals las escribió el builder por la delegación explícita de
+  Edgar (2026-10-17, "haz toda la implementación y todo lo necesario siguiendo tus
+  recomendaciones y después reviso todo"); Edgar las revisa al final.
+- Adición: `provenance` dentro de los hechos que recibe evaluate_rules (procedencia de cada cifra,
+  diseño §9); el spec la pide en su sección 10 pero no la nombra en el contrato de entrada.
+- Adición: NO_AGREEMENT solo se evalúa con una moneda declarada (con moneda ambigua escala por su
+  propia regla); VENDOR_INACTIVE como regla de escalamiento.
+- Adición: anular una instrucción simulada desde el tablero (`POST /api/payments/:id/void`), que es
+  lo que hace reversible a record_payment según el spec.
+- Adición: simulación de reglas (`POST /api/what-if`) sin escrituras.
+- Adición: lector local Ollama solo para correos y chats, sin costo; probado con qwen3:8b.
+- Telemetría: eventos JSONL con nombres OTel GenAI; el exportador OTLP queda como siguiente paso.
+- No se activó el respaldo de modelo (`fallbacks`) de la API: un rechazo del modelo se trata como
+  READER_FAILED y escala, para que cada lectura conserve el modelo que la hizo.

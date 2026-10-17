@@ -1,0 +1,11 @@
+node_modules
+data
+tmp
+runs
+runs-blind
+blind
+.env
+.env.*
+.git
+.claude
+docs

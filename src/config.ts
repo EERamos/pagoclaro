@@ -11,7 +11,7 @@ const Env = z.object({
   EXTRACTOR_MODE: z.enum(['live', 'record', 'replay', 'ollama']).optional(),
   PRIMARY_MODEL: z.string().default('claude-opus-5-5'),
   CHECK_MODEL: z.string().default('claude-haiku-5-5'),
-  MODEL_SPEND_CAP_USD: z.coerce.number().positive().default(50),
+  MODEL_SPEND_CAP_USD: z.coerce.number().nonnegative().default(50),
   READINGS_DIR: z.string().default('fixtures/readings'),
   OLLAMA_MODEL: z.string().default('qwen3:8b'),
   READER_TIMEOUT_MS: z.coerce.number().int().positive().default(40_000),
