@@ -41,10 +41,14 @@ Every text pair reaches a contrast of 5:1 or more.
 ## Sections
 
 1. **Facturas**: the metrics are also the filters (todas, por revisar, pagadas, frenadas), the
-   paid amount and "Pagos fuera de reglas: 0"; alarms as a plain notice; pending invoices first,
+   paid amount and "Pagos fuera de reglas: 0"; a "Panorama" of four plain charts (how invoices were
+   decided, why a person was needed, the month's budget, who was paid), where every bar is a button
+   that filters the list and every number is also written out; alarms as a plain notice; pending
+   invoices first,
    each with its state in words and one sentence; the detail explains the decision in one or two
-   sentences, quotes any suspicious text as data, and holds "Tu decisión" (approve or reject with
-   a note, choosing the reading when they disagree, with the suggested one preselected).
+   sentences, quotes any suspicious text as data, holds "Tu decisión" (approve or reject with
+   a note, choosing the reading when they disagree, with the suggested one preselected), and shows
+   the amount against the no-review limit and the cap per invoice on one bar.
 2. **Proveedores autorizados**: add, deactivate or reactivate, change an account with a reason,
    and confirm a pending account with a verification note; "N facturas esperan por esta cuenta"
    and "Tú hiciste este cambio" when the actor is the one who changed it.

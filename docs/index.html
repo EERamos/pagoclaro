@@ -45,6 +45,7 @@
       <h2 class="sr" id="h-facturas" tabindex="-1" data-i18n="navInvoices">Facturas</h2>
       <div class="alerts" id="alerts" role="status"></div>
       <div class="summary sheet" id="summary"></div>
+      <section class="insights sheet" id="insights" aria-labelledby="ins-h" hidden></section>
       <div class="desk">
         <div class="inbox sheet">
           <form class="drop" id="drop">
@@ -52,6 +53,7 @@
             <button class="btn primary small" type="button" id="pickBtn" data-i18n="upload">Subir factura</button>
             <span class="hint" id="uploadHint" data-i18n="uploadHint">o arrástrala aquí. PDF, foto, correo o chat, hasta 10 MB.</span>
           </form>
+          <div class="facet" id="facet" hidden></div>
           <ul class="rows" id="rows" aria-label="Facturas" data-i18n-aria="navInvoices"></ul>
         </div>
         <article class="detail sheet" id="detail" tabindex="-1"></article>

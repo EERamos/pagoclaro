@@ -238,6 +238,16 @@ written.
   demo estática carga `demo-data.json` en solo lectura. Un recorrido de las 24 facturas no
   encontró nombres de modelos, códigos de regla ni hashes en el texto visible (fuera del detalle
   técnico).
+- Gráficas del tablero (pedido de Edgar, 2026-10-18): un "Panorama" arriba de la lista con cuatro
+  gráficas en HTML y CSS, sin librerías, cada barra es un botón que filtra la lista y cada número
+  va también en palabras: cómo se decidieron (y cuántas resolvió PagoClaro sin pedir ayuda), por
+  qué pidieron a una persona (en palabras comunes), presupuesto del mes y a quién se le pagó; en el
+  detalle, el monto contra lo que se paga sin revisión y el tope por factura. Para el presupuesto,
+  `GET /api/summary` agrega `metrics.budget` (`period`, `budget_usd`, `committed_usd`), contado
+  como lo cuenta query_ledger; prueba primero:
+  `tests/infra.test.ts::el presupuesto del mes se cuenta como lo cuenta el libro: lo comprometido antes más lo pagado en el mes`.
+  Es solo lectura y no toca ninguna decisión. Probado en el navegador en escritorio, a 375 px sin
+  desplazamiento horizontal, en modo oscuro y en la demo estática.
 - Demo v3 (`npm run seed`, 0.02 USD por la única factura nueva): 24 facturas, el alta de
   Consultores Andinos con su cuenta por confirmar y una llave Pix nueva de Tradu Pro por confirmar,
   con TRP-221 esperando por ella; la demo estática no lleva ninguna cuenta completa.

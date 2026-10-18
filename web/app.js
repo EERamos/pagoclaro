@@ -18,6 +18,16 @@
       st_PAID: 'Pagada', st_PENDING: 'Necesita tu revisión', st_HELD: 'Frenada', st_REJECTED: 'Rechazada', st_EXPIRED: 'Vencida', st_VOIDED: 'Pago anulado', st_ERROR: 'No se pudo procesar', st_PROCESSING: 'Procesando',
       // summary band
       f_all: 'Todas', f_review: 'Por revisar', f_paid: 'Pagadas', f_stopped: 'Frenadas', filterAria: 'Mostrar facturas', amountPaid: 'Monto pagado', outOfRules: 'Pagos fuera de reglas: {n}',
+      // charts
+      insTitle: 'Panorama', insHint: 'Toca una barra para ver esas facturas.',
+      c_decided: 'Cómo se decidieron', c_alone: 'PagoClaro resolvió {n} de {t} sin pedir ayuda ({p} %).', c_segAria: '{g}: {n} facturas, {p} %. Mostrar en la lista.',
+      c_why: 'Por qué pidieron a una persona', c_whyNone: 'Ninguna factura necesita a una persona ahora.', c_whyAria: '{r}: {n} facturas. Mostrar en la lista.', c_whyMore: 'y {n} motivos más',
+      c_budget: 'Presupuesto del mes', c_budgetLine: 'Van {used} de {budget}.', c_budgetLeft: 'Quedan {left} este mes.', c_budgetOver: 'Se pasó por {over}: lo nuevo se frena.', c_budgetAria: 'Presupuesto usado: {p} %',
+      c_paidTo: 'A quién se le pagó', c_paidNone: 'Todavía no se ha pagado ninguna factura.', c_paidN1: '1 factura', c_paidNn: '{n} facturas', c_paidAria: '{v}: {amt} en {n}. Mostrar en la lista.',
+      facetReason: 'Mostrando: {r}', facetVendor: 'Mostrando: {v}', facetClear: 'Ver todas',
+      lim_title: 'Contra tus límites', lim_amount: 'Esta factura', lim_auto: 'Sin revisión hasta {v}', lim_cap: 'Tope {v}',
+      lim_under: '{amt}: usa el {p} % de lo que se paga sin revisión.', lim_over: '{amt}: pasa por {d} lo que se paga sin revisión, así que necesita a una persona.', lim_overPaid: '{amt}: pasó por {d} lo que se paga sin revisión, por eso la aprobó una persona antes de pagarla.', lim_overCap: '{amt}: pasa el tope por factura de {cap}, así que no se paga ni con aprobación.',
+      lim_aria: '{amt} contra {auto} sin revisión y {cap} de tope',
       attention: 'Atención:', alertOut: 'Hay {n} pagos fuera de reglas. Revísalos en el historial.', alertChain: 'El historial no cuadra. Mira el detalle técnico en Historial.',
       // list
       upload: 'Subir factura', uploadHint: 'o arrástrala aquí. PDF, foto, correo o chat, hasta 10 MB.', uploadOff: 'En esta demo no se pueden subir facturas.', reading: 'Leyendo la factura…', tooBig: 'El archivo pasa de 10 MB. Prueba con uno más liviano.',
@@ -114,6 +124,16 @@
       loading: 'Loading…', loadFail: 'This section could not load. Check your connection and try again.', bootFail: 'PagoClaro could not open. Check your connection and reload the page.',
       st_PAID: 'Paid', st_PENDING: 'Needs your review', st_HELD: 'Stopped', st_REJECTED: 'Rejected', st_EXPIRED: 'Expired', st_VOIDED: 'Payment canceled', st_ERROR: 'Could not be processed', st_PROCESSING: 'Processing',
       f_all: 'All', f_review: 'To review', f_paid: 'Paid', f_stopped: 'Stopped', filterAria: 'Show invoices', amountPaid: 'Amount paid', outOfRules: 'Payments outside the rules: {n}',
+      // charts
+      insTitle: 'At a glance', insHint: 'Tap a bar to see those invoices.',
+      c_decided: 'How they were decided', c_alone: 'PagoClaro settled {n} of {t} without asking for help ({p}%).', c_segAria: '{g}: {n} invoices, {p}%. Show them in the list.',
+      c_why: 'Why a person was needed', c_whyNone: 'No invoice needs a person right now.', c_whyAria: '{r}: {n} invoices. Show them in the list.', c_whyMore: 'and {n} more reasons',
+      c_budget: "This month's budget", c_budgetLine: '{used} of {budget} used.', c_budgetLeft: '{left} left this month.', c_budgetOver: 'Over by {over}: anything new is held.', c_budgetAria: 'Budget used: {p}%',
+      c_paidTo: 'Who was paid', c_paidNone: 'No invoice has been paid yet.', c_paidN1: '1 invoice', c_paidNn: '{n} invoices', c_paidAria: '{v}: {amt} in {n}. Show them in the list.',
+      facetReason: 'Showing: {r}', facetVendor: 'Showing: {v}', facetClear: 'See all',
+      lim_title: 'Against your limits', lim_amount: 'This invoice', lim_auto: 'No review up to {v}', lim_cap: 'Cap {v}',
+      lim_under: '{amt}: uses {p}% of what is paid without review.', lim_over: '{amt}: {d} over what is paid without review, so it needs a person.', lim_overPaid: '{amt}: {d} over what is paid without review, so a person approved it before it was paid.', lim_overCap: '{amt}: over the {cap} cap per invoice, so it is not paid even with an approval.',
+      lim_aria: '{amt} against {auto} without review and a {cap} cap',
       attention: 'Heads up:', alertOut: 'There are {n} payments outside the rules. Check them in History.', alertChain: 'The history does not add up. See the technical details in History.',
       upload: 'Upload invoice', uploadHint: 'or drop it here. PDF, photo, email or chat, up to 10 MB.', uploadOff: 'Invoices cannot be uploaded in this demo.', reading: 'Reading the invoice…', tooBig: 'The file is over 10 MB. Try a smaller one.',
       uploadedToast: 'Invoice checked: {st}.', emptyFilter: 'No invoices in this group.', emptyAll: 'No invoices yet. Upload the first one and PagoClaro will tell you whether it pays it, stops it or leaves it for your review.',
@@ -250,6 +270,27 @@
       _: () => 'it did not meet one of your rules',
     },
   };
+  /* Short labels for the "why" chart: a few words each, no codes. */
+  const SHORT = {
+    es: {
+      APPROVAL_THRESHOLD: 'Pasa del monto sin revisión', HARD_CAP: 'Pasa del tope por factura', BUDGET_EXCEEDED: 'Sin presupuesto del mes', DUPLICATE: 'Factura repetida',
+      POSSIBLE_DUPLICATE: 'Parecida a otra reciente', SPLIT_SUSPECTED: 'Parece un cobro partido', PO_BALANCE_EXCEEDED: 'Pasa del saldo de la orden', EXPIRED: 'Nadie la revisó a tiempo',
+      READINGS_DISAGREE: 'Las lecturas no coinciden', UNREADABLE: 'No se pudo leer', READER_FAILED: 'Falló la lectura', SUSPICIOUS_TEXT: 'Trae frases con órdenes',
+      CURRENCY_AMBIGUOUS: 'No dice la moneda', LINES_MISMATCH: 'Las líneas no suman', NEW_BENEFICIARY: 'Proveedor no autorizado', VENDOR_INACTIVE: 'Proveedor desactivado',
+      ACCOUNT_MISMATCH: 'Cuenta distinta a la registrada', ACCOUNT_PENDING: 'Cuenta por confirmar', NO_AGREEMENT: 'Sin contrato ni orden', AGREEMENT_MISMATCH: 'No cuadra con el contrato',
+      NO_FX_RATE: 'Sin tipo de cambio', STALE_DATE: 'Fecha fuera de rango', NOT_APPROVABLE: 'Aprobar no lo resuelve',
+    },
+    en: {
+      APPROVAL_THRESHOLD: 'Over the no-review amount', HARD_CAP: 'Over the cap per invoice', BUDGET_EXCEEDED: 'Out of monthly budget', DUPLICATE: 'Repeated invoice',
+      POSSIBLE_DUPLICATE: 'Like a recent one', SPLIT_SUSPECTED: 'Looks like a split charge', PO_BALANCE_EXCEEDED: 'Over the purchase order', EXPIRED: 'Nobody reviewed it in time',
+      READINGS_DISAGREE: 'Readings do not match', UNREADABLE: 'Could not be read', READER_FAILED: 'Reading failed', SUSPICIOUS_TEXT: 'Text giving orders',
+      CURRENCY_AMBIGUOUS: 'No currency stated', LINES_MISMATCH: 'Lines do not add up', NEW_BENEFICIARY: 'Vendor not approved', VENDOR_INACTIVE: 'Vendor deactivated',
+      ACCOUNT_MISMATCH: 'Not the registered account', ACCOUNT_PENDING: 'Account not confirmed', NO_AGREEMENT: 'No contract or order', AGREEMENT_MISMATCH: 'Off the contract',
+      NO_FX_RATE: 'No exchange rate', STALE_DATE: 'Date out of range', NOT_APPROVABLE: 'Approval cannot fix it',
+    },
+  };
+  /* Reasons that hold an invoice (never paid, not even with an approval). */
+  const HOLD_REASONS = new Set(['HARD_CAP', 'BUDGET_EXCEEDED', 'DUPLICATE', 'PO_BALANCE_EXCEEDED', 'NOT_APPROVABLE', 'EXPIRED']);
   /* Reasons an approval can clear (spec v3). Anything else stays after an approval. */
   const APPROVABLE = new Set(['APPROVAL_THRESHOLD', 'POSSIBLE_DUPLICATE', 'SPLIT_SUSPECTED', 'AGREEMENT_MISMATCH', 'NO_AGREEMENT', 'NEW_BENEFICIARY', 'STALE_DATE', 'READINGS_DISAGREE']);
   const TONE = { PAID: 'ok', PENDING: 'warn', HELD: 'stop', REJECTED: 'neutral', EXPIRED: 'neutral', VOIDED: 'neutral', ERROR: 'neutral', PROCESSING: 'neutral' };
@@ -295,7 +336,7 @@
   };
   const S = {
     lang: store.get('pc.lang', 'es') === 'en' ? 'en' : 'es',
-    mode: 'live', summary: null, staticData: null, invMap: {}, filter: 'all', view: 'facturas',
+    mode: 'live', summary: null, staticData: null, invMap: {}, filter: 'all', facet: null, view: 'facturas',
     selected: null, detail: null, detailToken: 0, techOpen: false, voidOpen: false,
     catalog: null, vForm: false, vEdit: null, rules: null, whatIf: null, audit: null, histLimit: 80,
   };
@@ -478,9 +519,128 @@
       <div class="paid-total"><span class="f-label">${esc(t('amountPaid'))}</span><span class="f-num">${moneyHtml(m.usd_paid ?? 0, 'USD')}</span>
       <span class="trust${out ? ' bad' : ''}">${out ? ICON.stop : ICON.ok}${esc(tf('outOfRules', { n: out }))}</span></div>`;
   }
+  /** A chart's filter on top of the state filter: one reason, or one vendor that was paid. */
+  function inFacet(inv) {
+    const f = S.facet;
+    if (!f) return true;
+    if (f.kind === 'reason') return (inv.reasons || []).includes(f.value) && WHY_STATES.has(inv.status);
+    return inv.status === 'PAID' && (inv.issuer_name || inv.filename) === f.value;
+  }
   function sortedInvoices() {
-    const inv = (S.summary.invoices || []).filter((i) => inGroup(i, S.filter));
+    const inv = (S.summary.invoices || []).filter((i) => inGroup(i, S.filter) && inFacet(i));
     return [...inv.filter((i) => i.status === 'PENDING'), ...inv.filter((i) => i.status !== 'PENDING')];
+  }
+
+  // ---- charts: plain HTML and CSS, every number also written in words
+  const WHY_STATES = new Set(['PENDING', 'HELD']);
+  const pct = (n, total) => (total ? Math.round((n / total) * 100) : 0);
+  const usdShort = (n) => `${Number(n).toLocaleString(locale(), { maximumFractionDigits: 0 })} USD`;
+  function decidedChart(inv, m) {
+    const total = inv.length;
+    const segs = ['paid', 'review', 'stopped'].map((g) => ({ g, n: inv.filter((i) => inGroup(i, g)).length })).filter((s) => s.n);
+    const bar = segs.map((s) => `<button type="button" class="seg t-${GROUP_TONE[s.g]}" style="flex-grow:${s.n}" data-filter="${s.g}" aria-pressed="${S.filter === s.g}"
+        aria-label="${esc(tf('c_segAria', { g: t(`f_${s.g}`), n: s.n, p: pct(s.n, total) }))}"><span>${s.n}</span></button>`).join('');
+    const legend = segs.map((s) => `<li class="t-${GROUP_TONE[s.g]}"><i aria-hidden="true"></i>${esc(t(`f_${s.g}`))} <b>${pct(s.n, total)}${S.lang === 'es' ? ' ' : ''}%</b></li>`).join('');
+    const alone = m.processed ? `<p class="c-note">${esc(tf('c_alone', { n: m.decided_by_agent ?? 0, t: m.processed, p: plainNum(m.autonomy_pct ?? 0) }))}</p>` : '';
+    return `<div class="c-cell"><h4>${esc(t('c_decided'))}</h4><div class="stack">${bar}</div><ul class="legend">${legend}</ul>${alone}</div>`;
+  }
+  function hbars(rows, max) {
+    return `<ul class="hbars">${rows.map((r) => `<li><button type="button" class="hbar${r.tone ? ` t-${r.tone}` : ''}" ${r.data} aria-pressed="${r.on}" aria-label="${esc(r.aria)}">
+      <span class="h-label">${esc(r.label)}</span><span class="h-val">${esc(r.value)}</span>
+      <span class="h-track" aria-hidden="true"><span class="h-fill" style="--w:${Math.max(3, (r.n / max) * 100).toFixed(1)}%"></span></span></button></li>`).join('')}</ul>`;
+  }
+  function whyChart(inv) {
+    const count = {};
+    for (const i of inv) if (WHY_STATES.has(i.status)) for (const c of new Set(i.reasons || [])) if (c !== 'NOT_APPROVABLE') count[c] = (count[c] || 0) + 1;
+    const all = Object.entries(count).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    if (!all.length) return `<div class="c-cell"><h4>${esc(t('c_why'))}</h4><p class="c-empty">${esc(t('c_whyNone'))}</p></div>`;
+    const top = all.slice(0, 6);
+    const max = top[0][1];
+    const rows = top.map(([code, n]) => {
+      const label = SHORT[S.lang][code] || reasonText(code);
+      return { label, value: String(n), n, tone: HOLD_REASONS.has(code) ? 'stop' : 'warn', data: `data-facet="reason" data-value="${esc(code)}"`, on: S.facet?.kind === 'reason' && S.facet.value === code, aria: tf('c_whyAria', { r: label, n }) };
+    });
+    const more = all.length > top.length ? `<p class="c-note">${esc(tf('c_whyMore', { n: all.length - top.length }))}</p>` : '';
+    return `<div class="c-cell"><h4>${esc(t('c_why'))}</h4>${hbars(rows, max)}${more}</div>`;
+  }
+  function budgetChart(m) {
+    const b = m.budget;
+    if (!b || !b.budget_usd) return '';
+    const p = pct(b.committed_usd, b.budget_usd);
+    const tone = p >= 100 ? 'stop' : p >= 80 ? 'warn' : 'ok';
+    const left = b.budget_usd - b.committed_usd;
+    const line2 = left >= 0 ? tf('c_budgetLeft', { left: usdShort(left) }) : tf('c_budgetOver', { over: usdShort(-left) });
+    return `<div class="c-cell"><h4>${esc(t('c_budget'))} <span class="c-period">${esc(dt(`${b.period}-15T12:00:00`, { month: 'long', year: 'numeric' }))}</span></h4>
+      <p class="c-big"><span class="money">${esc(plainNum(p))}<span class="cur"> %</span></span></p>
+      <div class="meter t-${tone}" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.min(p, 100)}" aria-label="${esc(tf('c_budgetAria', { p }))}"><span style="--w:${Math.min(p, 100)}%"></span></div>
+      <p class="c-note">${esc(tf('c_budgetLine', { used: usdShort(b.committed_usd), budget: usdShort(b.budget_usd) }))} ${esc(line2)}</p></div>`;
+  }
+  function paidChart(inv) {
+    const by = new Map();
+    for (const i of inv) {
+      if (i.status !== 'PAID') continue;
+      const k = i.issuer_name || i.filename;
+      const e = by.get(k) || { usd: 0, n: 0 };
+      e.usd += Number(i.amount_usd || 0);
+      e.n += 1;
+      by.set(k, e);
+    }
+    const all = [...by.entries()].sort((a, b) => b[1].usd - a[1].usd);
+    if (!all.length) return `<div class="c-cell"><h4>${esc(t('c_paidTo'))}</h4><p class="c-empty">${esc(t('c_paidNone'))}</p></div>`;
+    const top = all.slice(0, 5);
+    const max = top[0][1].usd || 1;
+    const rows = top.map(([name, e]) => {
+      const nTxt = e.n === 1 ? t('c_paidN1') : tf('c_paidNn', { n: e.n });
+      return { label: name, value: usdShort(e.usd), n: e.usd, tone: 'ok', data: `data-facet="vendor" data-value="${esc(name)}"`, on: S.facet?.kind === 'vendor' && S.facet.value === name, aria: tf('c_paidAria', { v: name, amt: usdShort(e.usd), n: nTxt }) };
+    });
+    return `<div class="c-cell"><h4>${esc(t('c_paidTo'))}</h4>${hbars(rows, max)}</div>`;
+  }
+  function renderInsights() {
+    const el = $('#insights');
+    const inv = S.summary.invoices || [];
+    if (!inv.length) { el.hidden = true; el.innerHTML = ''; return; }
+    const m = S.summary.metrics || {};
+    el.hidden = false;
+    el.innerHTML = `<div class="ins-head"><h3 id="ins-h">${esc(t('insTitle'))}</h3><p>${esc(t('insHint'))}</p></div>
+      <div class="ins-grid">${decidedChart(inv, m)}${whyChart(inv)}${budgetChart(m)}${paidChart(inv)}</div>`;
+  }
+  function renderFacet() {
+    const el = $('#facet');
+    const f = S.facet;
+    if (!f) { el.hidden = true; el.innerHTML = ''; return; }
+    const label = f.kind === 'reason' ? tf('facetReason', { r: SHORT[S.lang][f.value] || reasonText(f.value) }) : tf('facetVendor', { v: f.value });
+    el.hidden = false;
+    el.innerHTML = `<p>${ICON.info}<span>${esc(label)}</span></p><button type="button" class="btn quiet small" data-action="facet-clear">${esc(t('facetClear'))}</button>`;
+  }
+  /** Points the list at what a chart bar stands for and keeps the charts' pressed state in step. */
+  function syncFilters() {
+    $$('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === S.filter)));
+    $$('[data-facet]').forEach((b) => b.setAttribute('aria-pressed', String(!!S.facet && S.facet.kind === b.dataset.facet && S.facet.value === b.dataset.value)));
+    renderFacet();
+    renderRows();
+  }
+  /** The invoice against the no-review amount and the cap per invoice, with today's settings. */
+  function limitsBlock(inv) {
+    const r = S.summary?.rules;
+    const usd = Number(inv.amount_usd);
+    if (!r || !Number.isFinite(usd) || inv.amount_usd === null || inv.amount_usd === undefined) return '';
+    const auto = Number(r.auto_approve_up_to_usd);
+    const capV = Number(r.hard_cap_per_invoice_usd);
+    const top = Math.max(capV, usd) * 1.04;
+    const at = (v) => `${((v / top) * 100).toFixed(2)}%`;
+    const amt = usdShort(usd);
+    const paid = inv.status === 'PAID' || inv.status === 'VOIDED';
+    const line = usd > capV ? tf('lim_overCap', { amt, cap: usdShort(capV) })
+      : usd > auto ? tf(paid ? 'lim_overPaid' : 'lim_over', { amt, d: usdShort(usd - auto) })
+      : tf('lim_under', { amt, p: plainNum(pct(usd, auto)) });
+    const tone = usd > capV ? 'stop' : usd > auto && !paid ? 'warn' : 'ok';
+    return `<section class="block"><h4>${esc(t('lim_title'))}</h4>
+      <div class="limits t-${tone}" role="img" aria-label="${esc(tf('lim_aria', { amt, auto: usdShort(auto), cap: usdShort(capV) }))}">
+        <span class="l-fill" style="--w:${at(usd)}"></span>
+        <span class="l-mark${auto / top < 0.14 ? ' start' : ''}" style="left:${at(auto)}"><span>${esc(tf('lim_auto', { v: usdShort(auto) }))}</span></span>
+        <span class="l-mark cap" style="left:${at(capV)}"><span>${esc(tf('lim_cap', { v: usdShort(capV) }))}</span></span>
+      </div>
+      <p class="l-line">${esc(line)}</p></section>`;
   }
   function listLine(i) {
     const s = i[`summary_${S.lang}`];
@@ -758,6 +918,7 @@
       ${susp.length ? `<div class="quote"><span class="eyebrow">${esc(t('suspicious'))}</span>${susp.map((x) => `<q>${esc(x)}</q>`).join('')}</div>` : ''}</div></div>`);
     if (pend) html.push(decideBlock(d, pend));
     if (inv.payment) html.push(paymentBlock(inv));
+    html.push(limitsBlock(inv));
     html.push(factsBlock(inv));
     const hist = historyEntries(d);
     if (hist.length) html.push(`<section class="block"><h4>${esc(t('histTitle'))}</h4>${timelineHtml(hist, false)}</section>`);
@@ -783,6 +944,8 @@
   function renderFacturas() {
     renderAlerts();
     renderSummary();
+    renderInsights();
+    renderFacet();
     renderRows();
     renderDetail();
   }
@@ -791,6 +954,8 @@
     renderNav();
     renderAlerts();
     renderSummary();
+    renderInsights();
+    renderFacet();
     renderRows();
     if (S.selected && S.invMap[S.selected]) await select(S.selected, { hash: false });
     else renderDetail();
@@ -807,6 +972,7 @@
     if (!r) return;
     toast(tf('uploadedToast', { st: stWord(r.status) }));
     S.filter = 'all';
+    S.facet = null;
     S.selected = r.invoice_id || S.selected;
     await refreshInvoices();
   }
@@ -1184,11 +1350,23 @@
 
   // ---------------------------------------------------------------- events
   document.addEventListener('click', async (e) => {
+    // On a narrow screen the list sits below the charts: bring it into view after a chart click.
+    const toList = (from) => { if (from.closest('#insights') && window.matchMedia('(max-width: 1060px)').matches) $('.inbox').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
     const f = e.target.closest('[data-filter]');
     if (f) {
       S.filter = f.dataset.filter;
-      $$('#summary [data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === S.filter)));
-      renderRows();
+      if (f.closest('#summary')) S.facet = null;
+      syncFilters();
+      toList(f);
+      return;
+    }
+    const fc = e.target.closest('[data-facet]');
+    if (fc) {
+      const same = S.facet && S.facet.kind === fc.dataset.facet && S.facet.value === fc.dataset.value;
+      S.facet = same ? null : { kind: fc.dataset.facet, value: fc.dataset.value };
+      S.filter = 'all';
+      syncFilters();
+      toList(fc);
       return;
     }
     const row = e.target.closest('.row');
@@ -1200,6 +1378,7 @@
     if (act === 'reject') return reject(a);
     if (act === 'void-open') { S.voidOpen = true; renderDetail(); $('#voidReason')?.focus(); return; }
     if (act === 'void-cancel') { S.voidOpen = false; renderDetail(); return; }
+    if (act === 'facet-clear') { S.facet = null; syncFilters(); $('#rows')?.focus?.(); return; }
     if (act === 'void-do') return voidPayment(a);
     if (act === 'back') { const r = $(`#rows .row[data-id="${CSS.escape(S.selected || '')}"]`); (r || $('#rows')).scrollIntoView({ behavior: 'smooth', block: 'center' }); r?.focus({ preventScroll: true }); return; }
     if (act === 'v-add') { if (!canWrite()) return; S.vForm = true; S.vEdit = null; drawVendors(); $('[data-form="add"] input[name="name"]')?.focus(); return; }

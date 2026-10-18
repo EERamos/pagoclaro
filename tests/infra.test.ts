@@ -1,4 +1,4 @@
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, test } from 'vitest';
@@ -13,6 +13,9 @@ import { toEvent } from '../src/telemetry';
 import { activeAlerts, alertNotifier } from '../src/alerts';
 import type { State } from '../src/store/store';
 import { renderEml, type FixtureInvoice } from '../runner/render';
+import { materialize, type CaseFile } from '../runner/harness';
+import { OracleExtractor } from '../runner/oracle';
+import { metrics } from '../src/metrics';
 
 const reading: InvoiceReading = {
   issuer_name: 'A',
@@ -141,5 +144,18 @@ describe('lectores', () => {
     expect(m.exhausted()).toBe(false);
     m.add('claude-opus-5-5', 10_000, 1_000);
     expect(m.exhausted()).toBe(true);
+  });
+});
+
+describe('tablero', () => {
+  test('el presupuesto del mes se cuenta como lo cuenta el libro: lo comprometido antes más lo pagado en el mes', async () => {
+    const c = JSON.parse(readFileSync(join('evals', 'golden', 'EVL-013.json'), 'utf8')) as CaseFile;
+    const p = new OracleExtractor('claude-opus-5-5');
+    const k = new OracleExtractor('claude-haiku-5-5');
+    const s = new OracleExtractor('claude-sonnet-5-5');
+    const ctx = await materialize(c, { primary: p, check: k, tiebreak: s, onRender: (sha, inv) => (p.register(sha, inv), k.register(sha, inv), s.register(sha, inv)) });
+    const b = metrics(ctx.state(), 0, 50).budget;
+    // 10,000.00 USD committed before the month's run plus the 2,289.00 USD just paid (AUR-2026-0917).
+    expect(b).toEqual({ period: '2026-10', budget_usd: 60000, committed_usd: 12289 });
   });
 });

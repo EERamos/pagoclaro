@@ -1,6 +1,7 @@
 // Dashboard metrics, all derived from the store (nothing stored twice).
 import { activeAlerts } from './alerts';
 import { verifyChain } from './domain/audit';
+import { periodOf } from './domain/normalize';
 import { evaluate } from './domain/rules';
 import type { Rules } from './domain/types';
 import { currentRules, type State } from './store/store';
@@ -38,8 +39,25 @@ export function metrics(s: State, spendUsd: number, capUsd: number) {
     audit_chain_ok: chain.ok,
     audit_entries: s.audit.length,
     policy_version: s.rules_versions.length ? currentRules(s).version : null,
+    budget: budgetOf(s),
     alerts: activeAlerts(s, { payments_out_of_rules: outOfRules, audit_chain_ok: chain.ok, model_spend_usd: modelSpend, model_spend_cap_usd: capUsd }),
   };
+}
+
+/**
+ * The month's budget as query_ledger counts it: what was committed before this system plus what
+ * was paid in the month, here and in the seeded history. The month is the latest invoice's.
+ */
+function budgetOf(s: State): { period: string; budget_usd: number; committed_usd: number } | null {
+  if (!s.rules_versions.length) return null;
+  const latest = Object.values(s.invoices).reduce((a, i) => (i.received_at > a ? i.received_at : a), '');
+  const period = periodOf(latest || new Date().toISOString());
+  const paidHere = Object.values(s.invoices)
+    .filter((i) => i.status === 'PAID' && periodOf(i.decided_at ?? i.received_at) === period)
+    .reduce((a, i) => a + (i.amount_usd ?? 0), 0);
+  const paidBefore = s.external_ledger.filter((e) => e.status === 'PAID' && periodOf(e.decided_at) === period).reduce((a, e) => a + e.amount_usd, 0);
+  const committed = (s.budget_baselines[period] ?? 0) + paidHere + paidBefore;
+  return { period, budget_usd: currentRules(s).monthly_budget_usd, committed_usd: Math.round(committed * 100) / 100 };
 }
 
 /** Re-runs the engine over every stored decision with other rules. Writes nothing. */
