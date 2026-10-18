@@ -1,14 +1,14 @@
 ---
 agent_name: pagoclaro
-version: 2
-status: approved         # draft | approved — approved only by the owner at the gate
+version: 3
+status: draft            # draft | approved — approved only by the owner at the gate
 date: 2026-10-17
 track: heavy
-design_version: 1
-spec_version: 1
+design_version: 3
+spec_version: 3
 evals_date: 2026-10-17
 stack: no-framework@n/a
-runtime: TypeScript en Node 24.14.0 sin framework de agentes; lectores anthropic/claude-opus-5-5 y anthropic/claude-haiku-5-5 con @anthropic-ai/sdk 0.135.0
+runtime: TypeScript en Node 24.14.0 sin framework de agentes; lectores anthropic/claude-opus-5-5, anthropic/claude-haiku-5-5 y anthropic/claude-sonnet-5-5 (desempate y respaldo) con @anthropic-ai/sdk 0.135.0
 target: local (npm start) y demo estática en GitHub Pages; contenedor Docker listo para un hosting gratuito
 results: runs/20261017T144147Z.json
 ---
