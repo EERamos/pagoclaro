@@ -259,7 +259,7 @@ main:focus { outline: none; }
 .ins-head p { font-size: 13px; color: var(--muted); }
 /* Always four cells: four columns, two by two, or one, never three and one. Each cell draws its own
    right and bottom rule, and the outer ones fall outside the clipped edge. */
-.ins-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 0.95fr) minmax(0, 1.15fr); margin: 0 -1px -1px 0; border-top: 1px solid var(--line-2); }
+.ins-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1.15fr) minmax(0, 0.95fr); margin: 0 -1px -1px 0; border-top: 1px solid var(--line-2); }
 .c-cell { padding: 16px 20px 18px; min-width: 0; box-shadow: inset -1px 0 0 var(--line-2), inset 0 -1px 0 var(--line-2); }
 .unblock { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 10px 22px; border-top: 1px solid var(--line-2); background: var(--warn-soft); }
 .unblock p { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink); }

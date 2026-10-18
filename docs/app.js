@@ -547,7 +547,7 @@
       const tone = GROUP_TONE[g];
       return `<button type="button" class="filter${tone ? ` t-${tone}` : ''}" data-filter="${g}" aria-pressed="${S.filter === g}"><span class="f-label">${tone ? '<i aria-hidden="true"></i>' : ''}${esc(t(`f_${g}`))}</span><span class="f-num">${n}</span></button>`;
     };
-    $('#summary').innerHTML = `<div class="filters" role="group" aria-label="${esc(t('filterAria'))}">${['all', 'review', 'paid', 'stopped'].map(btn).join('')}</div>
+    $('#summary').innerHTML = `<div class="filters" role="group" aria-label="${esc(t('filterAria'))}">${['all', 'paid', 'review', 'stopped'].map(btn).join('')}</div>
       <div class="paid-total"><span class="f-label">${esc(t('amountPaid'))}</span><span class="f-num">${moneyHtml(m.usd_paid ?? 0, 'USD')}</span>
       <span class="trust${out ? ' bad' : ''}">${out ? ICON.stop : ICON.ok}${esc(tf('outOfRules', { n: out }))}</span></div>`;
   }
@@ -689,7 +689,7 @@
     const m = S.summary.metrics || {};
     el.hidden = false;
     el.innerHTML = `<div class="ins-head"><h3 id="ins-h">${esc(t('insTitle'))}</h3><p>${esc(t('insHint'))}</p></div>${unblockLine(inv)}
-      <div class="ins-grid">${decidedChart(inv, m)}${whyChart(inv)}${budgetChart(m, inv)}${paidChart(inv)}</div>`;
+      <div class="ins-grid">${decidedChart(inv, m)}${paidChart(inv)}${whyChart(inv)}${budgetChart(m, inv)}</div>`;
   }
   function renderFacet() {
     const el = $('#facet');
