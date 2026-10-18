@@ -34,7 +34,7 @@ Lo construí con un proceso de ingeniería de agentes: diseño, spec con 54 esce
 
 - Repositorio público de GitHub: https://github.com/EERamos/pagoclaro
 - Demo (URL): https://pagoclaro-899432572111.us-central1.run.app (en vivo en Google Cloud Run; código de acceso para escribir: `jueces-30x-blinka`). Copia de solo lectura: https://eeramos.github.io/pagoclaro/ (GitHub Pages desde docs/ en main)
-- Video demo (URL): subir el video a Google Drive, compartirlo como "Cualquier persona con el enlace · Lector" y pegar ese enlace
+- Video demo (URL): https://drive.google.com/file/d/1sjsPa6DYi89ndRcI7-obwGBCxHTW0zuT/view?usp=sharing (2:57, Google Drive, cualquier persona con el enlace puede verlo)
 
 ## Cómo grabar el video
 
