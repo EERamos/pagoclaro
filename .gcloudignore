@@ -1,0 +1,15 @@
+# What `gcloud run deploy --source .` uploads to Cloud Build: the image needs only what the
+# Dockerfile copies. Never the local secrets, data or the blind set.
+.git
+.gitignore
+.gcloudignore
+.claude
+.env
+.env.*
+node_modules
+data
+tmp
+runs
+runs-blind
+blind
+docs

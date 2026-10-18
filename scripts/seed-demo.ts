@@ -22,6 +22,9 @@ const config = loadConfig();
 // so the video can approve them live (npm run video:prep).
 const outArg = process.argv.find((a) => a.startsWith('--out='))?.split('=')[1];
 const withApprovals = !process.argv.includes('--no-approvals');
+// --start=now dates the demo in the last day instead of 2026-10-16, so a server that seeds it at
+// boot (the hosted demo) never shows the pending items already expired.
+const startNow = process.argv.includes('--start=now');
 const outDir = outArg ?? (mode === 'oracle' ? join('tmp', 'demo-oracle') : join('data', 'demo'));
 
 const fromCase = (id: string, patch: Partial<FixtureInvoice> = {}): FixtureInvoice => {
@@ -105,7 +108,7 @@ async function main() {
   }
   rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
-  let clock = Date.parse('2026-10-16T14:00:00Z');
+  let clock = startNow ? Date.now() - 26 * 3_600_000 : Date.parse('2026-10-16T14:00:00Z');
   const now = () => new Date(clock);
   const store = new JsonStore(join(outDir, 'state.json'));
   seedWorld(store, JSON.parse(readFileSync(config.worldFile, 'utf8')) as World, now().toISOString(), 'cfo@northwind.example.com');
