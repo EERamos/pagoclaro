@@ -12,6 +12,7 @@
       yourName: 'Tu nombre', accessCode: 'Código de acceso', langAria: 'Switch to English', langBtn: 'EN',
       footMade: 'Hecho para el reto Blinka del Hackathon 30X', footSim: 'Los pagos son simulados: no se mueve dinero real.',
       staticNotice: 'Demo de solo lectura: es una foto de una corrida real. Para subir facturas, aprobar o cambiar ajustes, abre PagoClaro en tu equipo.',
+      judgeA: 'Demo para el jurado: el código de acceso es ', judgeB: '. Escríbelo en "Código de acceso" o usa el botón para subir facturas, aprobar y cambiar ajustes.', useCode: 'Usar este código', codeSet: 'Código puesto. Ya puedes subir facturas, aprobar y cambiar ajustes.',
       readOnlyServer: 'Este servidor es de solo lectura: puedes ver todo, pero no hacer cambios.',
       loading: 'Cargando…', loadFail: 'No se pudo cargar esta sección. Revisa tu conexión e intenta de nuevo.', bootFail: 'No se pudo abrir PagoClaro. Revisa tu conexión y recarga la página.',
       // statuses
@@ -149,6 +150,7 @@
       yourName: 'Your name', accessCode: 'Access code', langAria: 'Cambiar a español', langBtn: 'ES',
       footMade: 'Made for the Blinka challenge at Hackathon 30X', footSim: 'Payments are simulated: no real money moves.',
       staticNotice: 'Read-only demo: a snapshot of a real run. To upload invoices, approve or change settings, run PagoClaro on your computer.',
+      judgeA: 'Demo for the judges: the access code is ', judgeB: '. Type it in "Access code" or use the button to upload invoices, approve and change settings.', useCode: 'Use this code', codeSet: 'Code set. You can now upload invoices, approve and change settings.',
       readOnlyServer: 'This server is read-only: you can see everything but cannot make changes.',
       loading: 'Loading…', loadFail: 'This section could not load. Check your connection and try again.', bootFail: 'PagoClaro could not open. Check your connection and reload the page.',
       st_PAID: 'Paid', st_PENDING: 'Needs your review', st_HELD: 'Stopped', st_REJECTED: 'Rejected', st_EXPIRED: 'Expired', st_VOIDED: 'Payment canceled', st_ERROR: 'Could not be processed', st_PROCESSING: 'Processing',
@@ -536,8 +538,11 @@
     lb.setAttribute('aria-label', t('langAria'));
     const n = $('#staticNotice');
     const msg = S.mode === 'static' ? t('staticNotice') : S.summary && !S.summary.writes ? t('readOnlyServer') : '';
-    n.hidden = !msg;
-    n.innerHTML = msg ? `<p>${ICON.info}<span>${esc(msg)}</span></p>` : '';
+    const code = S.mode === 'live' && S.summary?.writes ? S.summary.public_access_code : null;
+    n.hidden = !msg && !code;
+    n.innerHTML = code
+      ? `<p class="judge">${ICON.info}<span>${esc(t('judgeA'))}<b>${esc(code)}</b>${esc(t('judgeB'))}</span><button type="button" class="btn small" data-action="use-code">${esc(t('useCode'))}</button></p>`
+      : msg ? `<p>${ICON.info}<span>${esc(msg)}</span></p>` : '';
     $('#who').hidden = !writesOn();
     const off = !writesOn();
     $('#pickBtn').disabled = off;
@@ -1611,6 +1616,13 @@
     }
     if (act === 'v-toggle') return toggleVendor(a);
     if (act === 'what-if') return runWhatIf(a);
+    if (act === 'use-code') {
+      const input = $('#accessCode');
+      input.value = S.summary?.public_access_code || '';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      toast(t('codeSet'));
+      return;
+    }
     if (act === 'goto-setting') {
       const input = $(`#set-${CSS.escape(a.dataset.key)}`);
       if (input) { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); input.focus({ preventScroll: true }); }

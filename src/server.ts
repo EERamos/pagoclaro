@@ -17,6 +17,7 @@ async function main(): Promise<void> {
   const app = await buildHttp({
     agent,
     accessCode: config.accessCode,
+    showAccessCode: config.showAccessCode,
     spend: () => ({ usd: readers.spend.totalUsd, cap: readers.spend.capUsd }),
     telemetry,
     mode: readers.mode,
@@ -27,7 +28,7 @@ async function main(): Promise<void> {
     [
       `PagoClaro escuchando en http://${config.host}:${config.port}`,
       `  Lectores: ${readers.mode} (${config.primaryModel} + ${config.checkModel}, desempate ${config.tiebreakModel}), ${keyText}, tope ${config.spendCapUsd} USD, gastado ${readers.spend.totalUsd.toFixed(4)} USD`,
-      `  Escrituras: ${config.accessCode ? 'con código de acceso' : 'deshabilitadas (define PAGOCLARO_ACCESS_CODE)'}`,
+      `  Escrituras: ${config.accessCode ? `con código de acceso${config.showAccessCode ? ', visible en el tablero (demo pública)' : ''}` : 'deshabilitadas (define PAGOCLARO_ACCESS_CODE)'}`,
       `  Datos: ${p.state}`,
     ].join('\n'),
   );

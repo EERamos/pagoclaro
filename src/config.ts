@@ -7,6 +7,8 @@ const Env = z.object({
   HOST: z.string().default('localhost'),
   PAGOCLARO_DATA_DIR: z.string().default('data'),
   PAGOCLARO_ACCESS_CODE: z.string().min(8).optional(),
+  /** A public demo can show its access code on screen so judges can write; off by default. */
+  PAGOCLARO_SHOW_ACCESS_CODE: z.enum(['0', '1', 'true', 'false']).default('0'),
   PAGOCLARO_WORLD: z.string().default('fixtures/world/northwind.json'),
   EXTRACTOR_MODE: z.enum(['live', 'record', 'replay', 'ollama']).optional(),
   PRIMARY_MODEL: z.string().default('claude-opus-5-5'),
@@ -24,6 +26,7 @@ export interface AppConfig {
   host: string;
   dataDir: string;
   accessCode: string | null;
+  showAccessCode: boolean;
   worldFile: string;
   extractorMode: 'live' | 'record' | 'replay' | 'ollama';
   primaryModel: string;
@@ -57,6 +60,7 @@ export function loadConfig(): AppConfig {
     host: e.HOST,
     dataDir: e.PAGOCLARO_DATA_DIR,
     accessCode: e.PAGOCLARO_ACCESS_CODE ?? null,
+    showAccessCode: e.PAGOCLARO_SHOW_ACCESS_CODE === '1' || e.PAGOCLARO_SHOW_ACCESS_CODE === 'true',
     worldFile: e.PAGOCLARO_WORLD,
     extractorMode: e.EXTRACTOR_MODE ?? (hasApiKey ? 'record' : 'replay'),
     primaryModel: e.PRIMARY_MODEL,

@@ -16,7 +16,10 @@ import { renderEml, type FixtureInvoice } from '../runner/render';
 import { materialize, type CaseFile } from '../runner/harness';
 import { OracleExtractor } from '../runner/oracle';
 import { metrics, whatIf } from '../src/metrics';
-import { summaryInvoice } from '../src/http';
+import { buildHttp, summaryInvoice } from '../src/http';
+import { createPagoClaro } from '../src/factory';
+import { JsonStore } from '../src/store/store';
+import { seedWorld, type World } from '../src/world';
 
 const reading: InvoiceReading = {
   issuer_name: 'A',
@@ -158,6 +161,22 @@ describe('tablero', () => {
     const b = metrics(ctx.state(), 0, 50).budget;
     // 10,000.00 USD committed before the month's run plus the 2,289.00 USD just paid (AUR-2026-0917).
     expect(b).toEqual({ period: '2026-10', budget_usd: 60000, committed_usd: 12289 });
+  });
+
+  test('el código de acceso solo sale en el resumen cuando la demo pública lo pide', async () => {
+    const store = new JsonStore(null);
+    seedWorld(store, JSON.parse(readFileSync(join('fixtures', 'world', 'northwind.json'), 'utf8')) as World, '2026-10-17T00:00:00.000Z');
+    const { agent, telemetry } = createPagoClaro({ store, primary: new OracleExtractor('claude-opus-5-5'), check: new OracleExtractor('claude-haiku-5-5'), tiebreak: new OracleExtractor('claude-sonnet-5-5') });
+    const shown = async (accessCode: string | null, showAccessCode?: boolean) => {
+      const app = await buildHttp({ agent, accessCode, showAccessCode, spend: () => ({ usd: 0, cap: 50 }), telemetry, mode: 'eval', notify: () => {} });
+      const r = await app.inject({ method: 'GET', url: '/api/summary' });
+      await app.close();
+      return r.json().public_access_code;
+    };
+    expect(await shown('jurado-prueba-1234', true)).toBe('jurado-prueba-1234');
+    expect(await shown('jurado-prueba-1234')).toBeNull();
+    expect(await shown('jurado-prueba-1234', false)).toBeNull();
+    expect(await shown(null, true)).toBeNull();
   });
 });
 

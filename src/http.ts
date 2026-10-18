@@ -16,6 +16,8 @@ import type { Telemetry } from './telemetry';
 export interface HttpDeps {
   agent: PagoClaro;
   accessCode: string | null;
+  /** Public demo only: the summary carries the access code so the dashboard can show it. */
+  showAccessCode?: boolean;
   spend: () => { usd: number; cap: number };
   telemetry: Telemetry;
   mode: string;
@@ -201,6 +203,7 @@ export async function buildHttp(deps: HttpDeps): Promise<FastifyInstance> {
     return {
       mode: deps.mode,
       writes: !!deps.accessCode,
+      public_access_code: deps.showAccessCode && deps.accessCode ? deps.accessCode : null,
       metrics: metrics(s, sp.usd, sp.cap),
       rules: s.rules_versions.length ? currentRules(s) : null,
       invoices: Object.values(s.invoices)

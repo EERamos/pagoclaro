@@ -19,7 +19,8 @@ How to stop the agent now, fastest first. Give the exact command or the exact to
   `gcloud run services update pagoclaro --project pagoclaro-demo --region us-central1
   --update-env-vars MODEL_SPEND_CAP_USD=0`. Ahí el contador de gasto vuelve a cero con cada
   contenedor nuevo: el tope que no se reinicia es el límite del workspace de la llave en
-  console.anthropic.com.
+  console.anthropic.com. Esa demo muestra su código de acceso en el tablero porque corre con
+  `PAGOCLARO_SHOW_ACCESS_CODE=1`; para esconderlo, `--update-env-vars PAGOCLARO_SHOW_ACCESS_CODE=0`.
 
 - **Stop paying one vendor:** si se sospecha de un proveedor o de un cambio de cuenta, desactivarlo
   en "Proveedores autorizados" (o `PATCH /api/vendors/<id>` con `{"actor": "...", "status":

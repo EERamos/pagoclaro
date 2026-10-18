@@ -144,6 +144,10 @@ a { color: var(--accent-text); }
 .notice { max-width: 1440px; margin: 16px auto 0; padding: 0 24px; width: 100%; }
 .notice p { display: flex; gap: 10px; align-items: flex-start; padding: 11px 14px; border-radius: var(--r-md); background: var(--accent-tint); border: 1px solid var(--accent-soft); color: var(--ink-2); font-size: 14px; }
 .notice svg { flex: none; width: 18px; height: 18px; margin-top: 1px; color: var(--accent-text); }
+.notice p.judge { align-items: center; flex-wrap: wrap; color: var(--ink); }
+.notice p.judge span { flex: 1 1 32ch; }
+.notice p.judge b { font-family: var(--mono); font-weight: 600; }
+.notice p.judge .btn { flex: none; }
 
 main { flex: 1; width: 100%; max-width: 1440px; margin: 0 auto; padding: 20px 24px 40px; }
 main:focus { outline: none; }
