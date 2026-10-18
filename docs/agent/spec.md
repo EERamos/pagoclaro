@@ -766,7 +766,7 @@ until then both hold `—`.
 | BHV-026 | Decidir pagar, frenar o escalar según las reglas | EVL-023 | `tests/bhv.test.ts::BHV-026 EVL-023` |
 | BHV-027 | Decidir pagar, frenar o escalar según las reglas | EVL-024 | `tests/bhv.test.ts::BHV-027 EVL-024` |
 | BHV-028 | Decidir pagar, frenar o escalar según las reglas | EVL-025 | `tests/bhv.test.ts::BHV-028 EVL-025` |
-| BHV-029 | Registrar cada decisión con su explicación | EVL-026 | `tests/bhv.test.ts::BHV-029 EVL-026` |
+| BHV-029 | Registrar cada decisión con su explicación | EVL-026 | `tests/bhv.test.ts::BHV-029 EVL-026`, `tests/infra.test.ts::BHV-029 la frase del historial también queda encadenada` |
 | BHV-030 | Registrar cada decisión con su explicación | EVL-027 | `tests/bhv.test.ts::BHV-030 EVL-027` |
 | BHV-031 | Registrar cada decisión con su explicación | EVL-028 | `tests/bhv.test.ts::BHV-031 EVL-028` |
 | BHV-032 | Registrar cada decisión con su explicación | EVL-029 | `tests/bhv.test.ts::BHV-032 EVL-029`, `tests/infra.test.ts::BHV-032 editar una entrada rompe la cadena en esa entrada` |
@@ -778,20 +778,20 @@ until then both hold `—`.
 | BHV-038 | Resolver un pendiente con aprobación humana | ADV-009, ADV-010 | `tests/bhv.test.ts::BHV-038 ADV-009`, `tests/bhv.test.ts::BHV-038 ADV-010` |
 | BHV-039 | Resolver un pendiente con aprobación humana | ADV-011, ADV-012 | `tests/bhv.test.ts::BHV-039 ADV-011`, `tests/bhv.test.ts::BHV-039 ADV-012`, `tests/tool-surface.test.ts::BHV-039 los esquemas de entrada rechazan campos desconocidos` |
 | BHV-040 | Resolver un pendiente con aprobación humana | EVL-034 | `tests/bhv.test.ts::BHV-040 EVL-034`, `tests/rules.test.ts::BHV-040 una aprobación no levanta una cuenta que no coincide` |
-| BHV-041 | Desempatar cuando las lecturas no coinciden | EVL-035 | — |
-| BHV-042 | Desempatar cuando las lecturas no coinciden | EVL-036 | — |
-| BHV-043 | Desempatar cuando las lecturas no coinciden | EVL-037 | — |
-| BHV-044 | Desempatar cuando las lecturas no coinciden | ADV-013 | — |
-| BHV-045 | Desempatar cuando las lecturas no coinciden | EVL-038 | — |
-| BHV-046 | Mantener la lista de proveedores autorizados | EVL-039 | — |
-| BHV-047 | Mantener la lista de proveedores autorizados | EVL-040 | — |
-| BHV-048 | Mantener la lista de proveedores autorizados | EVL-041 | — |
-| BHV-049 | Mantener la lista de proveedores autorizados | EVL-042 | — |
-| BHV-050 | Mantener la lista de proveedores autorizados | EVL-043 | — |
-| BHV-051 | Mantener la lista de proveedores autorizados | ADV-014 | — |
-| BHV-052 | Mantener la lista de proveedores autorizados | ADV-015 | — |
-| BHV-053 | Mantener la lista de proveedores autorizados | ADV-016 | — |
-| BHV-054 | Mantener la lista de proveedores autorizados | EVL-044 | — |
+| BHV-041 | Desempatar cuando las lecturas no coinciden | EVL-035 | `tests/bhv.test.ts::BHV-041 EVL-035` |
+| BHV-042 | Desempatar cuando las lecturas no coinciden | EVL-036 | `tests/bhv.test.ts::BHV-042 EVL-036` |
+| BHV-043 | Desempatar cuando las lecturas no coinciden | EVL-037 | `tests/bhv.test.ts::BHV-043 EVL-037` |
+| BHV-044 | Desempatar cuando las lecturas no coinciden | ADV-013 | `tests/bhv.test.ts::BHV-044 ADV-013` |
+| BHV-045 | Desempatar cuando las lecturas no coinciden | EVL-038 | `tests/bhv.test.ts::BHV-045 EVL-038` |
+| BHV-046 | Mantener la lista de proveedores autorizados | EVL-039 | `tests/bhv.test.ts::BHV-046 EVL-039` |
+| BHV-047 | Mantener la lista de proveedores autorizados | EVL-040 | `tests/bhv.test.ts::BHV-047 EVL-040` |
+| BHV-048 | Mantener la lista de proveedores autorizados | EVL-041 | `tests/bhv.test.ts::BHV-048 EVL-041` |
+| BHV-049 | Mantener la lista de proveedores autorizados | EVL-042 | `tests/bhv.test.ts::BHV-049 EVL-042`, `tests/rules.test.ts::BHV-049 una factura a la cuenta por confirmar escala con ACCOUNT_PENDING y no se puede aprobar` |
+| BHV-050 | Mantener la lista de proveedores autorizados | EVL-043 | `tests/bhv.test.ts::BHV-050 EVL-043`, `tests/rules.test.ts::BHV-050 mientras la cuenta nueva espera, la confirmada se paga y ACCOUNT_PENDING queda en PASS` |
+| BHV-051 | Mantener la lista de proveedores autorizados | ADV-014 | `tests/bhv.test.ts::BHV-051 ADV-014` |
+| BHV-052 | Mantener la lista de proveedores autorizados | ADV-015 | `tests/bhv.test.ts::BHV-052 ADV-015` |
+| BHV-053 | Mantener la lista de proveedores autorizados | ADV-016 | `tests/bhv.test.ts::BHV-053 ADV-016` |
+| BHV-054 | Mantener la lista de proveedores autorizados | EVL-044 | `tests/bhv.test.ts::BHV-054 EVL-044`, `tests/rules.test.ts::BHV-054 sin acuerdo se paga solo bajo el tope de la empresa, con la cuenta confirmada` |
 
 ## 7. Open questions → /evals & /build
 
