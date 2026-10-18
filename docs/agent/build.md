@@ -1,7 +1,7 @@
 ---
 agent_name: pagoclaro
 version: 3
-status: draft            # draft | approved — approved only by the owner at the gate
+status: approved         # draft | approved — approved only by the owner at the gate
 date: 2026-10-17
 track: heavy
 design_version: 3
