@@ -67,11 +67,24 @@ export const TEMPLATES: Record<RuleCode, { pass: Template; fail: Template }> = {
     fail: { es: () => 'El proveedor está inactivo en el catálogo.', en: () => 'The vendor is inactive in the catalog.' },
   },
   ACCOUNT_MISMATCH: {
-    pass: { es: (p) => `La cuenta de pago coincide con la registrada (${p.masked}).`, en: (p) => `The payment account matches the registered one (${p.masked}).` },
+    pass: {
+      es: (p) => (p.pending ? `La cuenta de pago (${p.read}) es la cuenta por confirmar del proveedor.` : `La cuenta de pago coincide con la registrada (${p.masked}).`),
+      en: (p) => (p.pending ? `The payment account (${p.read}) is the vendor's account waiting for confirmation.` : `The payment account matches the registered one (${p.masked}).`),
+    },
     fail: { es: (p) => `La cuenta de pago de la factura (${p.read}) no coincide con lo registrado (${p.masked}).`, en: (p) => `The invoice's payment account (${p.read}) does not match the registered one (${p.masked}).` },
   },
+  ACCOUNT_PENDING: {
+    pass: { es: () => 'La cuenta de pago no está esperando confirmación.', en: () => 'The payment account is not waiting for confirmation.' },
+    fail: {
+      es: (p) => `La cuenta de pago (${p.read}) se agregó o cambió en la lista de proveedores y nadie la ha confirmado: una persona distinta de quien la cambió debe confirmarla en Proveedores autorizados antes de pagarle.`,
+      en: (p) => `The payment account (${p.read}) was added or changed in the vendor list and nobody has confirmed it: someone other than who changed it must confirm it under Authorized vendors before it is paid.`,
+    },
+  },
   NO_AGREEMENT: {
-    pass: { es: (p) => `Acuerdo vigente: ${p.ref}.`, en: (p) => `Open agreement: ${p.ref}.` },
+    pass: {
+      es: (p) => (p.cap ? `Sin acuerdo, dentro del tope para proveedores autorizados: ${usd(p.usd)} de ${usd(p.per_invoice)} por factura y ${usd(p.month)} de ${usd(p.per_month)} este mes.` : `Acuerdo vigente: ${p.ref}.`),
+      en: (p) => (p.cap ? `No agreement, within the cap for authorized vendors: ${usd(p.usd)} of ${usd(p.per_invoice)} per invoice and ${usd(p.month)} of ${usd(p.per_month)} this month.` : `Open agreement: ${p.ref}.`),
+    },
     fail: { es: (p) => `El proveedor no tiene un acuerdo abierto en ${p.cur}.`, en: (p) => `The vendor has no open agreement in ${p.cur}.` },
   },
   AGREEMENT_MISMATCH: {

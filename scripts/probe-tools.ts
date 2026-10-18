@@ -5,7 +5,8 @@ import { loadConfig } from '../src/config';
 
 const config = loadConfig();
 const client = new Anthropic();
-for (const model of [config.primaryModel, config.checkModel]) {
+const only = process.argv.find((a) => a.startsWith('--models='))?.split('=')[1]?.split(',');
+for (const model of [config.primaryModel, config.checkModel, config.tiebreakModel].filter((m) => !only || only.includes(m))) {
   const resp = await client.messages.create({
     model,
     max_tokens: 2000,

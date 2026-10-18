@@ -1,11 +1,11 @@
-// The ten tools of the spec (§2), exactly by name and tier. Inputs are closed schemas (unknown
+// The eleven tools of the spec (§2), exactly by name and tier. Inputs are closed schemas (unknown
 // fields rejected); errors come back as observations, never thrown. The toolbox records every
 // requested call in order — that log is the trajectory the eval runner checks.
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { evaluate, type ApprovalInput } from '../domain/rules';
 import { daysBetween, daysFromTo, maskAccount, newId, normAccount, normInvoiceNumber, normTaxId, periodOf, round2 } from '../domain/normalize';
-import type { Agreement, Evaluation, Facts, PaymentInstruction, Rail, ReadResult, RuleCode, Vendor } from '../domain/types';
+import type { Agreement, Evaluation, Facts, PaymentInstruction, Rail, ReadResult, RuleCode, VendorView } from '../domain/types';
 import type { InvoiceDocument } from '../extract/document';
 import type { Extractor } from '../extract/extractor';
 import { appendAudit, currentRules, type InvoiceRecord, type State, type Store } from '../store/store';
@@ -13,6 +13,7 @@ import { appendAudit, currentRules, type InvoiceRecord, type State, type Store }
 export const TOOL_TIERS = {
   read_invoice_primary: 'safe',
   read_invoice_check: 'safe',
+  read_invoice_tiebreak: 'safe',
   find_vendor: 'safe',
   find_agreement: 'safe',
   query_ledger: 'safe',
@@ -47,6 +48,7 @@ const FactsSchema = z
       .strict(),
     vendor: z.any().nullable(),
     account_matches: z.boolean().nullable(),
+    pending_account_matches: z.boolean().nullable().optional(),
     agreement: z.any().nullable(),
     ledger: z.any().nullable(),
     fx: z.object({ amount_usd: z.number(), rate: z.number(), rate_date: z.string(), source: z.string() }).strict().nullable(),
@@ -58,6 +60,7 @@ const FactsSchema = z
 export const INPUT_SCHEMAS = {
   read_invoice_primary: ReadInput,
   read_invoice_check: ReadInput,
+  read_invoice_tiebreak: ReadInput,
   find_vendor: z.object({ tax_id: z.string().min(1).max(32), payment_account: z.string().min(1).max(64).optional() }).strict(),
   find_agreement: z.object({ vendor_id: z.string().regex(/^ven_[A-Za-z0-9_]{1,32}$/), currency: Iso4217 }).strict(),
   query_ledger: z
@@ -69,7 +72,13 @@ export const INPUT_SCHEMAS = {
     .strict(),
   record_payment: z.object({ invoice_id: InvoiceId, evaluation_id: z.string().regex(/^evl_[0-9A-Z]{26}$/) }).strict(),
   record_hold: z.object({ invoice_id: InvoiceId, reasons: ReasonList }).strict(),
-  escalate_to_human: z.object({ invoice_id: InvoiceId, reasons: ReasonList }).strict(),
+  escalate_to_human: z
+    .object({ invoice_id: InvoiceId, reasons: ReasonList, suggested_reading: z.enum(['primary']).optional() })
+    .strict()
+    .refine((x) => x.suggested_reading === undefined || x.reasons.includes('READINGS_DISAGREE'), {
+      message: 'suggested_reading solo va con el motivo READINGS_DISAGREE',
+      path: ['suggested_reading'],
+    }),
 } satisfies Record<ToolName, z.ZodType>;
 
 export interface ToolCall {
@@ -83,7 +92,7 @@ export interface ToolCall {
 
 /** Injected by the eval runner only (harness_condition); production passes none. */
 export interface ToolOverrides {
-  alwaysErrors?: { tool: ToolName; error: string };
+  alwaysErrors?: { tools: ToolName[]; error: string };
   returns?: Partial<Record<ToolName, unknown>>;
 }
 
@@ -98,6 +107,7 @@ export interface ToolboxDeps {
   store: Store;
   primary: Extractor;
   check: Extractor;
+  tiebreak: Extractor;
   now: () => Date;
   overrides?: ToolOverrides;
 }
@@ -121,7 +131,7 @@ export class Toolbox {
     }
     entry.executed = true;
     const o = this.deps.overrides;
-    if (o?.alwaysErrors?.tool === name) {
+    if (o?.alwaysErrors?.tools.includes(name)) {
       entry.result = { ok: false, error: o.alwaysErrors.error, message: 'falla inyectada por el arnés de evaluación' };
       return entry.result;
     }
@@ -140,10 +150,12 @@ export class Toolbox {
   private async run(name: ToolName, a: any): Promise<unknown> {
     switch (name) {
       case 'read_invoice_primary':
-      case 'read_invoice_check': {
+      case 'read_invoice_check':
+      case 'read_invoice_tiebreak': {
         const doc = this.ctx.documents.get(a.document_sha256);
         if (!doc) return { ok: false, error: 'UNREADABLE', message: 'documento no disponible' } satisfies ReadResult;
-        return (name === 'read_invoice_primary' ? this.deps.primary : this.deps.check).read(doc);
+        const reader = name === 'read_invoice_primary' ? this.deps.primary : name === 'read_invoice_check' ? this.deps.check : this.deps.tiebreak;
+        return reader.read(doc);
       }
       case 'find_vendor':
         return this.findVendor(a.tax_id, a.payment_account);
@@ -160,16 +172,19 @@ export class Toolbox {
       case 'record_hold':
         return this.recordHold(a.invoice_id, a.reasons as RuleCode[]);
       case 'escalate_to_human':
-        return this.escalate(a.invoice_id, a.reasons as RuleCode[]);
+        return this.escalate(a.invoice_id, a.reasons as RuleCode[], a.suggested_reading ?? null);
     }
   }
 
+  /** The read account is compared with the confirmed account only; the pending one is reported apart. */
   private findVendor(taxId: string, account?: string) {
     const s = this.deps.store.read();
     const v = s.vendors.find((x) => normTaxId(x.tax_id) === normTaxId(taxId)) ?? null;
-    if (!v) return { ok: true, match: 'NONE', vendor: null, account_matches: null };
-    const account_matches = account === undefined ? false : normAccount(account) === normAccount(v.account);
-    return { ok: true, match: 'TAX_ID', vendor: v, account_matches };
+    if (!v) return { ok: true, match: 'NONE', vendor: null, account_matches: null, pending_account_matches: null };
+    const same = (x: string | null | undefined) => account !== undefined && !!x && normAccount(account) === normAccount(x);
+    const pending = v.pending_account?.value ?? null;
+    const vendor: VendorView = { id: v.id, name: v.name, tax_id: v.tax_id, country: v.country, currency: v.currency, rail: v.rail, account: v.account, pending_account: pending, status: v.status };
+    return { ok: true, match: 'TAX_ID', vendor, account_matches: same(v.account), pending_account_matches: pending === null ? null : same(pending) };
   }
 
   private findAgreement(vendorId: string, currency: string) {
@@ -218,6 +233,8 @@ export class Toolbox {
         return d >= 0 && d <= splitDays;
       })
       .reduce((sum, r) => sum + r.amount_usd, 0);
+    // Paid to this vendor in the calendar month (UTC), for the no-agreement monthly cap.
+    const paidInPeriod = mine.filter((r) => r.status === 'PAID' && periodOf(r.decided_at) === period).reduce((sum, r) => sum + r.amount_usd, 0);
     const committed =
       (s.budget_baselines[period] ?? 0) +
       rows.filter((r) => r.status === 'PAID' && periodOf(r.decided_at) === period).reduce((sum, r) => sum + r.amount_usd, 0);
@@ -226,6 +243,7 @@ export class Toolbox {
       exact_duplicate: exact ? { invoice_id: exact.invoice_id, invoice_number: exact.invoice_number, status: exact.status } : null,
       possible_duplicates: possible,
       vendor_paid_usd_in_split_window: round2(paidInWindow),
+      vendor_paid_usd_in_period: round2(paidInPeriod),
       period,
       period_committed_usd: round2(committed),
     };
@@ -268,7 +286,7 @@ export class Toolbox {
       total: inv.total,
       currency: inv.currency,
       amount_usd: inv.amount_usd,
-      readers: { primary: read(inv.readings.primary), check: read(inv.readings.check) },
+      readers: { primary: read(inv.readings.primary), check: read(inv.readings.check), tiebreak: read(inv.readings.tiebreak ?? null) },
       fx: inv.facts?.fx ?? null,
       evaluation: ev ? { id: ev.id, outcome: ev.outcome, policy_version: ev.policy_version, rules: ev.rules, approval: ev.approval } : null,
       policy_version: ev?.policy_version ?? currentRules(d).version,
@@ -287,7 +305,7 @@ export class Toolbox {
       if (inv.status !== 'PROCESSING' && inv.status !== 'PENDING') return { ok: false, error: 'ALREADY_DECIDED', message: `la factura ya está ${inv.status}` };
       const facts = inv.facts;
       if (!facts || !facts.fx) return { ok: false, error: 'NOT_PAY', message: 'faltan hechos de la evaluación' };
-      const vendor = facts.vendor as Vendor | null;
+      const vendor = facts.vendor as VendorView | null;
       const currency = facts.reading.currency;
       const rail: Rail = vendor?.rail ?? RAIL_BY_CURRENCY[currency] ?? 'ACH';
       const account = vendor?.account ?? facts.reading.payment_account ?? '';
@@ -373,7 +391,7 @@ export class Toolbox {
     });
   }
 
-  private escalate(invoiceId: string, reasons: RuleCode[]) {
+  private escalate(invoiceId: string, reasons: RuleCode[], suggested: 'primary' | null) {
     const now = this.deps.now();
     return this.deps.store.tx((d) => {
       const inv = d.invoices[invoiceId];
@@ -381,13 +399,13 @@ export class Toolbox {
       if (inv.status !== 'PROCESSING') return { ok: false, error: 'ALREADY_DECIDED', message: `la factura ya está ${inv.status}` };
       const hours = currentRules(d).pending_timeout_hours;
       const expires = new Date(now.getTime() + hours * 3_600_000).toISOString();
-      const pending = { id: newId('pnd', now.getTime()), invoice_id: invoiceId, reasons, created_at: now.toISOString(), expires_at: expires, resolved_at: null, resolved_by: null, resolution: null, note: null };
+      const pending = { id: newId('pnd', now.getTime()), invoice_id: invoiceId, reasons, suggested_reading: suggested, created_at: now.toISOString(), expires_at: expires, resolved_at: null, resolved_by: null, resolution: null, note: null };
       d.pending[pending.id] = pending;
       inv.status = 'PENDING';
       inv.reasons = reasons;
       inv.pending_id = pending.id;
       const ev = inv.evaluation_id ? d.evaluations[inv.evaluation_id] : null;
-      const entry = appendAudit(d, { at: now.toISOString(), invoice_id: invoiceId, type: 'decision.escalate', actor: 'pagoclaro', data: { ...this.decisionData(d, inv, ev), reasons, pending_id: pending.id, expires_at: expires } });
+      const entry = appendAudit(d, { at: now.toISOString(), invoice_id: invoiceId, type: 'decision.escalate', actor: 'pagoclaro', data: { ...this.decisionData(d, inv, ev), reasons, suggested_reading: suggested, pending_id: pending.id, expires_at: expires } });
       return { ok: true, pending_id: pending.id, expires_at: expires, audit_seq: entry.seq };
     });
   }

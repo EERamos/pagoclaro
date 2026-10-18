@@ -9,6 +9,9 @@ export interface AuditEntry {
   type: string;
   actor: string;
   data: unknown;
+  /** The plain-language line the history shows (spec v3); entries written before it have none. */
+  summary_es?: string;
+  summary_en?: string;
   prev_hash: string;
   hash: string;
 }
@@ -23,8 +26,12 @@ export function canonical(value: unknown): string {
   return `{${keys.map((k) => `${JSON.stringify(k)}:${canonical((value as Record<string, unknown>)[k])}`).join(',')}}`;
 }
 
+/** The summaries are hashed only when present, so entries written before them still verify. */
 export function hashEntry(prev: string, e: Omit<AuditEntry, 'hash' | 'prev_hash'>): string {
-  const body = canonical({ seq: e.seq, at: e.at, invoice_id: e.invoice_id, type: e.type, actor: e.actor, data: e.data });
+  const content: Record<string, unknown> = { seq: e.seq, at: e.at, invoice_id: e.invoice_id, type: e.type, actor: e.actor, data: e.data };
+  if (e.summary_es !== undefined) content.summary_es = e.summary_es;
+  if (e.summary_en !== undefined) content.summary_en = e.summary_en;
+  const body = canonical(content);
   return createHash('sha256').update(prev).update('\n').update(body).digest('hex');
 }
 

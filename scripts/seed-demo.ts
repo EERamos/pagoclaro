@@ -102,23 +102,27 @@ async function main() {
   seedWorld(store, JSON.parse(readFileSync(config.worldFile, 'utf8')) as World, now().toISOString(), 'cfo@northwind.example.com');
   let primary: Extractor;
   let check: Extractor;
+  let tiebreak: Extractor;
   let register: ((sha: string, inv: FixtureInvoice) => void) | null = null;
   const spend = new SpendMeter(config.spendCapUsd, join(config.dataDir, 'model-spend.json'));
   if (mode === 'oracle') {
     const p = new OracleExtractor(config.primaryModel);
     const c = new OracleExtractor(config.checkModel);
+    const t = new OracleExtractor(config.tiebreakModel);
     primary = p;
     check = c;
-    register = (sha, inv) => (p.register(sha, inv), c.register(sha, inv));
+    tiebreak = t;
+    register = (sha, inv) => (p.register(sha, inv), c.register(sha, inv), t.register(sha, inv));
   } else {
     const client = new Anthropic();
     const opts = { timeoutMs: config.readerTimeoutMs, effort: 'low' as const };
     const live = (m: string) => (mode === 'record' ? new AnthropicExtractor(client, m, spend, opts) : null);
     primary = new RecordedExtractor(config.primaryModel, config.readingsDir, mode === 'record' ? 'record' : 'replay', live(config.primaryModel));
     check = new RecordedExtractor(config.checkModel, config.readingsDir, mode === 'record' ? 'record' : 'replay', live(config.checkModel));
+    tiebreak = new RecordedExtractor(config.tiebreakModel, config.readingsDir, mode === 'record' ? 'record' : 'replay', live(config.tiebreakModel));
   }
   const telemetry = new JsonlTelemetry(join(outDir, 'telemetry.jsonl'), now);
-  const { agent } = createPagoClaro({ store, primary, check, now, telemetry });
+  const { agent } = createPagoClaro({ store, primary, check, tiebreak, now, telemetry });
   for (const [actor, inv] of SEQUENCE) {
     clock += 37 * 60_000;
     const r = await renderInvoice(inv);

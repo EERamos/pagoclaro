@@ -13,7 +13,7 @@ async function main(): Promise<void> {
   seedWorld(store, JSON.parse(readFileSync(config.worldFile, 'utf8')) as World, new Date().toISOString());
   const readers = buildReaders(config, p.spend);
   const telemetry = new JsonlTelemetry(p.telemetry);
-  const { agent } = createPagoClaro({ store, primary: readers.primary, check: readers.check, telemetry });
+  const { agent } = createPagoClaro({ store, primary: readers.primary, check: readers.check, tiebreak: readers.tiebreak, telemetry });
   const app = await buildHttp({
     agent,
     accessCode: config.accessCode,

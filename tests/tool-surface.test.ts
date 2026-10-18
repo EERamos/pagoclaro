@@ -9,7 +9,7 @@ const fromSpec = Object.fromEntries([...spec.matchAll(/^### `([a-z_]+)` — tier
 
 describe('superficie de herramientas', () => {
   test('las herramientas y sus niveles son exactamente los del spec', () => {
-    expect(Object.keys(fromSpec).length).toBe(10);
+    expect(Object.keys(fromSpec).length).toBe(11);
     expect(TOOL_TIERS).toEqual(fromSpec);
     expect(Object.keys(INPUT_SCHEMAS).sort()).toEqual(Object.keys(fromSpec).sort());
   });

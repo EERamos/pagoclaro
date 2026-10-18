@@ -44,6 +44,7 @@ async function main() {
     const ctx = await materialize(asCase, {
       primary: new AnthropicExtractor(client, config.primaryModel, spend, opts),
       check: new AnthropicExtractor(client, config.checkModel, spend, opts),
+      tiebreak: new AnthropicExtractor(client, config.tiebreakModel, spend, opts),
     });
     const inv = Object.values(ctx.state().invoices)[0];
     const got = inv?.status === 'PAID' ? 'PAY' : inv?.status === 'PENDING' ? 'ESCALATE' : inv?.status === 'HELD' || inv?.status === 'EXPIRED' ? 'HOLD' : `OTRO:${inv?.status}`;

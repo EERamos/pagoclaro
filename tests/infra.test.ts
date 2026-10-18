@@ -38,6 +38,17 @@ describe('registro encadenado', () => {
     expect(v.ok).toBe(false);
     expect(v.ok === false && v.broken_at).toBe(3);
   });
+
+  test('BHV-029 la frase del historial también queda encadenada', () => {
+    const log: AuditEntry[] = [];
+    for (let i = 1; i <= 3; i++) log.push(makeEntry(log.at(-1), { at: `t${i}`, invoice_id: null, type: 'x', actor: 'a', data: { amount: i }, summary_es: `frase ${i}`, summary_en: `line ${i}` }));
+    // An entry written before the lines existed still verifies next to the new ones.
+    log.push(makeEntry(log.at(-1), { at: 't4', invoice_id: null, type: 'x', actor: 'a', data: { amount: 4 } }));
+    expect(verifyChain(log).ok).toBe(true);
+    log[1].summary_es = 'PagoClaro pagó todo';
+    const v = verifyChain(log);
+    expect(v.ok === false && v.broken_at).toBe(2);
+  });
 });
 
 describe('cruce de lecturas', () => {

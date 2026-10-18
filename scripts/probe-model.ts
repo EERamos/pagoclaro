@@ -19,7 +19,9 @@ const spend = new SpendMeter(config.spendCapUsd, join(config.dataDir, 'model-spe
 const client = new Anthropic();
 const load = (id: string) => (JSON.parse(readFileSync(join('evals', id.startsWith('ADV') ? 'adversarial' : 'golden', `${id}.json`), 'utf8')) as { input: { fixture: { invoice: FixtureInvoice } } }).input.fixture.invoice;
 
-for (const model of [config.primaryModel, config.checkModel]) {
+const only = process.argv.find((a) => a.startsWith('--models='))?.split('=')[1]?.split(',');
+const models = [config.primaryModel, config.checkModel, config.tiebreakModel].filter((m) => !only || only.includes(m));
+for (const model of models) {
   const reader = new AnthropicExtractor(client, model, spend, { timeoutMs: 60_000, effort: 'low' });
   for (const id of ['EVL-001', 'ADV-003']) {
     const r = await renderInvoice(load(id));

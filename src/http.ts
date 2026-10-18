@@ -4,11 +4,11 @@ import { readFile } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import type { PagoClaro } from './agent/pipeline';
+import { waitingFor, type PagoClaro, type VendorResult } from './agent/pipeline';
 import { alertNotifier, type Alert } from './alerts';
 import { maskAccount } from './domain/normalize';
 import { RulesSchema } from './domain/rules';
-import type { ReadResult } from './domain/types';
+import type { ReadResult, Vendor } from './domain/types';
 import { metrics, whatIf } from './metrics';
 import { appendAudit, currentRules, type InvoiceRecord, type State } from './store/store';
 import type { Telemetry } from './telemetry';
@@ -27,7 +27,25 @@ export interface HttpDeps {
 
 const Actor = z.string().trim().min(2).max(60).regex(/^[\p{L}0-9._@ -]+$/u, 'nombre de actor inválido');
 const UploadBody = z.object({ file_name: z.string().min(3).max(120), content_base64: z.string().min(4).max(15_000_000), actor: Actor }).strict();
-const ApproveBody = z.object({ actor: Actor, note: z.string().max(500).optional(), confirm_reading: z.enum(['primary', 'check']).optional() }).strict();
+const ApproveBody = z.object({ actor: Actor, note: z.string().max(500).optional(), confirm_reading: z.enum(['primary', 'check', 'tiebreak']).optional() }).strict();
+const Account = z.string().trim().min(4).max(64).regex(/^[\p{L}0-9@._+\- ]+$/u, 'cuenta inválida');
+const NewVendorBody = z
+  .object({
+    actor: Actor,
+    vendor: z
+      .object({
+        name: z.string().trim().min(2).max(120),
+        tax_id: z.string().trim().min(3).max(32),
+        country: z.string().trim().regex(/^[A-Z]{2}$/, 'país de 2 letras'),
+        currency: z.enum(['USD', 'MXN', 'COP', 'BRL', 'EUR']),
+        rail: z.enum(['SPEI', 'PIX', 'BRE_B', 'ACH']),
+        account: Account,
+      })
+      .strict(),
+  })
+  .strict();
+const VendorPatchBody = z.object({ actor: Actor, status: z.enum(['active', 'inactive']).optional(), account: Account.optional(), reason: z.string().max(300).optional() }).strict();
+const ConfirmAccountBody = z.object({ actor: Actor, note: z.string().max(500).optional() }).strict();
 const RejectBody = z.object({ actor: Actor, reason: z.string().min(3).max(500) }).strict();
 const VoidBody = z.object({ actor: Actor, reason: z.string().min(3).max(500) }).strict();
 const RulesBody = z.object({ actor: Actor, rules: z.any() }).strict();
@@ -38,10 +56,43 @@ function maskReading(r: ReadResult | null) {
   return { ...r, reading: { ...r.reading, payment_account: r.reading.payment_account ? maskAccount(r.reading.payment_account) : null } };
 }
 
+const maskOrNull = (a: string | null | undefined) => (a ? maskAccount(a) : null);
+
+/** The vendor as the dashboard shows it: accounts masked, and how many invoices wait on its account. */
+export function publicVendor(v: Vendor, s: State) {
+  return {
+    id: v.id,
+    name: v.name,
+    tax_id: v.tax_id,
+    country: v.country,
+    currency: v.currency,
+    rail: v.rail,
+    account: maskOrNull(v.account),
+    pending_account: maskOrNull(v.pending_account?.value),
+    pending_changed_by: v.pending_account?.changed_by ?? null,
+    pending_changed_at: v.pending_account?.changed_at ?? null,
+    pending_reason: v.pending_account?.reason ?? null,
+    account_confirmed_by: v.account_confirmed_by ?? null,
+    account_confirmed_at: v.account_confirmed_at ?? null,
+    added_by: v.added_by ?? null,
+    added_at: v.added_at ?? null,
+    status: v.status,
+    waiting_invoices: waitingFor(s, v.id, v.pending_account?.value, v.account),
+  };
+}
+
+/** The latest plain-language line about an invoice's decision. */
+function latestSummary(s: State, invoiceId: string): { summary_es: string | null; summary_en: string | null } {
+  const e = [...s.audit].reverse().find((x) => x.invoice_id === invoiceId && x.summary_es && (x.type.startsWith('decision.') || x.type === 'invoice.error' || x.type === 'payment.voided'))
+    ?? [...s.audit].reverse().find((x) => x.invoice_id === invoiceId && x.summary_es);
+  return { summary_es: e?.summary_es ?? null, summary_en: e?.summary_en ?? null };
+}
+
 export function publicInvoice(i: InvoiceRecord, s: State) {
   const ev = i.evaluation_id ? s.evaluations[i.evaluation_id] : null;
   const pay = i.payment_id ? s.payments[i.payment_id] : null;
   const pending = i.pending_id ? s.pending[i.pending_id] : null;
+  const vendor = i.facts?.vendor ?? null;
   return {
     id: i.id,
     document: i.document,
@@ -57,15 +108,16 @@ export function publicInvoice(i: InvoiceRecord, s: State) {
     amount_usd: i.amount_usd,
     decided_at: i.decided_at,
     reading_used: i.reading_used,
-    readings: { primary: maskReading(i.readings.primary), check: maskReading(i.readings.check) },
-    vendor: i.facts?.vendor ? { ...(i.facts.vendor as object), account: maskAccount((i.facts.vendor as { account: string }).account) } : null,
+    readings: { primary: maskReading(i.readings.primary), check: maskReading(i.readings.check), tiebreak: maskReading(i.readings.tiebreak ?? null), tiebreak_role: i.readings.tiebreak_role ?? null },
+    vendor: vendor ? { ...vendor, account: maskOrNull(vendor.account), pending_account: maskOrNull(vendor.pending_account) } : null,
     agreement: i.facts?.agreement ?? null,
     fx: i.facts?.fx ?? null,
     ledger: i.facts?.ledger ?? null,
     provenance: i.facts?.provenance ?? null,
     evaluation: ev,
     payment: pay ? { ...pay, account: undefined } : null,
-    pending,
+    pending: pending ? { ...pending, suggested_reading: pending.suggested_reading ?? null } : null,
+    ...latestSummary(s, i.id),
   };
 }
 
@@ -124,7 +176,21 @@ export async function buildHttp(deps: HttpDeps): Promise<FastifyInstance> {
       rules: s.rules_versions.length ? currentRules(s) : null,
       invoices: Object.values(s.invoices)
         .sort((a, b) => b.received_at.localeCompare(a.received_at))
-        .map((i) => ({ id: i.id, status: i.status, reasons: i.reasons, issuer_name: i.issuer_name, invoice_number: i.invoice_number, total: i.total, currency: i.currency, amount_usd: i.amount_usd, received_at: i.received_at, kind: i.document.kind, filename: i.document.filename, uploaded_by: i.uploaded_by })),
+        .map((i) => ({
+          id: i.id,
+          status: i.status,
+          reasons: i.reasons,
+          issuer_name: i.issuer_name,
+          invoice_number: i.invoice_number,
+          total: i.total,
+          currency: i.currency,
+          amount_usd: i.amount_usd,
+          received_at: i.received_at,
+          kind: i.document.kind,
+          filename: i.document.filename,
+          uploaded_by: i.uploaded_by,
+          ...latestSummary(s, i.id),
+        })),
     };
   });
 
@@ -132,7 +198,12 @@ export async function buildHttp(deps: HttpDeps): Promise<FastifyInstance> {
     const s = store.read();
     const inv = s.invoices[(req.params as { id: string }).id];
     if (!inv) return bad(reply, 404, 'NOT_FOUND', 'factura no encontrada');
-    return { invoice: publicInvoice(inv, s), audit: s.audit.filter((e) => e.invoice_id === inv.id) };
+    const audit = s.audit.filter((e) => e.invoice_id === inv.id);
+    return {
+      invoice: publicInvoice(inv, s),
+      audit,
+      history: audit.filter((e) => e.summary_es).map((e) => ({ at: e.at, actor: e.actor, summary_es: e.summary_es, summary_en: e.summary_en })),
+    };
   });
 
   app.post('/api/invoices', async (req, reply) => {
@@ -202,7 +273,34 @@ export async function buildHttp(deps: HttpDeps): Promise<FastifyInstance> {
 
   app.get('/api/catalog', async () => {
     const s = store.read();
-    return { vendors: s.vendors.map((v) => ({ ...v, account: maskAccount(v.account) })), agreements: s.agreements, fx_table: s.fx_table };
+    return { vendors: s.vendors.map((v) => publicVendor(v, s)), agreements: s.agreements, fx_table: s.fx_table };
+  });
+
+  // Authorized vendors: kept by a person with the access code and a name, never by the agent.
+  const vendorReply = (r: VendorResult, reply: FastifyReply) => {
+    if (!r.ok) return bad(reply, r.status ?? 400, r.code, r.message);
+    const s = store.read();
+    const v = s.vendors.find((x) => x.id === r.vendor_id)!;
+    return { ok: true, vendor: publicVendor(v, s), ...(r.waiting_invoices !== undefined ? { waiting_invoices: r.waiting_invoices } : {}) };
+  };
+  app.post('/api/vendors', async (req, reply) => {
+    const body = parse(NewVendorBody, req.body, reply);
+    if (!body) return;
+    if (!authorized(req, reply)) return;
+    return vendorReply(await agent.addVendor(body.actor, body.vendor), reply);
+  });
+  app.patch('/api/vendors/:id', async (req, reply) => {
+    const body = parse(VendorPatchBody, req.body, reply);
+    if (!body) return;
+    if (!authorized(req, reply)) return;
+    const { actor, ...changes } = body;
+    return vendorReply(await agent.updateVendor((req.params as { id: string }).id, actor, changes), reply);
+  });
+  app.post('/api/vendors/:id/confirm-account', async (req, reply) => {
+    const body = parse(ConfirmAccountBody, req.body, reply);
+    if (!body) return;
+    if (!authorized(req, reply)) return;
+    return vendorReply(await agent.confirmAccount((req.params as { id: string }).id, body.actor, body.note ?? ''), reply);
   });
 
   app.get('/api/audit', async () => ({ entries: store.read().audit, verify: agent.verifyAudit() }));

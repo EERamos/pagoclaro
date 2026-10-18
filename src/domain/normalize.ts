@@ -24,8 +24,9 @@ export function cents(n: number): number {
 }
 
 /** Shows the last 4 characters of an account; the rest is masked. */
-export function maskAccount(account: string): string {
-  const clean = account.trim();
+export function maskAccount(account: string | null | undefined): string {
+  const clean = (account ?? '').trim();
+  if (!clean) return 'sin cuenta';
   if (clean.length <= 4) return '••••';
   return `••••${clean.slice(-4)}`;
 }

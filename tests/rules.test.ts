@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { APPROVABLE, evaluate, HOLD_CODES } from '../src/domain/rules';
-import type { Facts, Rules, Vendor } from '../src/domain/types';
+import type { Facts, Rules, VendorView } from '../src/domain/types';
 
 const RULES: Rules = {
   version: 1,
@@ -13,8 +13,10 @@ const RULES: Rules = {
   stale_after_days: 120,
   future_tolerance_days: 3,
   pending_timeout_hours: 72,
+  no_agreement_max_per_invoice_usd: 0,
+  no_agreement_max_per_month_usd: 0,
 };
-const VENDOR: Vendor = { id: 'ven_cloudbridge', name: 'Cloudbridge LLC', tax_id: '12-3456789', country: 'US', currency: 'USD', rail: 'ACH', account: '000000001-000123456789', status: 'active' };
+const VENDOR: VendorView = { id: 'ven_cloudbridge', name: 'Cloudbridge LLC', tax_id: '12-3456789', country: 'US', currency: 'USD', rail: 'ACH', account: '000000001-000123456789', pending_account: null, status: 'active' };
 
 function facts(over: Partial<Facts> & { total?: number } = {}): Facts {
   const total = over.total ?? 1000;
@@ -30,6 +32,43 @@ function facts(over: Partial<Facts> & { total?: number } = {}): Facts {
     ...over,
   };
 }
+
+describe('cuentas por confirmar y tope sin acuerdo (spec v3)', () => {
+  const PENDING = '000000001-000999999999';
+  const withPending: VendorView = { ...VENDOR, pending_account: PENDING };
+  test('BHV-049 una factura a la cuenta por confirmar escala con ACCOUNT_PENDING y no se puede aprobar', () => {
+    const f = facts({ vendor: withPending, account_matches: false, pending_account_matches: true });
+    f.reading.payment_account = PENDING;
+    const r = evaluate(f, RULES);
+    expect(r.outcome).toBe('ESCALATE');
+    expect(r.rules.find((x) => x.rule === 'ACCOUNT_PENDING')?.result).toBe('FAIL');
+    expect(r.rules.find((x) => x.rule === 'ACCOUNT_MISMATCH')?.result).toBe('PASS');
+    expect(APPROVABLE.has('ACCOUNT_PENDING')).toBe(false);
+    const ap = evaluate(f, RULES, { approver: 'luis.tesoreria', at: 't' });
+    expect(ap.outcome).toBe('HOLD');
+    expect(ap.rules.find((x) => x.rule === 'NOT_APPROVABLE')?.result).toBe('FAIL');
+  });
+  test('BHV-050 mientras la cuenta nueva espera, la confirmada se paga y ACCOUNT_PENDING queda en PASS', () => {
+    const r = evaluate(facts({ vendor: withPending, account_matches: true, pending_account_matches: false }), RULES);
+    expect(r.outcome).toBe('PAY');
+    expect(r.rules.find((x) => x.rule === 'ACCOUNT_PENDING')?.result).toBe('PASS');
+  });
+  test('BHV-054 sin acuerdo se paga solo bajo el tope de la empresa, con la cuenta confirmada', () => {
+    const capped: Rules = { ...RULES, no_agreement_max_per_invoice_usd: 1000, no_agreement_max_per_month_usd: 3000 };
+    const ledger = { ...facts().ledger!, vendor_paid_usd_in_period: 0 };
+    const small = evaluate(facts({ total: 600, agreement: null, ledger }), capped);
+    expect(small.outcome).toBe('PAY');
+    expect(small.rules.find((x) => x.rule === 'NO_AGREEMENT')?.result).toBe('PASS');
+    const big = evaluate(facts({ total: 1500, agreement: null, ledger }), capped);
+    expect(big.rules.find((x) => x.rule === 'NO_AGREEMENT')?.result).toBe('FAIL');
+    const month = evaluate(facts({ total: 600, agreement: null, ledger: { ...ledger, vendor_paid_usd_in_period: 2600 } }), capped);
+    expect(month.rules.find((x) => x.rule === 'NO_AGREEMENT')?.result).toBe('FAIL');
+    const zero = evaluate(facts({ total: 600, agreement: null, ledger }), RULES);
+    expect(zero.rules.find((x) => x.rule === 'NO_AGREEMENT')?.result).toBe('FAIL');
+    const unconfirmed = evaluate(facts({ total: 600, agreement: null, ledger, account_matches: false, pending_account_matches: true, vendor: withPending }), capped);
+    expect(unconfirmed.rules.find((x) => x.rule === 'NO_AGREEMENT')?.result).toBe('FAIL');
+  });
+});
 
 describe('motor de reglas', () => {
   test('BHV-016 una factura dentro de las reglas da PAY con todo en PASS', () => {
@@ -94,13 +133,21 @@ describe('propiedad: cero pagos fuera de las reglas', () => {
   test('BHV-016 PAY implica que toda regla quedó en PASS, con y sin aprobación', () => {
     let pays = 0;
     for (let i = 0; i < 20000; i++) {
-      const rules: Rules = { ...RULES, auto_approve_up_to_usd: pick([0, 1000, 5000, 20000]), hard_cap_per_invoice_usd: pick([20000, 25000, 50000]), monthly_budget_usd: pick([0, 10000, 60000]) };
+      const rules: Rules = {
+        ...RULES,
+        auto_approve_up_to_usd: pick([0, 1000, 5000, 20000]),
+        hard_cap_per_invoice_usd: pick([20000, 25000, 50000]),
+        monthly_budget_usd: pick([0, 10000, 60000]),
+        no_agreement_max_per_invoice_usd: pick([0, 0, 1000, 30000]),
+        no_agreement_max_per_month_usd: pick([0, 3000, 100000]),
+      };
       if (rules.auto_approve_up_to_usd > rules.hard_cap_per_invoice_usd) continue;
       const total = Math.round(rnd() * 60000 * 100) / 100 + 0.01;
       const f = facts({
         total,
         vendor: rnd() < 0.1 ? null : VENDOR,
         account_matches: pick([true, true, true, false, null]),
+        pending_account_matches: pick([null, null, false, true]),
         fx: rnd() < 0.1 ? null : { amount_usd: total, rate: 1, rate_date: '2026-10-16', source: 'tabla' },
         ledger: { exact_duplicate: rnd() < 0.1 ? { invoice_id: 'x', invoice_number: 'CB-1', status: 'PAID' } : null, possible_duplicates: rnd() < 0.1 ? [{ invoice_id: 'y', invoice_number: 'CB-0', issue_date: '2026-10-10' }] : [], vendor_paid_usd_in_split_window: pick([0, 1000, 4500]), period: '2026-10', period_committed_usd: pick([0, 10000, 59000]) },
         agreement: rnd() < 0.1 ? null : { ...facts().agreement!, remaining: pick([0, 1000, 20000, 100000]) },
@@ -118,6 +165,8 @@ describe('propiedad: cero pagos fuera de las reglas', () => {
         if (x.lifted_by) expect(APPROVABLE.has(x.rule)).toBe(true);
       }
       expect(f.vendor === null ? approval !== null : true).toBe(true);
+      // Never by itself to an account nobody confirmed (design v3 NO-goal), with or without approval.
+      if (f.vendor) expect(f.account_matches).toBe(true);
       expect(f.reading.has_suspicious_text).toBe(false);
       expect(f.fx).not.toBeNull();
       expect(f.fx!.amount_usd).toBeLessThanOrEqual(rules.hard_cap_per_invoice_usd + 1e-9);

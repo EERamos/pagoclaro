@@ -1,5 +1,6 @@
 // The demo world (catalog, agreements, rules v1, exchange-rate table, budget baseline), seeded
-// once into an empty store. Vendors and agreements are read-only in the dashboard.
+// once into an empty store. Agreements are read-only; authorized vendors are kept from the
+// dashboard by a person (spec v3), never by the agent.
 import { z } from 'zod';
 import { RulesSchema } from './domain/rules';
 import { periodOf } from './domain/normalize';
@@ -19,7 +20,17 @@ export interface World {
   actor?: string;
 }
 
-const VendorSchema = z.object({ id: z.string(), name: z.string(), tax_id: z.string(), country: z.string(), currency: z.string(), rail: z.enum(['SPEI', 'PIX', 'BRE_B', 'ACH']), account: z.string(), status: z.enum(['active', 'inactive']) });
+const VendorSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  tax_id: z.string(),
+  country: z.string(),
+  currency: z.string(),
+  rail: z.enum(['SPEI', 'PIX', 'BRE_B', 'ACH']),
+  account: z.string().nullable(),
+  pending_account: z.object({ value: z.string(), changed_by: z.string(), changed_at: z.string(), reason: z.string().nullable() }).nullable().optional(),
+  status: z.enum(['active', 'inactive']),
+});
 const AgreementSchema = z.object({
   id: z.string(),
   vendor_id: z.string(),

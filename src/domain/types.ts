@@ -39,6 +39,14 @@ export type ReadResult =
   | { ok: true; reading: InvoiceReading; model: string; usage: ReadUsage }
   | { ok: false; error: ReadErrorCode; message: string };
 
+/** An account added or changed from the dashboard: never paid by itself until a person confirms it. */
+export interface PendingAccount {
+  value: string;
+  changed_by: string;
+  changed_at: string;
+  reason: string | null;
+}
+
 export interface Vendor {
   id: string;
   name: string;
@@ -46,7 +54,30 @@ export interface Vendor {
   country: string;
   currency: string;
   rail: Rail;
-  account: string;
+  /** The confirmed account, the only one the agent pays by itself; null until one is confirmed. */
+  account: string | null;
+  pending_account?: PendingAccount | null;
+  account_confirmed_by?: string | null;
+  account_confirmed_at?: string | null;
+  account_confirmation_note?: string | null;
+  added_by?: string | null;
+  added_at?: string | null;
+  status: 'active' | 'inactive';
+}
+
+/**
+ * What find_vendor returns for a vendor (spec §2): the confirmed account, the account waiting for
+ * confirmation as a plain value, and nothing about who keeps the list.
+ */
+export interface VendorView {
+  id: string;
+  name: string;
+  tax_id: string;
+  country: string;
+  currency: string;
+  rail: Rail;
+  account: string | null;
+  pending_account: string | null;
   status: 'active' | 'inactive';
 }
 
@@ -80,6 +111,9 @@ export interface Rules {
   stale_after_days: number;
   future_tolerance_days: number;
   pending_timeout_hours: number;
+  /** Cap for an authorized vendor with a confirmed account and no agreement; 0 = always escalate. */
+  no_agreement_max_per_invoice_usd: number;
+  no_agreement_max_per_month_usd: number;
 }
 
 export type Outcome = 'PAY' | 'HOLD' | 'ESCALATE';
@@ -111,6 +145,7 @@ export type RuleCode =
   | 'NEW_BENEFICIARY'
   | 'VENDOR_INACTIVE'
   | 'ACCOUNT_MISMATCH'
+  | 'ACCOUNT_PENDING'
   | 'NO_AGREEMENT'
   | 'AGREEMENT_MISMATCH'
   | 'APPROVAL_THRESHOLD'
@@ -136,13 +171,15 @@ export interface Evaluation {
   rules: RuleResult[];
   policy_version: number;
   at: string;
-  approval: { approver: string; at: string; confirm_reading?: 'primary' | 'check' } | null;
+  approval: { approver: string; at: string; confirm_reading?: 'primary' | 'check' | 'tiebreak' } | null;
 }
 
 export interface LedgerFacts {
   exact_duplicate: { invoice_id: string; invoice_number: string; status: string } | null;
   possible_duplicates: { invoice_id: string; invoice_number: string; issue_date: string }[];
   vendor_paid_usd_in_split_window: number;
+  /** Paid to this vendor in the calendar month (UTC), for the no-agreement monthly cap. */
+  vendor_paid_usd_in_period?: number;
   period: string;
   period_committed_usd: number;
 }
@@ -166,8 +203,11 @@ export interface Facts {
     payment_account: string | null;
     has_suspicious_text: boolean;
   };
-  vendor: Vendor | null;
+  vendor: VendorView | null;
+  /** The read account against the confirmed one only. */
   account_matches: boolean | null;
+  /** The read account against the account waiting for confirmation, null when there is none. */
+  pending_account_matches?: boolean | null;
   agreement: Agreement | null;
   ledger: LedgerFacts | null;
   fx: FxFacts | null;

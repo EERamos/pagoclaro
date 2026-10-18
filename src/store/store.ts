@@ -2,6 +2,7 @@
 // (Postgres) implements the same interface without touching the domain.
 import { existsSync, readFileSync, renameSync } from 'node:fs';
 import { makeEntry, type AuditEntry } from '../domain/audit';
+import { summarize } from '../domain/history';
 import { atomicWrite } from '../util/atomic';
 import type {
   Agreement,
@@ -30,8 +31,17 @@ export interface InvoiceRecord {
   document: StoredDocument;
   uploaded_by: string;
   received_at: string;
-  readings: { primary: ReadResult | null; check: ReadResult | null; check_attempts: number; primary_attempts: number };
-  reading_used: 'primary' | 'check' | null;
+  readings: {
+    primary: ReadResult | null;
+    check: ReadResult | null;
+    check_attempts: number;
+    primary_attempts: number;
+    /** Sonnet's reading, when there was a disagreement or the check reader failed (spec v3). */
+    tiebreak?: ReadResult | null;
+    tiebreak_attempts?: number;
+    tiebreak_role?: 'tiebreak' | 'second_reader' | null;
+  };
+  reading_used: 'primary' | 'check' | 'tiebreak' | null;
   facts: Facts | null;
   vendor_id: string | null;
   issuer_name: string | null;
@@ -52,6 +62,8 @@ export interface PendingRecord {
   id: string;
   invoice_id: string;
   reasons: RuleCode[];
+  /** 'primary' when the readings disagree: the person sees the reference reading preloaded. */
+  suggested_reading?: 'primary' | null;
   created_at: string;
   expires_at: string;
   resolved_at: string | null;
@@ -162,8 +174,10 @@ export function currentRules(s: State): Rules {
   return v.rules;
 }
 
+/** Every entry carries its plain-language line, written from the entry and the state it lands in. */
 export function appendAudit(draft: State, e: { at: string; invoice_id: string | null; type: string; actor: string; data: unknown }): AuditEntry {
-  const entry = makeEntry(draft.audit.at(-1), e);
+  const s = summarize(draft, e);
+  const entry = makeEntry(draft.audit.at(-1), s ? { ...e, ...s } : e);
   draft.audit.push(entry);
   return entry;
 }

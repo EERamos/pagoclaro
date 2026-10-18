@@ -4,7 +4,7 @@ import type { FastifyInstance } from 'fastify';
 import type { PagoClaro } from '../src/agent/pipeline';
 import type { ToolOverrides, Toolbox, ToolName } from '../src/agent/tools';
 import { makeEntry } from '../src/domain/audit';
-import { newId, normInvoiceNumber } from '../src/domain/normalize';
+import { newId, normInvoiceNumber, normTaxId } from '../src/domain/normalize';
 import type { ReadResult, RuleCode } from '../src/domain/types';
 import { sha256 } from '../src/extract/document';
 import type { Extractor } from '../src/extract/extractor';
@@ -39,17 +39,22 @@ interface PreloadedPending {
 }
 
 type Action =
-  | { type: 'upload'; actor: string; access_code: string }
+  | { type: 'upload'; actor: string; access_code: string; invoice_number?: string }
   | { type: 'api_upload'; actor: string; access_code: string; extra_fields: Record<string, unknown> }
   | { type: 'approve'; invoice_number: string; actor: string; access_code: string; note: string | null }
   | { type: 'view_detail'; invoice_number: string }
-  | { type: 'verify_audit' };
+  | { type: 'verify_audit' }
+  | { type: 'add_vendor'; actor: string; access_code: string; vendor: Record<string, unknown> }
+  | { type: 'update_vendor'; tax_id: string; actor: string; access_code: string; changes: Record<string, unknown> }
+  | { type: 'confirm_account'; tax_id: string; actor: string; access_code: string; note: string };
 
 export interface Fixture extends World {
   today: string;
   access_code: string;
   actor: string;
   invoice?: FixtureInvoice;
+  /** Several invoices in one case; each upload names its invoice_number. */
+  invoices?: FixtureInvoice[];
   actions: Action[];
   store?: PreloadedPending[];
   harness_condition?: Record<string, unknown>;
@@ -79,11 +84,12 @@ export interface RunCtx {
 export interface Readers {
   primary: Extractor;
   check: Extractor;
+  tiebreak: Extractor;
   /** Called with every rendered document, so a test double can map it to its fixture. */
   onRender?: (sha: string, inv: FixtureInvoice) => void;
 }
 
-const TOOL_NAMES = new Set<ToolName>(['read_invoice_primary', 'read_invoice_check', 'find_vendor', 'find_agreement', 'query_ledger', 'convert_currency', 'evaluate_rules', 'record_payment', 'record_hold', 'escalate_to_human']);
+const TOOL_NAMES = new Set<ToolName>(['read_invoice_primary', 'read_invoice_check', 'read_invoice_tiebreak', 'find_vendor', 'find_agreement', 'query_ledger', 'convert_currency', 'evaluate_rules', 'record_payment', 'record_hold', 'escalate_to_human']);
 
 /** harness_condition → injected tool backends. A key the runner cannot bind fails the run. */
 export function bindHarness(h: Record<string, unknown> | undefined): ToolOverrides {
@@ -91,8 +97,9 @@ export function bindHarness(h: Record<string, unknown> | undefined): ToolOverrid
   if (!h) return o;
   for (const [k, v] of Object.entries(h)) {
     if (k === 'tool_always_errors') {
-      if (!TOOL_NAMES.has(v as ToolName)) throw new Error(`harness_condition: herramienta desconocida "${String(v)}"`);
-      o.alwaysErrors = { tool: v as ToolName, error: String(h.error ?? 'PROVIDER_ERROR') };
+      const tools = (Array.isArray(v) ? v : [v]) as ToolName[];
+      for (const t of tools) if (!TOOL_NAMES.has(t)) throw new Error(`harness_condition: herramienta desconocida "${String(t)}"`);
+      o.alwaysErrors = { tools, error: String(h.error ?? 'PROVIDER_ERROR') };
     } else if (k === 'error') {
       continue;
     } else if (k.endsWith('_returns')) {
@@ -113,7 +120,7 @@ export async function materialize(c: CaseFile, readers: Readers): Promise<RunCtx
   const store = new JsonStore(null);
   seedWorld(store, fx, fx.today);
   const overrides = bindHarness(fx.harness_condition);
-  const { agent, tools, telemetry } = createPagoClaro({ store, primary: readers.primary, check: readers.check, now, overrides });
+  const { agent, tools, telemetry } = createPagoClaro({ store, primary: readers.primary, check: readers.check, tiebreak: readers.tiebreak, now, overrides });
   const http = await buildHttp({ agent, accessCode: fx.access_code, spend: () => ({ usd: 0, cap: 50 }), telemetry, mode: 'eval', notify: () => {} });
 
   // Pending items that already exist when the case starts (their readings were taken before).
@@ -131,7 +138,7 @@ export async function materialize(c: CaseFile, readers: Readers): Promise<RunCtx
         document: { sha256: sha, kind: p.invoice.kind === 'corrupt' ? 'pdf' : p.invoice.kind, filename: r.filename, media_type: 'application/pdf', size: r.bytes.length },
         uploaded_by: p.uploaded_by,
         received_at: at,
-        readings: { primary: p.readings.primary, check: p.readings.check, primary_attempts: 1, check_attempts: 1 },
+        readings: { primary: p.readings.primary, check: p.readings.check, primary_attempts: 1, check_attempts: 1, tiebreak: null, tiebreak_attempts: 0, tiebreak_role: null },
         reading_used: 'primary',
         facts: null,
         vendor_id: null,
@@ -183,12 +190,19 @@ export async function materialize(c: CaseFile, readers: Readers): Promise<RunCtx
     invoiceByNumber: (n) => Object.values(store.read().invoices).find((i) => normInvoiceNumber(i.invoice_number) === normInvoiceNumber(n)),
   };
 
+  const vendorIdByTaxId = (taxId: string) => {
+    const v = store.read().vendors.find((x) => normTaxId(x.tax_id) === normTaxId(taxId));
+    if (!v) throw new Error(`no hay proveedor con identificación ${taxId}`);
+    return v.id;
+  };
   for (const a of fx.actions) {
     clock += 60_000;
     if (a.type === 'upload' || a.type === 'api_upload') {
-      if (!fx.invoice) throw new Error('el caso sube una factura pero no tiene fixture.invoice');
-      const r = await renderInvoice(fx.invoice);
-      readers.onRender?.(sha256(r.bytes), fx.invoice);
+      const want = a.type === 'upload' ? a.invoice_number : undefined;
+      const invoice = want ? fx.invoices?.find((i) => normInvoiceNumber(i.number) === normInvoiceNumber(want)) : (fx.invoice ?? fx.invoices?.[0]);
+      if (!invoice) throw new Error(`el caso sube una factura${want ? ` ${want}` : ''} que no está en el fixture`);
+      const r = await renderInvoice(invoice);
+      readers.onRender?.(sha256(r.bytes), invoice);
       const payload: Record<string, unknown> = { file_name: r.filename, content_base64: r.bytes.toString('base64'), actor: a.actor, ...(a.type === 'api_upload' ? a.extra_fields : {}) };
       const res = await http.inject({ method: 'POST', url: '/api/invoices', headers: { 'x-access-code': a.access_code }, payload });
       responses.push({ action: a.type, status: res.statusCode, body: res.json() });
@@ -205,6 +219,15 @@ export async function materialize(c: CaseFile, readers: Readers): Promise<RunCtx
       responses.push({ action: a.type, status: res.statusCode, body: res.json() });
     } else if (a.type === 'verify_audit') {
       const res = await http.inject({ method: 'GET', url: '/api/audit/verify' });
+      responses.push({ action: a.type, status: res.statusCode, body: res.json() });
+    } else if (a.type === 'add_vendor') {
+      const res = await http.inject({ method: 'POST', url: '/api/vendors', headers: { 'x-access-code': a.access_code }, payload: { actor: a.actor, vendor: a.vendor } });
+      responses.push({ action: a.type, status: res.statusCode, body: res.json() });
+    } else if (a.type === 'update_vendor') {
+      const res = await http.inject({ method: 'PATCH', url: `/api/vendors/${vendorIdByTaxId(a.tax_id)}`, headers: { 'x-access-code': a.access_code }, payload: { actor: a.actor, ...a.changes } });
+      responses.push({ action: a.type, status: res.statusCode, body: res.json() });
+    } else if (a.type === 'confirm_account') {
+      const res = await http.inject({ method: 'POST', url: `/api/vendors/${vendorIdByTaxId(a.tax_id)}/confirm-account`, headers: { 'x-access-code': a.access_code }, payload: { actor: a.actor, note: a.note } });
       responses.push({ action: a.type, status: res.statusCode, body: res.json() });
     } else {
       throw new Error(`acción desconocida: ${(a as { type: string }).type}`);

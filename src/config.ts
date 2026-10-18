@@ -11,6 +11,7 @@ const Env = z.object({
   EXTRACTOR_MODE: z.enum(['live', 'record', 'replay', 'ollama']).optional(),
   PRIMARY_MODEL: z.string().default('claude-opus-5-5'),
   CHECK_MODEL: z.string().default('claude-haiku-5-5'),
+  TIEBREAK_MODEL: z.string().default('claude-sonnet-5-5'),
   MODEL_SPEND_CAP_USD: z.coerce.number().nonnegative().default(50),
   READINGS_DIR: z.string().default('fixtures/readings'),
   OLLAMA_MODEL: z.string().default('qwen3:8b'),
@@ -27,6 +28,8 @@ export interface AppConfig {
   extractorMode: 'live' | 'record' | 'replay' | 'ollama';
   primaryModel: string;
   checkModel: string;
+  /** Breaks a disagreement, or stands in when the check reader fails (design v3). */
+  tiebreakModel: string;
   spendCapUsd: number;
   readingsDir: string;
   ollamaModel: string;
@@ -58,6 +61,7 @@ export function loadConfig(): AppConfig {
     extractorMode: e.EXTRACTOR_MODE ?? (hasApiKey ? 'record' : 'replay'),
     primaryModel: e.PRIMARY_MODEL,
     checkModel: e.CHECK_MODEL,
+    tiebreakModel: e.TIEBREAK_MODEL,
     spendCapUsd: e.MODEL_SPEND_CAP_USD,
     readingsDir: e.READINGS_DIR,
     ollamaModel: e.OLLAMA_MODEL,

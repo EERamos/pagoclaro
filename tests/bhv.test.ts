@@ -22,7 +22,8 @@ describe('BHV (lector de prueba)', () => {
     test(`${bhv} ${c.id}`, async () => {
       const p = new OracleExtractor('claude-opus-5-5');
       const k = new OracleExtractor('claude-haiku-5-5');
-      const ctx = await materialize(c, { primary: p, check: k, onRender: (sha, inv) => (p.register(sha, inv), k.register(sha, inv)) });
+      const s = new OracleExtractor('claude-sonnet-5-5');
+      const ctx = await materialize(c, { primary: p, check: k, tiebreak: s, onRender: (sha, inv) => (p.register(sha, inv), k.register(sha, inv), s.register(sha, inv)) });
       const problems: string[] = [];
       const t = checkTrajectory(c, ctx);
       if (t) problems.push(t);
@@ -62,7 +63,8 @@ describe('BHV-010 con lecturas que no coinciden', () => {
 
   test('BHV-010 un chat con órdenes y lecturas distintas escala también con SUSPICIOUS_TEXT', async () => {
     const c = cases.find((x) => x.id === 'ADV-006')!;
-    const ctx = await materialize(c, { primary: fixed('claude-opus-5-5', primary), check: fixed('claude-haiku-5-5', check) });
+    // The tie-break reading sides with the check one, so the disagreement stands (spec v3).
+    const ctx = await materialize(c, { primary: fixed('claude-opus-5-5', primary), check: fixed('claude-haiku-5-5', check), tiebreak: fixed('claude-sonnet-5-5', check) });
     const esc = ctx.tools.calls.filter((x) => x.name === 'escalate_to_human');
     expect(esc).toHaveLength(1);
     expect((esc[0].args as { reasons: string[] }).reasons).toEqual(expect.arrayContaining(['READINGS_DISAGREE', 'SUSPICIOUS_TEXT']));

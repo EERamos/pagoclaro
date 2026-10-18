@@ -45,13 +45,15 @@ function readersFor(spend: SpendMeter | null, readingsOut: string): Readers {
   if (mode === 'oracle') {
     const p = new OracleExtractor(config.primaryModel);
     const c = new OracleExtractor(config.checkModel);
-    return { primary: p, check: c, onRender: (sha, inv) => (p.register(sha, inv), c.register(sha, inv)) };
+    const t = new OracleExtractor(config.tiebreakModel);
+    return { primary: p, check: c, tiebreak: t, onRender: (sha, inv) => (p.register(sha, inv), c.register(sha, inv), t.register(sha, inv)) };
   }
   const client = new Anthropic();
   const opts = { timeoutMs: config.readerTimeoutMs, effort: 'low' as const };
   return {
     primary: new TeeExtractor(new AnthropicExtractor(client, config.primaryModel, spend!, opts), readingsOut),
     check: new TeeExtractor(new AnthropicExtractor(client, config.checkModel, spend!, opts), readingsOut),
+    tiebreak: new TeeExtractor(new AnthropicExtractor(client, config.tiebreakModel, spend!, opts), readingsOut),
   };
 }
 
@@ -99,7 +101,7 @@ async function runOnce(c: CaseFile, spend: SpendMeter | null, readingsOut: strin
 
 async function main() {
   if (mode === 'live' && !config.hasApiKey) {
-    console.error('Falta ANTHROPIC_API_KEY en el entorno o en .env: la suite corre con los lectores reales (Opus 5.5 y Haiku 5.5).');
+    console.error('Falta ANTHROPIC_API_KEY en el entorno o en .env: la suite corre con los lectores reales (Opus 5.5, Haiku 5.5 y Sonnet 5.5).');
     process.exit(2);
   }
   const cfg = JSON.parse(readFileSync('evals/config.json', 'utf8')) as {

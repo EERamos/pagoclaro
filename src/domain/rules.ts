@@ -18,6 +18,8 @@ export const RulesSchema = z
     stale_after_days: z.number().int().min(1).max(3650),
     future_tolerance_days: z.number().int().min(0).max(365),
     pending_timeout_hours: z.number().int().min(1).max(24 * 60),
+    no_agreement_max_per_invoice_usd: z.number().nonnegative().default(0),
+    no_agreement_max_per_month_usd: z.number().nonnegative().default(0),
   })
   .strict()
   .refine((r) => r.auto_approve_up_to_usd <= r.hard_cap_per_invoice_usd, {
@@ -95,17 +97,43 @@ export function evaluate(facts: Facts, rules: Rules, approval: ApprovalInput | n
   out.push(rule('NEW_BENEFICIARY', v !== null, { name: v?.name ?? '', taxid: r.issuer_tax_id }));
   if (v) {
     out.push(rule('VENDOR_INACTIVE', v.status === 'active', {}));
+    // The agent pays by itself only the confirmed account (design v3 NO-goal). An account that
+    // matches the one waiting for confirmation is not a mismatch: it is ACCOUNT_PENDING.
+    const confirmed = facts.account_matches === true;
+    const pendingMatch = facts.pending_account_matches === true && !confirmed;
+    const readMasked = r.payment_account ? maskAccount(r.payment_account) : 'sin cuenta';
     out.push(
-      rule('ACCOUNT_MISMATCH', facts.account_matches === true, {
-        masked: maskAccount(v.account),
-        read: r.payment_account ? maskAccount(r.payment_account) : 'sin cuenta',
+      rule('ACCOUNT_MISMATCH', confirmed || pendingMatch, {
+        masked: v.account ? maskAccount(v.account) : 'sin cuenta confirmada',
+        read: readMasked,
+        pending: pendingMatch ? 1 : 0,
       }),
     );
+    out.push(rule('ACCOUNT_PENDING', !pendingMatch, { read: readMasked }));
 
     // What was agreed: looked up only for a currency the invoice states (an ambiguous one already
-    // escalates on its own rule).
+    // escalates on its own rule). Without an agreement, an authorized vendor with its confirmed
+    // account passes only under the no-agreement caps the company sets (0 = never).
     const a = facts.agreement;
-    if (cur !== 'AMBIGUOUS' && cur !== 'OTHER') out.push(rule('NO_AGREEMENT', a !== null, { ref: a?.id ?? '', cur }));
+    if (cur !== 'AMBIGUOUS' && cur !== 'OTHER') {
+      const usdAmt = facts.fx?.amount_usd ?? null;
+      const perInvoice = rules.no_agreement_max_per_invoice_usd ?? 0;
+      const perMonth = rules.no_agreement_max_per_month_usd ?? 0;
+      const paidMonth = facts.ledger?.vendor_paid_usd_in_period ?? 0;
+      const underCap =
+        a === null && confirmed && usdAmt !== null && perInvoice > 0 && perMonth > 0 && usdAmt <= perInvoice + 1e-9 && paidMonth + usdAmt <= perMonth + 1e-9;
+      out.push(
+        rule('NO_AGREEMENT', a !== null || underCap, {
+          ref: a?.id ?? '',
+          cur,
+          cap: underCap ? 1 : 0,
+          usd: usdAmt ?? 0,
+          per_invoice: perInvoice,
+          per_month: perMonth,
+          month: round2(paidMonth + (usdAmt ?? 0)),
+        }),
+      );
+    }
     if (a) {
       if (a.kind === 'CONTRACT' && a.amount_per_period !== null) {
         const dev = (Math.abs(r.total - a.amount_per_period) / a.amount_per_period) * 100;
