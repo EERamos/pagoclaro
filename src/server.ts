@@ -26,7 +26,7 @@ async function main(): Promise<void> {
   console.log(
     [
       `PagoClaro escuchando en http://${config.host}:${config.port}`,
-      `  Lectores: ${readers.mode} (${config.primaryModel} + ${config.checkModel}), ${keyText}, tope ${config.spendCapUsd} USD, gastado ${readers.spend.totalUsd.toFixed(4)} USD`,
+      `  Lectores: ${readers.mode} (${config.primaryModel} + ${config.checkModel}, desempate ${config.tiebreakModel}), ${keyText}, tope ${config.spendCapUsd} USD, gastado ${readers.spend.totalUsd.toFixed(4)} USD`,
       `  Escrituras: ${config.accessCode ? 'con código de acceso' : 'deshabilitadas (define PAGOCLARO_ACCESS_CODE)'}`,
       `  Datos: ${p.state}`,
     ].join('\n'),
