@@ -144,9 +144,10 @@ Result:
   `docs/agent/ship-report.md` (cita el propio patrón), `web/app.js:1295` y `docs/app.js:1295` (el
   atributo `data-keys` de Ajustes) y `docs/demo-data.json` (las llaves de idempotencia de los pagos
   simulados, huellas sha256 de 64 caracteres hexadecimales). En el historial, los mismos archivos en
-  sus commits (18f0f4c, 9979a99, 56192a9, 23a2993, 4de1208, cd48450, c2e4a73, a0b72e1, 2836caf), y
-  `sk-ant` solo aparece en 9979a99 y 56192a9 como parte del patrón citado en los reportes de ship.
-  Ninguno es una credencial. El único archivo `.env*` del historial es `.env.example` (c2b2435),
+  sus commits (12b843f, 12f4b58, 5355262, 3aa6c5c, 1dbd1df, e216924, 5b99274, 5bbcf32 y, después
+  de la firma, 516a04b, este mismo reporte), y `sk-ant` solo aparece en 12f4b58, 5355262 y 516a04b
+  como parte del patrón citado en los reportes de ship.
+  Ninguno es una credencial. El único archivo `.env*` del historial es `.env.example` (9593765),
   con los valores vacíos, y `.env` está ignorado (`.gitignore:3`).
 - **Ingress:** esquemas cerrados con `.strict()` en cada cuerpo, también en los de proveedores
   (`src/http.ts:29-52`); reglas validadas con `RulesSchema` antes de guardarse o simularse
@@ -178,38 +179,45 @@ the Installed line records. Anything else is a blocker.
 Command run:
 
 ```text
-git log --format="%h %ad %s" --date=short 799beb7..HEAD -- evals/ docs/agent/design.md docs/agent/spec.md
-git diff -M100% --stat 799beb7..HEAD -- evals/ docs/agent/design.md docs/agent/spec.md
-git diff -M100% --word-diff 799beb7..HEAD -- evals/ docs/agent/design.md docs/agent/spec.md
-git show --stat --patch --word-diff 7fe740b f786420 76d6842 d50535e 9654e15 00f6c4c 3bcd752 a89642c
-git show a89642c -- docs/agent/spec.md | node -e "(compara las tres primeras celdas de cada fila quitada y agregada)"
-git show 3bcd752 -- docs/agent/spec.md | node -e "(compara todas las celdas salvo la de Eval)"
-git show 3bcd752 -- evals/config.json
+git log --format="%h %ad %s" --date=short d90c73e..HEAD -- evals/ docs/agent/design.md docs/agent/spec.md
+git diff -M100% --stat d90c73e..HEAD -- evals/ docs/agent/design.md docs/agent/spec.md
+git diff -M100% --word-diff d90c73e..HEAD -- evals/ docs/agent/design.md docs/agent/spec.md
+git show --stat --patch --word-diff 9cd8935 e159001 0ca514f 10f67b6 f0ff29f 4e7965e 9065e3b 048e5b2
+git show 048e5b2 -- docs/agent/spec.md | node -e "(compara las tres primeras celdas de cada fila quitada y agregada)"
+git show 9065e3b -- docs/agent/spec.md | node -e "(compara todas las celdas salvo la de Eval)"
+git show 9065e3b -- evals/config.json
 git status --porcelain -- evals/ docs/agent/design.md docs/agent/spec.md
-git log --format="%h %s" 799beb7..HEAD -- .claude/
-git show --name-only --format="%h %s" 18f0f4c
-git log --format="%h" 799beb7..HEAD -- agents/
+git log --format="%h %s" d90c73e..HEAD -- .claude/
+git show --name-only --format="%h %s" 12b843f
+git log --format="%h" d90c73e..HEAD -- agents/
 ```
 
 Result:
-La base es 799beb7, el primer hash de la línea Installed de build.md; el rango es 799beb7..HEAD.
+La base es d90c73e, el primer hash de la línea Installed de build.md; el rango es d90c73e..HEAD.
 Ocho commits del rango tocan `evals/`, el diseño o el spec, y los ocho están sancionados:
 
 - Columna Test, con el guard activo, solo la cuarta celda de filas `| BHV-`, y build.md los nombra
-  en su línea Test-column edit: 7fe740b (40 celdas), f786420 (BHV-010) y a89642c (BHV-041 a BHV-054
+  en su línea Test-column edit: 9cd8935 (40 celdas), e159001 (BHV-010) y 048e5b2 (BHV-041 a BHV-054
   y BHV-029: 15 filas, las tres primeras celdas iguales, ninguna otra línea).
 - Re-entradas con el guard apagado y regresado por Edgar, cada una un solo artefacto, con su versión
-  subida y aprobada en el mismo commit: 76d6842 (diseño v1 a v2) y 9654e15 (diseño v2 a v3); d50535e
-  (spec v1 a v2, `design_version: 2`) y 00f6c4c (spec v2 a v3, `design_version: 3`); 3bcd752
+  subida y aprobada en el mismo commit: 0ca514f (diseño v1 a v2) y f0ff29f (diseño v2 a v3); 10f67b6
+  (spec v1 a v2, `design_version: 2`) y 4e7965e (spec v2 a v3, `design_version: 3`); 9065e3b
   (la suite: 60 casos, `evals/config.json` y solo la columna Eval del spec, 14 filas, que cuenta como
   el mismo artefacto). Las del v2 las reemplazan las del v3 del mismo artefacto, y los enlaces de
   build.md (`design_version: 3`, `spec_version: 3`, `evals_date: 2026-10-17`) son los del v3, al que
-  siguió el build v3. En 3bcd752 la suite movió su `spec_version` de 1 a 3 y quedó `approved`; su
+  siguió el build v3. En 9065e3b la suite movió su `spec_version` de 1 a 3 y quedó `approved`; su
   `date` ya era 2026-10-17, el mismo día de la re-entrada, así que no podía avanzar más.
 
 `git status` no muestra cambios sin commit en esas rutas. Hay un solo agente: ningún commit toca
-`agents/`. Bajo `.claude/` el rango solo tiene 18f0f4c (script del guard, ratchet y settings), la
-instalación que nombra la línea Installed. Que el guard sea igual a la plantilla lo comprueba el rail
+`agents/`. Bajo `.claude/` el rango solo tiene 12b843f (script del guard, ratchet y settings), la
+instalación que nombra la línea Installed.
+
+Nota posterior a la firma (2026-10-18): Edgar reescribió el historial desde su terminal con
+git-filter-repo para quitar de los textos y mensajes viejos el nombre de un proyecto previo. El árbol
+final no cambió (`git rev-parse HEAD^{tree}` da b97e1e0 antes y después), desapareció un commit que
+solo quitaba esas menciones, y los ids de este reporte se pasaron a los nuevos con
+`.git/filter-repo/commit-map`. Las comprobaciones de esta sección y del rastreo de secretos se
+volvieron a correr sobre el historial nuevo con el mismo resultado. Que el guard sea igual a la plantilla lo comprueba el rail
 de `chain`, que pasó en la línea del build en el gate.
 
 - **Verdict:** pass

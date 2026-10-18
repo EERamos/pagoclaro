@@ -88,7 +88,7 @@ Changing what they do fix is a re-entry.
 The guard is installed before the first source file. It blocks edits to evals/ and to the design
 and the spec; the Test column of the spec's Traceability table is the one sanctioned edit.
 
-- **Installed:** baseline 799beb7 (design, spec y evals aprobados), luego el guard en 18f0f4c
+- **Installed:** baseline d90c73e (design, spec y evals aprobados), luego el guard en 12b843f
 - **Verified:** 2026-10-17, en una sesión abierta en la raíz del repositorio, un Edit que cambiaba
   `"status": "approved"` a `"status": "guard-probe"` en `evals/config.json` volvió rechazado por el
   hook PreToolUse: "BLOCKED by the agent-engineering anti-gaming guard: …\evals\config.json is a
@@ -103,14 +103,14 @@ and the spec; the Test column of the spec's Traceability table is the one sancti
   renombrarlo), un solo Edit llenó las 40 celdas Test de la tabla Traceability con pruebas de
   `tests/bhv.test.ts`, `tests/rules.test.ts`, `tests/infra.test.ts` y `tests/tool-surface.test.ts`;
   el guard lo dejó pasar y `git diff -- docs/agent/spec.md` mostró 40 líneas cambiadas, solo en la
-  cuarta celda. Commit aparte, el spec solo: 7fe740b. En el v2, tras la corrida verde y con el
+  cuarta celda. Commit aparte, el spec solo: 9cd8935. En el v2, tras la corrida verde y con el
   guard activo, un Edit agregó a la celda Test de BHV-010 la prueba de lecturas distintas; el diff
-  mostró 1 línea cambiada, solo en esa celda. Commit aparte, el spec solo: f786420. En el v3, tras
+  mostró 1 línea cambiada, solo en esa celda. Commit aparte, el spec solo: e159001. En el v3, tras
   la corrida verde `runs/20261018T022526Z.json` y con el guard activo (Edgar lo regresó después de
   la re-entrada de los evals y la prueba de `guard-probe` volvió rechazada), dos Edit llenaron las
   celdas Test de BHV-041 a BHV-054 y agregaron a BHV-029 la prueba de la frase encadenada; el guard
   los dejó pasar y `git diff -- docs/agent/spec.md` mostró 15 líneas cambiadas, solo en la cuarta
-  celda. Commit aparte, el spec solo: a89642c.
+  celda. Commit aparte, el spec solo: 048e5b2.
 
 ## 3. Delegation
 
@@ -200,8 +200,8 @@ The agent runs once end to end in its real shape, outside the eval harness.
 Anything built that the spec does not name, and anything the spec names that was not built as
 written.
 
-- Versión 3 (2026-10-17), re-entrada que Edgar aprobó: diseño v3 (9654e15), spec v3 (00f6c4c) y
-  evals de 60 casos (3bcd752), build reabierto en 62a425d. Código en 128b5f1: `read_invoice_tiebreak`
+- Versión 3 (2026-10-17), re-entrada que Edgar aprobó: diseño v3 (f0ff29f), spec v3 (4e7965e) y
+  evals de 60 casos (9065e3b), build reabierto en e8ac34c. Código en 3de85aa: `read_invoice_tiebreak`
   (Sonnet 5.5) compara solo los campos en discrepancia contra la lectura principal y la deja avanzar
   si los confirma todos; si no los confirma o falla tras su reintento, escala con
   READINGS_DISAGREE y `suggested_reading: primary`. Si la de verificación falla tras su reintento,
@@ -229,7 +229,11 @@ written.
   `pending_account` como texto, según el contrato; quién cambió la cuenta lo muestra la API de
   proveedores, no la herramienta.
 - La frase de un escalamiento dice también la hora en que vence el pendiente.
-- Tablero v3 (cd48450, de la rama del subagente 4de1208): cuatro secciones con nombres comunes
+- Historial reescrito (2026-10-18, después del ship v3): Edgar corrió git-filter-repo desde su
+  terminal para quitar de los textos y mensajes viejos el nombre de un proyecto previo; el árbol de
+  HEAD no cambió (b97e1e0), desapareció un commit que solo quitaba esas menciones y los ids de este
+  registro y del reporte de ship se pasaron a los nuevos con `.git/filter-repo/commit-map`.
+- Tablero v3 (1dbd1df, desde la rama del subagente del tablero): cuatro secciones con nombres comunes
   (Facturas, Proveedores autorizados, Ajustes, Historial), la paleta y la tipografía de blinka.co
   sin su nombre ni su logo, y lo técnico (lecturas lado a lado, cada regla con su resultado,
   procedencia, hashes) en "Ver detalle técnico". Probado contra el servidor v3 en modo replay:
@@ -268,14 +272,14 @@ written.
   con TRP-221 esperando por ella; la demo estática no lleva ninguna cuenta completa.
 - El runner acepta tres modelos en la telemetría (ADV-007: "los modelos" de cada lector que leyó).
 
-- Versión 2 (2026-10-17), re-entrada desde el ship v1 (NO-SHIP, 9979a99), que Edgar firmó y mandó
+- Versión 2 (2026-10-17), re-entrada desde el ship v1 (NO-SHIP, 12f4b58), que Edgar firmó y mandó
   a build. Blocker: en la corrida de la auditoría ADV-006 (BHV-010) quedó rojo porque Haiku 5.5
   dejó vacíos los campos del chat, las lecturas no coincidieron y `src/agent/pipeline.ts:139`
   escalaba solo con READINGS_DISAGREE, sin SUSPICIOUS_TEXT, aunque las dos lecturas copiaron la
   orden. Ahora, con lecturas distintas, la factura escala también con SUSPICIOUS_TEXT si alguna
   lectura trae texto con órdenes. Prueba primero:
   `tests/bhv.test.ts::BHV-010 un chat con órdenes y lecturas distintas escala también con
-  SUSPICIOUS_TEXT`, con las dos lecturas reales de esa corrida. Commit d917206.
+  SUSPICIOUS_TEXT`, con las dos lecturas reales de esa corrida. Commit ad20aed.
 - Adición del v2: las alarmas del runbook avisan solas (`src/alerts.ts`): `GET /health` y
   `GET /api/summary` (`metrics.alerts`) las traen, el tablero muestra un banner rojo y el servidor
   imprime una línea `[ALERTA]` cuando una se enciende (hallazgo important del ship v1). Probado con
@@ -289,7 +293,7 @@ written.
 - El guard no estuvo activo en la primera sesión del build (sección 2): mientras se escribió el
   código, la protección de `evals/`, el diseño y el spec dependió de no editarlos;
   `git log -- evals docs/agent/design.md` muestra solo el commit base y el spec solo suma el commit
-  de la columna Test (7fe740b). La prueba se repitió en una sesión en la raíz y el guard la
+  de la columna Test (9cd8935). La prueba se repitió en una sesión en la raíz y el guard la
   rechazó. Cambio pedido: ninguno upstream.
 - Adición: tokens de razonamiento (`reasoning_tokens` en cada lectura,
   `pagoclaro.usage.reasoning_tokens` en la telemetría), que el spec no nombra; cambio pedido para
