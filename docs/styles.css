@@ -506,6 +506,35 @@ details.tech[open] > summary::before { transform: rotate(45deg); }
 .whatif ul { margin-top: 10px; display: grid; gap: 6px; }
 .whatif li { font-size: 14.5px; padding-left: 16px; position: relative; }
 .whatif li::before { content: ''; position: absolute; left: 2px; top: 0.6em; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+/* ---- How PagoClaro decides: the rules in plain words, above the settings */
+.how { margin-bottom: 20px; padding: 20px 24px 16px; }
+.how h3 { font-size: 17px; font-weight: 550; letter-spacing: -0.015em; }
+.how-lead { margin-top: 4px; max-width: 70ch; color: var(--muted); font-size: 14px; }
+.how-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 28px; margin: 18px 0 0; padding: 0; list-style: none; }
+.how-steps li { display: flex; gap: 12px; align-items: flex-start; }
+.how-n { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text); font-size: 14px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.how-st { font-size: 14.5px; font-weight: 600; }
+.how-st + p { margin-top: 2px; color: var(--ink-2); font-size: 13.5px; line-height: 1.45; }
+.how-out { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 20px; border-top: 1px solid var(--line-2); }
+.how-col { display: flex; flex-direction: column; gap: 8px; padding: 16px 20px 4px; }
+.how-col:first-child { padding-left: 0; }
+.how-col:last-child { padding-right: 0; }
+.how-col + .how-col { border-left: 1px solid var(--line-2); }
+.how-col h4 { display: flex; align-items: center; gap: 8px; color: var(--tone); font-size: 15px; font-weight: 600; }
+.how-col h4 svg { flex: none; width: 18px; height: 18px; }
+.how-col > p { color: var(--muted); font-size: 13.5px; }
+.how-col ul { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.how-col li { position: relative; padding-left: 16px; font-size: 14px; line-height: 1.45; }
+.how-col li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--tone); }
+.how-col .how-note { color: var(--ink-2); font-size: 13.5px; }
+.how-val { padding: 0 3px; border: 0; border-radius: 5px; background: var(--tone-soft); color: var(--ink); font: inherit; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+.how-val:hover { text-decoration-style: solid; }
+.how-see { align-self: flex-start; margin-top: auto; padding: 6px 0; border: 0; background: none; color: var(--accent-text); font: inherit; font-size: 13.5px; font-weight: 550; cursor: pointer; }
+.how-see:hover { text-decoration: underline; text-underline-offset: 3px; }
+.how-see.none { color: var(--muted); font-weight: 400; cursor: default; }
+.how-foot { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line-2); color: var(--ink-2); font-size: 13.5px; }
+.how-link { color: var(--accent-text); font-weight: 550; white-space: nowrap; text-underline-offset: 3px; }
 .version-line { margin-top: 12px; font-size: 13.5px; color: var(--muted); }
 .fx { margin-top: 20px; padding: 18px 22px; }
 .fx h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
@@ -551,6 +580,10 @@ details.tech[open] > summary::before { transform: rotate(45deg); }
   .paid-total { border-left: 0; border-top: 1px solid var(--line-2); padding-left: 16px; flex-basis: 100%; }
 }
 @media (max-width: 720px) {
+  .how { padding: 16px 16px 12px; }
+  .how-steps, .how-out { grid-template-columns: 1fr; }
+  .how-col, .how-col:first-child, .how-col:last-child { padding: 14px 0 4px; }
+  .how-col + .how-col { border-left: 0; border-top: 1px solid var(--line-2); }
   .top-in { grid-template-columns: 1fr auto; grid-template-areas: 'brand lang' 'who who' 'nav nav'; row-gap: 10px; padding: 10px 16px 0; }
   .who { justify-self: stretch; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .who label { display: grid; gap: 4px; font-size: 12.5px; }

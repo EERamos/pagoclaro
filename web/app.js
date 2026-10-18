@@ -105,6 +105,19 @@
       c_MX: 'México', c_CO: 'Colombia', c_BR: 'Brasil', c_US: 'Estados Unidos',
       // settings
       sTitle: 'Ajustes', sLead: 'PagoClaro paga solo lo que cumple estos ajustes. Lo demás te lo deja para revisar o lo frena.',
+      howTitle: 'Así decide PagoClaro', howLead: 'Cada factura pasa por los mismos tres pasos. Tú pones los números; PagoClaro solo los aplica.',
+      how1T: 'Lee la factura', how1: 'Dos lectores de IA la leen por separado. Si no coinciden, un tercero desempata; si sigue la duda, te la pasa.',
+      how2T: 'La compara con tus reglas', how2: 'Proveedor autorizado, cuenta confirmada, monto, contrato, presupuesto y que no esté repetida.',
+      how3T: 'Decide y te dice por qué', how3: 'La paga, te la deja para revisar o la frena. Cada paso queda en el Historial.',
+      howPayT: 'Se paga sola', howPayL: 'Solo si cumple todo esto:',
+      howPay: ['El proveedor está autorizado y su cuenta es la confirmada.', 'Su monto es de {limit} o menos.', 'Cuadra con su contrato u orden de compra.', 'Cabe en el presupuesto del mes y no está repetida.'],
+      howRevT: 'Te pide revisión', howRevL: 'Si algo necesita a una persona:',
+      howRev: ['Su monto pasa de {limit}.', 'El proveedor no está autorizado o su cuenta cambió.', 'Se sale de su contrato más de {tol}, o parece repetida o partida.', 'Las lecturas no coinciden o el texto trae órdenes.'],
+      howRevF: 'Tú decides. Si nadie lo hace en {hours}, vence y no se paga.',
+      howStopT: 'Se frena', howStopL: 'No se paga ni con aprobación:',
+      howStop: ['Pasa del tope de {cap} por factura.', 'Ya no cabe en el presupuesto de {budget} del mes.', 'Ya hay una factura con el mismo número de ese proveedor.', 'Pasa de lo que queda en su orden de compra.'],
+      howFoot: 'Aunque apruebes una factura, PagoClaro vuelve a revisar los topes justo antes de pagar. Toca un número para ir a su ajuste.',
+      howSee0: 'Ninguna por ahora', howSee1: 'Ver 1 factura', howSeeN: 'Ver {n} facturas', howGoto: 'Ir a este ajuste', howLink: 'Así decide PagoClaro',
       g_when: 'Cuándo pagar sin preguntarte', gd_when: 'Lo que cumpla esto se paga solo.', g_limits: 'Límites que nunca se pasan', gd_limits: 'Por encima de esto no se paga, ni con aprobación.',
       g_repeat: 'Cobros repetidos', gd_repeat: 'Para detectar facturas duplicadas o partidas.', g_dates: 'Fechas y plazos', gd_dates: 'Qué fechas se aceptan y cuánto espera una revisión.',
       s_auto_approve_up_to_usd: 'Pagar sin revisión hasta', sh_auto_approve_up_to_usd: 'Por encima de este monto, la factura espera tu revisión.',
@@ -220,6 +233,19 @@
       vEmpty: 'No approved vendors yet. Add the first one so PagoClaro can pay it.',
       c_MX: 'Mexico', c_CO: 'Colombia', c_BR: 'Brazil', c_US: 'United States',
       sTitle: 'Settings', sLead: 'PagoClaro pays only what meets these settings. Everything else waits for your review or is stopped.',
+      howTitle: 'How PagoClaro decides', howLead: 'Every invoice goes through the same three steps. You set the numbers; PagoClaro only applies them.',
+      how1T: 'Reads the invoice', how1: 'Two AI readers read it separately. If they disagree, a third one breaks the tie; if there is still doubt, it comes to you.',
+      how2T: 'Checks it against your rules', how2: 'Approved vendor, confirmed account, amount, contract, budget and that it is not repeated.',
+      how3T: 'Decides and tells you why', how3: 'It pays it, leaves it for your review or stops it. Every step stays in History.',
+      howPayT: 'Paid on its own', howPayL: 'Only if it meets all of this:',
+      howPay: ['The vendor is approved and its account is the confirmed one.', 'Its amount is {limit} or less.', 'It matches its contract or purchase order.', 'It fits the monthly budget and is not repeated.'],
+      howRevT: 'Asks for your review', howRevL: 'When something needs a person:',
+      howRev: ['Its amount is over {limit}.', 'The vendor is not approved or its account changed.', 'It is off its contract by more than {tol}, or looks repeated or split.', 'The readings disagree or the text gives orders.'],
+      howRevF: 'You decide. If nobody does within {hours}, it expires and is not paid.',
+      howStopT: 'Stopped', howStopL: 'Not paid, not even with an approval:',
+      howStop: ['It is over the {cap} cap per invoice.', 'The {budget} monthly budget no longer covers it.', 'That vendor already sent an invoice with the same number.', 'It is over what is left on its purchase order.'],
+      howFoot: 'Even when you approve an invoice, PagoClaro checks the caps again right before paying. Tap a number to go to its setting.',
+      howSee0: 'None for now', howSee1: 'See 1 invoice', howSeeN: 'See {n} invoices', howGoto: 'Go to this setting', howLink: 'How PagoClaro decides',
       g_when: 'When to pay without asking you', gd_when: 'Whatever meets this is paid on its own.', g_limits: 'Limits that are never crossed', gd_limits: 'Nothing above this is paid, not even with an approval.',
       g_repeat: 'Repeated charges', gd_repeat: 'To catch duplicated or split invoices.', g_dates: 'Dates and deadlines', gd_dates: 'Which dates are accepted and how long a review waits.',
       s_auto_approve_up_to_usd: 'Pay without review up to', sh_auto_approve_up_to_usd: 'Above this amount, the invoice waits for your review.',
@@ -688,7 +714,7 @@
     if (!inv.length) { el.hidden = true; el.innerHTML = ''; return; }
     const m = S.summary.metrics || {};
     el.hidden = false;
-    el.innerHTML = `<div class="ins-head"><h3 id="ins-h">${esc(t('insTitle'))}</h3><p>${esc(t('insHint'))}</p></div>${unblockLine(inv)}
+    el.innerHTML = `<div class="ins-head"><h3 id="ins-h">${esc(t('insTitle'))}</h3><p>${esc(t('insHint'))} <a class="how-link" href="#ajustes">${esc(t('howLink'))}<span aria-hidden="true"> →</span></a></p></div>${unblockLine(inv)}
       <div class="ins-grid">${decidedChart(inv, m)}${paidChart(inv)}${whyChart(inv)}${budgetChart(m, inv)}</div>`;
   }
   function renderFacet() {
@@ -1299,6 +1325,34 @@
     if (!(key in cur)) return '';
     return `<div class="setting" data-keys="${key}"><label for="set-${key}">${esc(t(`s_${key}`))}<span class="changed" hidden>${esc(t('changed'))}</span></label>${unitInput(key, cur[key])}<small class="hint">${esc(t(`sh_${key}`))}</small>${ruleHit(key)}</div>`;
   }
+  /** The rules in plain words: the three steps every invoice goes through, and what pays, waits or stops with today's numbers. */
+  function howBlock(cur) {
+    const val = (key, text) => `<button type="button" class="how-val" data-action="goto-setting" data-key="${key}" title="${esc(t('howGoto'))}">${esc(text)}</button>`;
+    const has = (k) => cur[k] != null && cur[k] !== '';
+    const chips = {
+      limit: has('auto_approve_up_to_usd') ? val('auto_approve_up_to_usd', moneyText(cur.auto_approve_up_to_usd, 'USD')) : '',
+      cap: has('hard_cap_per_invoice_usd') ? val('hard_cap_per_invoice_usd', moneyText(cur.hard_cap_per_invoice_usd, 'USD')) : '',
+      budget: has('monthly_budget_usd') ? val('monthly_budget_usd', moneyText(cur.monthly_budget_usd, 'USD')) : '',
+      tol: has('contract_tolerance_pct') ? val('contract_tolerance_pct', `${plainNum(cur.contract_tolerance_pct)}${S.lang === 'es' ? ' ' : ''}%`) : '',
+      hours: has('pending_timeout_hours') ? val('pending_timeout_hours', `${cur.pending_timeout_hours} ${t('u_hours')}`) : '',
+    };
+    // The sentence is escaped first; each {number} then comes back as a button that jumps to its setting.
+    const say = (s) => esc(s).replace(/\{(\w+)\}/g, (_, k) => chips[k] || '');
+    const inv = S.summary?.invoices;
+    const see = (g) => {
+      if (!inv) return '';
+      const n = inv.filter((i) => inGroup(i, g)).length;
+      return n ? `<button type="button" class="how-see" data-action="see-group" data-group="${g}">${esc(n === 1 ? t('howSee1') : tf('howSeeN', { n }))}<span aria-hidden="true"> →</span></button>`
+        : `<p class="how-see none">${esc(t('howSee0'))}</p>`;
+    };
+    const col = (tone, g, key) => `<section class="how-col t-${tone}" aria-labelledby="how-${g}"><h4 id="how-${g}">${ICON[tone]}<span>${esc(t(`how${key}T`))}</span></h4><p>${esc(t(`how${key}L`))}</p>
+      <ul>${t(`how${key}`).map((s) => `<li>${say(s)}</li>`).join('')}</ul>${key === 'Rev' ? `<p class="how-note">${say(t('howRevF'))}</p>` : ''}${see(g)}</section>`;
+    const steps = [1, 2, 3].map((n) => `<li><span class="how-n" aria-hidden="true">${n}</span><div><p class="how-st">${esc(t(`how${n}T`))}</p><p>${esc(t(`how${n}`))}</p></div></li>`).join('');
+    return `<section class="sheet how" aria-labelledby="how-h"><h3 id="how-h">${esc(t('howTitle'))}</h3><p class="how-lead">${esc(t('howLead'))}</p>
+      <ol class="how-steps">${steps}</ol>
+      <div class="how-out">${col('ok', 'paid', 'Pay')}${col('warn', 'review', 'Rev')}${col('stop', 'stopped', 'Stop')}</div>
+      <p class="how-foot">${esc(t('howFoot'))}</p></section>`;
+  }
   function drawSettings() {
     const el = $('#view-ajustes');
     const r = S.rules;
@@ -1316,7 +1370,7 @@
       ? `<section class="sheet fx" aria-labelledby="fx-h"><h3 id="fx-h">${esc(t('fxTitle'))}</h3><p>${esc(tf('fxLine', { d: dateOnly(fx.date), src: cap(String(fx.source || '').replace(/\.$/, '')) }))}</p>
          <ul>${Object.entries(fx.rates).map(([k, v]) => `<li>1 ${esc(k)} = ${esc(plainNum(v))} USD</li>`).join('')}</ul></section>`
       : '';
-    el.innerHTML = `${pageHead('ajustes', t('sTitle'), t('sLead'))}
+    el.innerHTML = `${pageHead('ajustes', t('sTitle'), t('sLead'))}${howBlock(cur)}
       <form class="sheet settings" id="settingsForm" novalidate>${groups}
         <div class="save-bar"><span class="state-txt" id="dirtyTxt">${esc(ro ? (S.mode === 'static' ? t('staticSettings') : t('readOnlyServer')) : t('noChanges'))}</span>
           <div class="actions"><button class="btn" type="button" data-action="what-if"${ro ? ' disabled' : ''}>${esc(t('whatIf'))}</button><button class="btn primary" type="submit" id="saveRules" disabled>${esc(t('save'))}</button></div></div>
@@ -1557,6 +1611,12 @@
     }
     if (act === 'v-toggle') return toggleVendor(a);
     if (act === 'what-if') return runWhatIf(a);
+    if (act === 'goto-setting') {
+      const input = $(`#set-${CSS.escape(a.dataset.key)}`);
+      if (input) { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); input.focus({ preventScroll: true }); }
+      return;
+    }
+    if (act === 'see-group') { S.filter = a.dataset.group; S.facet = null; S.selected = null; location.hash = '#facturas'; return; }
     if (act === 'more') { S.histLimit += 120; drawHistory(); }
   });
   document.addEventListener('submit', (e) => {
