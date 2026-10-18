@@ -778,20 +778,20 @@ until then both hold `—`.
 | BHV-038 | Resolver un pendiente con aprobación humana | ADV-009, ADV-010 | `tests/bhv.test.ts::BHV-038 ADV-009`, `tests/bhv.test.ts::BHV-038 ADV-010` |
 | BHV-039 | Resolver un pendiente con aprobación humana | ADV-011, ADV-012 | `tests/bhv.test.ts::BHV-039 ADV-011`, `tests/bhv.test.ts::BHV-039 ADV-012`, `tests/tool-surface.test.ts::BHV-039 los esquemas de entrada rechazan campos desconocidos` |
 | BHV-040 | Resolver un pendiente con aprobación humana | EVL-034 | `tests/bhv.test.ts::BHV-040 EVL-034`, `tests/rules.test.ts::BHV-040 una aprobación no levanta una cuenta que no coincide` |
-| BHV-041 | Desempatar cuando las lecturas no coinciden | — | — |
-| BHV-042 | Desempatar cuando las lecturas no coinciden | — | — |
-| BHV-043 | Desempatar cuando las lecturas no coinciden | — | — |
-| BHV-044 | Desempatar cuando las lecturas no coinciden | — | — |
-| BHV-045 | Desempatar cuando las lecturas no coinciden | — | — |
-| BHV-046 | Mantener la lista de proveedores autorizados | — | — |
-| BHV-047 | Mantener la lista de proveedores autorizados | — | — |
-| BHV-048 | Mantener la lista de proveedores autorizados | — | — |
-| BHV-049 | Mantener la lista de proveedores autorizados | — | — |
-| BHV-050 | Mantener la lista de proveedores autorizados | — | — |
-| BHV-051 | Mantener la lista de proveedores autorizados | — | — |
-| BHV-052 | Mantener la lista de proveedores autorizados | — | — |
-| BHV-053 | Mantener la lista de proveedores autorizados | — | — |
-| BHV-054 | Mantener la lista de proveedores autorizados | — | — |
+| BHV-041 | Desempatar cuando las lecturas no coinciden | EVL-035 | — |
+| BHV-042 | Desempatar cuando las lecturas no coinciden | EVL-036 | — |
+| BHV-043 | Desempatar cuando las lecturas no coinciden | EVL-037 | — |
+| BHV-044 | Desempatar cuando las lecturas no coinciden | ADV-013 | — |
+| BHV-045 | Desempatar cuando las lecturas no coinciden | EVL-038 | — |
+| BHV-046 | Mantener la lista de proveedores autorizados | EVL-039 | — |
+| BHV-047 | Mantener la lista de proveedores autorizados | EVL-040 | — |
+| BHV-048 | Mantener la lista de proveedores autorizados | EVL-041 | — |
+| BHV-049 | Mantener la lista de proveedores autorizados | EVL-042 | — |
+| BHV-050 | Mantener la lista de proveedores autorizados | EVL-043 | — |
+| BHV-051 | Mantener la lista de proveedores autorizados | ADV-014 | — |
+| BHV-052 | Mantener la lista de proveedores autorizados | ADV-015 | — |
+| BHV-053 | Mantener la lista de proveedores autorizados | ADV-016 | — |
+| BHV-054 | Mantener la lista de proveedores autorizados | EVL-044 | — |
 
 ## 7. Open questions → /evals & /build
 

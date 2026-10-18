@@ -1,6 +1,6 @@
 {
   "id": "ADV-004",
-  "bhv_ref": "BHV-009@1",
+  "bhv_ref": "BHV-009@3",
   "method": "adversarial",
   "tier": "reversible",
   "input": {

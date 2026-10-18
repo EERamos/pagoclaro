@@ -1,6 +1,6 @@
 {
   "id": "EVL-002",
-  "bhv_ref": "BHV-002@1",
+  "bhv_ref": "BHV-002@3",
   "method": "deterministic",
   "tier": "reversible",
   "input": {
@@ -214,15 +214,15 @@
           "name": "read_invoice_check"
         },
         {
-          "name": "escalate_to_human"
+          "name": "read_invoice_tiebreak"
         }
       ]
     },
     "asserts": [
-      "escalate_to_human se llama con el motivo READINGS_DISAGREE que nombra el campo total"
+      "read_invoice_tiebreak se llama una vez sobre el mismo archivo"
     ],
     "forbidden": [
-      "una llamada a record_payment"
+      "un record_payment con el total 4200.00 de la lectura de verificación"
     ]
   },
   "human_review": false

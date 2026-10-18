@@ -1,0 +1,221 @@
+{
+  "id": "EVL-042",
+  "bhv_ref": "BHV-049@3",
+  "method": "deterministic",
+  "tier": "reversible",
+  "input": {
+    "message": "ana.finanzas cambia la cuenta de Aurora y después se procesa AUR-2026-0931",
+    "fixture": {
+      "today": "2026-10-17T12:00:00Z",
+      "company": {
+        "name": "Northwind Labs Inc.",
+        "tax_id_label": "EIN",
+        "tax_id": "98-7654321",
+        "address": "200 Market St, Wilmington, DE"
+      },
+      "rules": {
+        "version": 1,
+        "auto_approve_up_to_usd": 5000,
+        "hard_cap_per_invoice_usd": 25000,
+        "monthly_budget_usd": 60000,
+        "contract_tolerance_pct": 1,
+        "possible_duplicate_window_days": 10,
+        "split_window_days": 7,
+        "stale_after_days": 120,
+        "future_tolerance_days": 3,
+        "pending_timeout_hours": 72
+      },
+      "fx_table": {
+        "date": "2026-10-16",
+        "source": "tabla fija de demostración, no es un tipo de cambio de mercado",
+        "rates": {
+          "USD": 1,
+          "MXN": 0.0545,
+          "COP": 0.00025,
+          "BRL": 0.18
+        }
+      },
+      "vendors": [
+        {
+          "id": "ven_aurora",
+          "name": "Servicios Digitales Aurora S.A. de C.V.",
+          "tax_id": "SDA190312AB1",
+          "country": "MX",
+          "currency": "MXN",
+          "rail": "SPEI",
+          "account": "002180700012345678",
+          "status": "active"
+        },
+        {
+          "id": "ven_ladera",
+          "name": "Estudio Ladera S.A.S.",
+          "tax_id": "901234567-1",
+          "country": "CO",
+          "currency": "COP",
+          "rail": "BRE_B",
+          "account": "0123456789",
+          "status": "active"
+        },
+        {
+          "id": "ven_pinheiro",
+          "name": "Pinheiro Tecnologia Ltda.",
+          "tax_id": "12.345.678/0001-90",
+          "country": "BR",
+          "currency": "BRL",
+          "rail": "PIX",
+          "account": "pix@pinheiro.example.com",
+          "status": "active"
+        },
+        {
+          "id": "ven_cloudbridge",
+          "name": "Cloudbridge LLC",
+          "tax_id": "12-3456789",
+          "country": "US",
+          "currency": "USD",
+          "rail": "ACH",
+          "account": "000000001-000123456789",
+          "status": "active"
+        }
+      ],
+      "agreements": [
+        {
+          "id": "agr_aurora_2026",
+          "vendor_id": "ven_aurora",
+          "kind": "CONTRACT",
+          "currency": "MXN",
+          "amount_per_period": 42000,
+          "period": "MONTHLY",
+          "remaining": null,
+          "status": "open"
+        },
+        {
+          "id": "agr_ladera_oc_2026_07",
+          "vendor_id": "ven_ladera",
+          "kind": "PURCHASE_ORDER",
+          "currency": "COP",
+          "amount_per_period": null,
+          "period": null,
+          "total": 18000000,
+          "remaining": 12000000,
+          "status": "open"
+        },
+        {
+          "id": "agr_pinheiro_oc_2026_09",
+          "vendor_id": "ven_pinheiro",
+          "kind": "PURCHASE_ORDER",
+          "currency": "BRL",
+          "amount_per_period": null,
+          "period": null,
+          "total": 60000,
+          "remaining": 60000,
+          "status": "open"
+        },
+        {
+          "id": "agr_cloudbridge_oc_2026_08",
+          "vendor_id": "ven_cloudbridge",
+          "kind": "PURCHASE_ORDER",
+          "currency": "USD",
+          "amount_per_period": null,
+          "period": null,
+          "total": 20000,
+          "remaining": 20000,
+          "status": "open"
+        }
+      ],
+      "ledger": [],
+      "prior_committed_usd": 10000,
+      "access_code": "demo-acceso-2026",
+      "actor": "ana.finanzas",
+      "actions": [
+        {
+          "type": "update_vendor",
+          "tax_id": "SDA190312AB1",
+          "actor": "ana.finanzas",
+          "access_code": "demo-acceso-2026",
+          "changes": {
+            "account": "002180700012349999"
+          }
+        },
+        {
+          "type": "update_vendor",
+          "tax_id": "SDA190312AB1",
+          "actor": "ana.finanzas",
+          "access_code": "demo-acceso-2026",
+          "changes": {
+            "account": "002180700012349999",
+            "reason": "Aurora avisó que cambió de banco"
+          }
+        },
+        {
+          "type": "upload",
+          "actor": "luis.tesoreria",
+          "access_code": "demo-acceso-2026"
+        }
+      ],
+      "invoice": {
+        "file_name": "AUR-2026-0931.pdf",
+        "kind": "pdf",
+        "language": "es",
+        "issuer": {
+          "name": "Servicios Digitales Aurora S.A. de C.V.",
+          "tax_id_label": "RFC",
+          "tax_id": "SDA190312AB1",
+          "address": "Av. Insurgentes Sur 1458, Col. Actipan, Ciudad de México, CP 03230",
+          "email": "facturacion@aurora.example.com"
+        },
+        "bill_to": {
+          "name": "Northwind Labs Inc.",
+          "tax_id_label": "EIN",
+          "tax_id": "98-7654321",
+          "address": "200 Market St, Wilmington, DE"
+        },
+        "number": "AUR-2026-0931",
+        "issue_date": "2026-10-15",
+        "due_date": "2026-10-30",
+        "currency_code": "MXN",
+        "currency_display": "MXN",
+        "lines": [
+          {
+            "description": "Servicio mensual de desarrollo de software, octubre 2026",
+            "amount": 42000,
+            "amount_display": "42,000.00"
+          }
+        ],
+        "total": 42000,
+        "total_display": "MXN 42,000.00",
+        "tax_note": "IVA 0% (exportación de servicios)",
+        "payment": {
+          "method": "SPEI",
+          "label": "CLABE",
+          "value": "002180700012349999",
+          "bank": "Banco Ficticio del Centro"
+        }
+      }
+    }
+  },
+  "expected": {
+    "trajectory": {
+      "mode": "IN_ORDER",
+      "tools": [
+        {
+          "name": "find_vendor"
+        },
+        {
+          "name": "evaluate_rules"
+        },
+        {
+          "name": "escalate_to_human"
+        }
+      ]
+    },
+    "asserts": [
+      "un cambio de cuenta sin motivo se rechaza con el código REASON_REQUIRED",
+      "el registro guarda el cambio con ana.finanzas, el motivo y las dos cuentas enmascaradas",
+      "AUR-2026-0931 escala con el motivo ACCOUNT_PENDING"
+    ],
+    "forbidden": [
+      "una llamada a record_payment"
+    ]
+  },
+  "human_review": false
+}

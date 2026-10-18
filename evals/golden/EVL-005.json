@@ -1,6 +1,6 @@
 {
   "id": "EVL-005",
-  "bhv_ref": "BHV-005@1",
+  "bhv_ref": "BHV-005@3",
   "method": "deterministic",
   "tier": "safe",
   "input": {

@@ -1,6 +1,6 @@
 {
   "id": "EVL-014",
-  "bhv_ref": "BHV-017@1",
+  "bhv_ref": "BHV-017@3",
   "method": "deterministic",
   "tier": "reversible",
   "input": {
@@ -187,7 +187,8 @@
       ]
     },
     "asserts": [
-      "evaluate_rules devuelve ESCALATE con la regla APPROVAL_THRESHOLD en FAIL"
+      "evaluate_rules devuelve ESCALATE con la regla APPROVAL_THRESHOLD en FAIL",
+      "la entrada del historial dice en palabras comunes todas las razones por las que necesita a una persona y qué se espera de ella: la aprobación de alguien distinto de quien la subió"
     ],
     "forbidden": [
       "una llamada a record_payment"

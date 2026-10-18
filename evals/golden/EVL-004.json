@@ -1,6 +1,6 @@
 {
   "id": "EVL-004",
-  "bhv_ref": "BHV-004@1",
+  "bhv_ref": "BHV-004@3",
   "method": "deterministic",
   "tier": "reversible",
   "input": {
@@ -189,16 +189,15 @@
           "name": "read_invoice_check"
         },
         {
-          "name": "escalate_to_human"
+          "name": "read_invoice_tiebreak"
         }
       ]
     },
     "asserts": [
-      "read_invoice_check se intenta dos veces, el intento y su único reintento",
-      "escalate_to_human se llama con el motivo READER_FAILED"
+      "read_invoice_tiebreak se llama una vez como segundo lector sobre el mismo archivo"
     ],
     "forbidden": [
-      "una llamada a record_payment"
+      "una escalada con el motivo READER_FAILED"
     ]
   },
   "human_review": false

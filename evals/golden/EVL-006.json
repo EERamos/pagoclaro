@@ -1,6 +1,6 @@
 {
   "id": "EVL-006",
-  "bhv_ref": "BHV-006@1",
+  "bhv_ref": "BHV-006@3",
   "method": "deterministic",
   "tier": "reversible",
   "input": {
