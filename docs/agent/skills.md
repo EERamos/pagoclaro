@@ -1,11 +1,11 @@
 ---
 agent_name: pagoclaro
-version: 2
+version: 3
 status: approved         # draft | approved — approved only by the owner at the gate
 date: 2026-10-17
 track: heavy
-spec_version: 1
-build_version: 2
+spec_version: 3
+build_version: 3
 ---
 
 # PagoClaro — Skills decision
@@ -28,10 +28,12 @@ A capability that needs other permissions or true parallelism is a design change
 | Capability | Verdict | Reason |
 |---|---|---|
 | Leer cada factura dos veces y cruzar las lecturas | static | Lo que el modelo necesita saber cabe en el bloque fijo del lector (`READER_SYSTEM`, 10 reglas, unos 900 tokens) y el cruce campo por campo ya es código (`compareReadings`) |
-| Identificar al proveedor y lo acordado | code | `find_vendor` y `find_agreement` buscan por identificación fiscal normalizada en código; ningún modelo participa |
-| Decidir pagar, frenar o escalar según las reglas | code | Lo decide el motor de 17 reglas deterministas (`evaluate_rules`), el más estricto gana; ningún modelo decide |
-| Registrar cada decisión con su explicación | code | El registro encadenado con hash y el porqué de cada regla se escriben en código dentro de la misma transacción que la decisión |
+| Identificar al proveedor y lo acordado | code | `find_vendor` y `find_agreement` buscan por identificación fiscal normalizada en código y comparan la cuenta leída solo con la confirmada; ningún modelo participa |
+| Decidir pagar, frenar o escalar según las reglas | code | Lo decide el motor de 18 reglas deterministas (`evaluate_rules`), el más estricto gana; ningún modelo decide |
+| Registrar cada decisión con su explicación | code | El registro encadenado con hash, el porqué de cada regla y la frase en palabras comunes (`src/domain/history.ts`, plantillas fijas) se escriben en código dentro de la misma transacción que la decisión |
 | Resolver un pendiente con aprobación humana | code | La aprobación vuelve a evaluar con el motor y la lista de motivos que nunca se aprueban está en código; la persona decide en el tablero |
+| Desempatar cuando las lecturas no coinciden | code | Cuándo se llama al lector de desempate, qué campos se comparan y cuándo escala lo decide el código (`decide` en `src/agent/pipeline.ts` con `compareReadings`); Sonnet 5.5 lee con el mismo bloque fijo de 10 reglas que los otros dos lectores y no elige nada |
+| Mantener la lista de proveedores autorizados | code | Lo hace una persona por la API y el tablero con esquemas cerrados; la cuenta por confirmar, `SAME_ACTOR`, la nota de verificación y que confirmar no pague se aplican en código; el agente no toca la lista y ningún modelo participa |
 
 ## 2. Decision
 
@@ -45,6 +47,10 @@ skill added while we are at it. With no skill authored, the Loader line is —.
   varíe por caso o por cliente y que inflaría las instrucciones fijas. Revisado contra el build v2:
   el escalamiento con SUSPICIOUS_TEXT cuando las lecturas no coinciden y las alarmas que avisan
   son código; el bloque fijo del lector no cambió (10 reglas), así que la prueba da lo mismo.
+  Revisado contra el build v3: el desempate agrega un tercer lector que usa el mismo bloque fijo, y
+  la lista de proveedores autorizados, el historial en palabras comunes y las gráficas del tablero
+  son código; el bloque fijo del lector sigue sin cambios desde el primer build
+  (`git log -- src/extract/prompt.ts` muestra un solo commit), así que la decisión sigue en none.
 - **Loader:** —
 
 ## 3. Skills
@@ -73,3 +79,8 @@ The concrete changes that reopen this decision.
 - El spec agrega una capacidad procedimental por naturaleza, como conciliar estados de cuenta o
   pedir al proveedor una factura corregida.
 - El lector recibe herramientas o el flujo pasa a un bucle de agente donde el modelo elige pasos.
+- El desempate deja de compararse campo por campo y pasa a juzgar con criterio propio cuál lectura
+  vale, o necesita instrucciones distintas a las de los otros dos lectores.
+- Confirmar una cuenta de proveedor pasa a verificarse contra fuentes externas que cambian por
+  país (por ejemplo bancos o registros fiscales de cada país), con un procedimiento distinto en
+  cada uno.
