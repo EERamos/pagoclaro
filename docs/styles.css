@@ -383,7 +383,7 @@ details.tech[open] > summary::before { transform: rotate(45deg); }
 .vlist .wide { grid-column: 1 / -1; }
 .pending-acc { display: flex; justify-content: space-between; align-items: center; gap: 12px 20px; flex-wrap: wrap; padding: 14px 16px; border-radius: var(--r-md); background: var(--warn-soft); }
 .pending-acc p { font-size: 14.5px; }
-.pending-acc .small { font-size: 13.5px; color: var(--ink-2); margin-top: 2px; }
+.pending-acc p.small { font-size: 13.5px; color: var(--ink-2); margin-top: 2px; }
 .pending-acc .waiting { font-weight: 600; color: var(--warn); }
 .inline-form { padding: 16px; border-radius: var(--r-md); border: 1px solid var(--line-2); background: var(--paper); display: grid; gap: 14px; }
 .inline-form .grid-form { margin-bottom: 0; }
