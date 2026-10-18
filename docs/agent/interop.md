@@ -1,11 +1,11 @@
 ---
 agent_name: pagoclaro
-version: 2
+version: 3
 status: approved         # draft | approved — approved only by the owner at the gate
 date: 2026-10-17
 track: heavy
-spec_version: 1
-build_version: 2
+spec_version: 3
+build_version: 3
 ---
 
 # PagoClaro — Interop decision
@@ -24,10 +24,11 @@ anticipates. A credentialed internal store gets a row too. The first test that h
 
 | Relationship | Verdict | Reason |
 |---|---|---|
-| API de Anthropic, Claude Opus 5.5 y Claude Haiku 5.5 (`read_invoice_primary`, `read_invoice_check`), con la API key de los lectores | tool | Una factura entra y una lectura con esquema cerrado sale, sin herramientas ni historial; los dos contratos están en el spec y el flujo fijo los llama |
-| Almacén JSON de PagoClaro en `data/` con catálogo, acuerdos, libro de pagos, tabla de tipos de cambio, reglas versionadas, registro y telemetría (`find_vendor`, `find_agreement`, `query_ledger`, `convert_currency`, `evaluate_rules`, `record_payment`, `record_hold`) | tool | Almacén interno detrás de la interfaz de repositorio: cada herramienta es una lectura o una escritura de semántica fija en una transacción; nadie del otro lado razona |
-| Personas de finanzas en el tablero: aprobadores de pendientes y quien cambia las reglas (`escalate_to_human`) | hitl | Son personas; el spec las gobierna con su compuerta (sección 8: aprobación que reevalúa, 72 horas, nadie aprueba lo que subió) |
-| Tablero web y API HTTP de PagoClaro, el canal por el que finanzas u otro sistema sube facturas con el código de acceso | tool | Una petición, una respuesta: se sube una factura y vuelve la decisión con su explicación; esquemas cerrados y la decisión nunca viene del cliente (BHV-039) |
+| API de Anthropic, Claude Opus 5.5, Claude Haiku 5.5 y Claude Sonnet 5.5 (`read_invoice_primary`, `read_invoice_check`, `read_invoice_tiebreak`), con la API key de los lectores | tool | Una factura entra y una lectura con esquema cerrado sale, sin herramientas ni historial; los tres contratos están en el spec y el flujo fijo los llama; el código decide cuándo llamar al de desempate y qué campos comparar, Sonnet no elige nada |
+| Almacén JSON de PagoClaro en `data/` con catálogo de proveedores autorizados, acuerdos, libro de pagos, tabla de tipos de cambio, reglas versionadas, registro y telemetría (`find_vendor`, `find_agreement`, `query_ledger`, `convert_currency`, `evaluate_rules`, `record_payment`, `record_hold`) | tool | Almacén interno detrás de la interfaz de repositorio: cada herramienta es una lectura o una escritura de semántica fija en una transacción; nadie del otro lado razona |
+| Personas de finanzas en el tablero: aprobadores de pendientes y quien cambia las reglas (`escalate_to_human`) | hitl | Son personas; el spec las gobierna con su compuerta (sección 8: aprobación que reevalúa, 72 horas, nadie aprueba lo que subió; con lecturas distintas la principal llega precargada) |
+| Personas de finanzas que mantienen la lista de proveedores autorizados: agregan, desactivan, cambian una cuenta con motivo y confirman una cuenta por confirmar | hitl | Son personas y el spec las gobierna (secciones 3, 4 y 8): una cuenta nueva queda por confirmar, la confirma alguien distinto de quien la cambió con una nota de verificación por otro canal, y confirmar no paga nada; el agente nunca cambia la lista |
+| Tablero web y API HTTP de PagoClaro, el canal por el que finanzas u otro sistema sube facturas y mantiene la lista de proveedores con el código de acceso | tool | Una petición, una respuesta: se sube una factura y vuelve la decisión con su explicación, o se agrega, cambia o confirma un proveedor y vuelve su estado; esquemas cerrados y la decisión nunca viene del cliente (BHV-039, BHV-047, BHV-051) |
 | Proveedores que emiten las facturas en PDF, imagen, correo .eml o chat | tool | Nunca conversan con el agente: su documento solo entra como dato a una lectura; lo que intente dar órdenes se copia y escala (BHV-008 a BHV-010) |
 | Registro de npm, solo al instalar dependencias | tool | Una petición por paquete al instalar con `npm ci`, verificada contra el `integrity` del lockfile; no participa en tiempo de ejecución |
 
@@ -42,7 +43,10 @@ future; the future has a re-visit trigger.
   finanzas son una compuerta humana que el spec ya gobierna. El diseño lo dice igual: "A2A: no; el
   agente no habla con otros agentes. Otros sistemas lo llaman por su API HTTP". Revisado contra el
   build v2: las alarmas nuevas salen por `/health`, `/api/summary`, el tablero y la consola del
-  servidor, todos ya en la tabla o locales; no aparece ninguna contraparte nueva.
+  servidor, todos ya en la tabla o locales; no aparece ninguna contraparte nueva. Revisado contra el
+  build v3: Sonnet 5.5 es un tercer lector por la misma API, con una petición y una lectura como los
+  otros dos, y la lista de proveedores autorizados la mantienen personas, no otro agente; tampoco
+  aparece ninguna contraparte que razone o negocie por su cuenta.
 
 ## 3. A2A
 
@@ -67,6 +71,9 @@ The concrete changes that reopen this decision.
 - Un proveedor o su agente puede contestar o negociar con PagoClaro, por ejemplo para corregir una
   factura o confirmar una cuenta por otro canal, en lugar de que lo haga una persona.
 - El agente se lista en un registro de agentes.
+- Confirmar una cuenta de proveedor pasa a hacerse contra un servicio de verificación de cuentas
+  bancarias: si responde una vez con sí o no es tool; si pide datos, espera o escala por su cuenta
+  puede ser a2a.
 - Un segundo agente entra a este repositorio y nombra a PagoClaro en su Delegation o sus Delegates.
 
 ## 5. Inbound contracts
