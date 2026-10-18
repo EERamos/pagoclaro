@@ -15,7 +15,8 @@ import type { State } from '../src/store/store';
 import { renderEml, type FixtureInvoice } from '../runner/render';
 import { materialize, type CaseFile } from '../runner/harness';
 import { OracleExtractor } from '../runner/oracle';
-import { metrics } from '../src/metrics';
+import { metrics, whatIf } from '../src/metrics';
+import { summaryInvoice } from '../src/http';
 
 const reading: InvoiceReading = {
   issuer_name: 'A',
@@ -157,5 +158,40 @@ describe('tablero', () => {
     const b = metrics(ctx.state(), 0, 50).budget;
     // 10,000.00 USD committed before the month's run plus the 2,289.00 USD just paid (AUR-2026-0917).
     expect(b).toEqual({ period: '2026-10', budget_usd: 60000, committed_usd: 12289 });
+  });
+});
+
+describe('tablero: datos de las gráficas', () => {
+  const run = async (id: string) => {
+    const dir = id.startsWith('ADV') ? 'adversarial' : 'golden';
+    const c = JSON.parse(readFileSync(join('evals', dir, `${id}.json`), 'utf8')) as CaseFile;
+    const p = new OracleExtractor('claude-opus-5-5');
+    const k = new OracleExtractor('claude-haiku-5-5');
+    const s = new OracleExtractor('claude-sonnet-5-5');
+    return materialize(c, { primary: p, check: k, tiebreak: s, onRender: (sha, inv) => (p.register(sha, inv), k.register(sha, inv), s.register(sha, inv)) });
+  };
+
+  test('la lista dice de qué proveedor es, cuándo vence y si hizo falta el desempate', async () => {
+    const ctx = await run('EVL-036');
+    const s = ctx.state();
+    const row = summaryInvoice(Object.values(s.invoices)[0], s);
+    // Readings that disagree escalate before the vendor is looked up.
+    expect(row.vendor_id).toBeNull();
+    expect(row.readers).toBe('tiebreak');
+    expect(row.expires_at).toBe(Object.values(s.pending)[0].expires_at);
+    const paid = await run('EVL-013');
+    const p = summaryInvoice(Object.values(paid.state().invoices)[0], paid.state());
+    expect(p.vendor_id).toBe('ven_aurora');
+    expect(p.readers).toBe('agree');
+    expect(p.expires_at).toBeNull();
+  });
+
+  test('la simulación de reglas cuenta las decisiones antes y después', async () => {
+    const ctx = await run('EVL-013');
+    const s = ctx.state();
+    const r = whatIf(s, { ...s.rules_versions[0].rules, auto_approve_up_to_usd: 1000 });
+    expect(r.before).toEqual({ PAY: 1, HOLD: 0, ESCALATE: 0 });
+    expect(r.after).toEqual({ PAY: 0, HOLD: 0, ESCALATE: 1 });
+    expect(r.changed).toBe(1);
   });
 });

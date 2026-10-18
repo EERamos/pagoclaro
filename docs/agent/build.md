@@ -248,6 +248,21 @@ written.
   `tests/infra.test.ts::el presupuesto del mes se cuenta como lo cuenta el libro: lo comprometido antes más lo pagado en el mes`.
   Es solo lectura y no toca ninguna decisión. Probado en el navegador en escritorio, a 375 px sin
   desplazamiento horizontal, en modo oscuro y en la demo estática.
+- Segunda vuelta de gráficas (2026-10-18, con propuestas de Fable 5.1 que Edgar pidió consultar):
+  el panorama siempre tiene cuatro celdas (4, 2+2 o 1 columna, nunca un hueco); "Cómo se
+  decidieron" suma la barra por dinero y cuántas lecturas coincidieron o desempató un tercero; el
+  presupuesto muestra lo usado y lo pendiente rayado con "si apruebas lo pendiente llegarías a…";
+  un aviso dice cuántas facturas y cuánto dinero esperan una cuenta por confirmar; cada pendiente
+  dice "vence en N h" y salen ordenadas por vencimiento; el detalle trae el camino de la factura
+  en cuatro pasos; Ajustes compara "Hoy" con "Con estos ajustes" al simular y dice junto a cada
+  regla cuántas facturas detuvo, con enlace a ellas; Proveedores muestra cuánto va usado de cada
+  orden de compra y lo que espera decisión. Para eso la lista de facturas de la API suma
+  `vendor_id`, `expires_at` y `readers`, en una sola función que comparten la API y la demo
+  estática, y la simulación de reglas devuelve `before` y `after`; pruebas primero en
+  `tests/infra.test.ts` ("la lista dice de qué proveedor es, cuándo vence y si hizo falta el
+  desempate" y "la simulación de reglas cuenta las decisiones antes y después"). Se quitó la
+  animación de las barras: en una pestaña que no pinta se quedaban en cero, y es movimiento
+  decorativo. Contraste de 4.5:1 o más en todo el texto nuevo, en modo claro y oscuro.
 - Demo v3 (`npm run seed`, 0.02 USD por la única factura nueva): 24 facturas, el alta de
   Consultores Andinos con su cuenta por confirmar y una llave Pix nueva de Tradu Pro por confirmar,
   con TRP-221 esperando por ella; la demo estática no lleva ninguna cuenta completa.

@@ -3,7 +3,7 @@
 import { copyFileSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { verifyChain } from '../src/domain/audit';
-import { publicInvoice, publicVendor } from '../src/http';
+import { publicInvoice, publicVendor, summaryInvoice } from '../src/http';
 import { metrics } from '../src/metrics';
 import { currentRules, type State } from '../src/store/store';
 
@@ -19,14 +19,9 @@ try {
   spendUsd = 0;
 }
 const invoices = Object.values(s.invoices).sort((a, b) => b.received_at.localeCompare(a.received_at));
-// Plain-words sentences (audit summary_es/en) when the state has them: the dashboard shows the
-// last decision's sentence in the list and the per-invoice history; it has fallbacks otherwise.
+// Plain-words sentences (audit summary_es/en) for the per-invoice history.
 type Said = { summary_es?: string; summary_en?: string };
 const said = (e: unknown) => e as Said;
-const lastSaid = (id: string) => {
-  const e = [...s.audit].reverse().find((x) => x.invoice_id === id && said(x).summary_es && !/^(invoice\.received|approval\.)/.test(x.type));
-  return e ? { summary_es: said(e).summary_es, summary_en: said(e).summary_en ?? null } : {};
-};
 const data = {
   generated_from: src,
   summary: {
@@ -34,7 +29,8 @@ const data = {
     writes: false,
     metrics: metrics(s, spendUsd, 50),
     rules: currentRules(s),
-    invoices: invoices.map((i) => ({ id: i.id, status: i.status, reasons: i.reasons, issuer_name: i.issuer_name, invoice_number: i.invoice_number, total: i.total, currency: i.currency, amount_usd: i.amount_usd, received_at: i.received_at, kind: i.document.kind, filename: i.document.filename, uploaded_by: i.uploaded_by, ...lastSaid(i.id) })),
+    // The same row as GET /api/summary.
+    invoices: invoices.map((i) => summaryInvoice(i, s)),
   },
   details: Object.fromEntries(
     invoices.map((i) => {

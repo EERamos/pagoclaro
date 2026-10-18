@@ -28,6 +28,19 @@
       lim_title: 'Contra tus límites', lim_amount: 'Esta factura', lim_auto: 'Sin revisión hasta {v}', lim_cap: 'Tope {v}',
       lim_under: '{amt}: usa el {p} % de lo que se paga sin revisión.', lim_over: '{amt}: pasa por {d} lo que se paga sin revisión, así que necesita a una persona.', lim_overPaid: '{amt}: pasó por {d} lo que se paga sin revisión, por eso la aprobó una persona antes de pagarla.', lim_overCap: '{amt}: pasa el tope por factura de {cap}, así que no se paga ni con aprobación.',
       lim_aria: '{amt} contra {auto} sin revisión y {cap} de tope',
+      c_segUsdAria: '{g}: {usd}, {p} % del dinero. Mostrar en la lista.', c_byCount: 'Por número de facturas', c_byMoney: 'Por dinero (USD)',
+      c_readers: 'Los dos lectores coincidieron en {a} de {n}.', c_readersTie: 'Los dos lectores coincidieron en {a} de {n}; en {t} desempató un tercero.',
+      c_budgetNone: 'Todavía no hay datos del presupuesto de este mes.', c_toSettings: 'Ver el presupuesto en Ajustes',
+      c_kUsed: 'Ya usado', c_kWaiting: 'Si apruebas lo pendiente', c_ifAll: 'Si apruebas lo pendiente ({w}), llegarías a {all} ({p}).', c_ifAllOver: 'Si apruebas lo pendiente ({w}), llegarías a {all}: te pasarías por {over}.',
+      c_paidMore: 'y {n} proveedores más',
+      unblockLine1: '1 factura ({usd}) espera a que alguien confirme la cuenta nueva de {who}.', unblockLineN: '{n} facturas ({usd}) esperan a que alguien confirme cuentas nuevas: {who}.', unblockSee: 'Ver cuáles', unblockGo: 'Ir a Proveedores', facetAccount: 'Mostrando: esperan una cuenta por confirmar',
+      dueNow: 'vence ya', dueH: 'vence en {h} h', dueD: 'vence en {d} días',
+      p_title: 'Camino de la factura', p_received: 'Recibida', p_read: 'Leída', p_readOk: 'Dos lectores coincidieron', p_readTie: 'Desempató un tercer lector', p_readSecond: 'Un tercer lector suplió al segundo',
+      p_readDiff: 'Las lecturas no coinciden', p_readFail: 'No se pudo leer', p_readNone: 'Sin lectura', p_rules: 'Tus reglas', p_rulesV: '{p} de {n} cumplidas', p_rulesNone: 'Aún no se revisaron',
+      p_result: 'Resultado', p_paid: 'Pagada por {rail} (simulado)', p_wait: 'Espera a una persona', p_waitUntil: 'Espera a una persona hasta el {d}', p_held: 'Frenada: no se pagó',
+      p_rejected: 'Rechazada', p_expired: 'Venció sin pagarse', p_voided: 'Pago anulado', p_error: 'No se pudo procesar',
+      poLine: 'Usado {used} de {total} ({p}).', poWait: 'Esperan decisión {w} más.', poWaitOver: 'Esperan decisión {w} más, y no alcanzaría el saldo.',
+      waiting1u: '1 factura ({usd}) espera por esta cuenta.', waitingNu: '{n} facturas ({usd}) esperan por esta cuenta.',
       attention: 'Atención:', alertOut: 'Hay {n} pagos fuera de reglas. Revísalos en el historial.', alertChain: 'El historial no cuadra. Mira el detalle técnico en Historial.',
       // list
       upload: 'Subir factura', uploadHint: 'o arrástrala aquí. PDF, foto, correo o chat, hasta 10 MB.', uploadOff: 'En esta demo no se pueden subir facturas.', reading: 'Leyendo la factura…', tooBig: 'El archivo pasa de 10 MB. Prueba con uno más liviano.',
@@ -109,6 +122,9 @@
       versionLine: 'Versión {v}, guardada por {who} el {d}.', versionOnly: 'Versión {v}.', savedToast: 'Ajustes guardados. Las facturas nuevas se revisan con ellos.',
       wiNone: 'Con estos ajustes ninguna de las {n} decisiones del agente cambiaría.', wiSome1: 'Con estos ajustes cambiaría 1 de {n} decisiones del agente:', wiSomeN: 'Con estos ajustes cambiarían {c} de {n} decisiones del agente:', wiRow: '{inv}: hoy {from}; con estos ajustes {to}.',
       o_now_PAY: 'se paga', o_now_HOLD: 'se frena', o_now_ESCALATE: 'pide revisión', o_new_PAY: 'se pagaría', o_new_HOLD: 'se frenaría', o_new_ESCALATE: 'pediría revisión',
+      o_k_PAY: 'Se pagan solas', o_k_ESCALATE: 'Piden revisión', o_k_HOLD: 'Se frenan', o_new_PAY_pl: 'se pagarían solas', o_new_ESCALATE_pl: 'pedirían revisión', o_new_HOLD_pl: 'se frenarían', o_new_PAY_1: 'se pagaría sola', o_new_ESCALATE_1: 'pediría revisión', o_new_HOLD_1: 'se frenaría',
+      wiToday: 'Hoy', wiWith: 'Con estos ajustes', wiMore: '{n} más {what}', wiLess: '{n} menos {what}', wiDelta: 'Con estos ajustes, {list}.',
+      hitNone: 'No ha detenido ninguna factura.', hit1: 'Detuvo 1 de {total} facturas · ver', hitN: 'Detuvo {n} de {total} facturas · ver', hitAria: '{n} de {total} facturas tienen este motivo. Verlas en Facturas.',
       capLtAuto: '«Pagar sin revisión hasta» no puede ser mayor que el «Tope por factura».', badNumber: 'Escribe un número entre {min} y {max}.', badInt: 'Escribe un número entero entre {min} y {max}.',
       fxTitle: 'Tipos de cambio que usa PagoClaro', fxLine: 'Tabla del {d}. {src}.',
       // history
@@ -134,6 +150,19 @@
       lim_title: 'Against your limits', lim_amount: 'This invoice', lim_auto: 'No review up to {v}', lim_cap: 'Cap {v}',
       lim_under: '{amt}: uses {p}% of what is paid without review.', lim_over: '{amt}: {d} over what is paid without review, so it needs a person.', lim_overPaid: '{amt}: {d} over what is paid without review, so a person approved it before it was paid.', lim_overCap: '{amt}: over the {cap} cap per invoice, so it is not paid even with an approval.',
       lim_aria: '{amt} against {auto} without review and a {cap} cap',
+      c_segUsdAria: '{g}: {usd}, {p}% of the money. Show them in the list.', c_byCount: 'By number of invoices', c_byMoney: 'By money (USD)',
+      c_readers: 'Both readers agreed on {a} of {n}.', c_readersTie: 'Both readers agreed on {a} of {n}; a third one broke the tie on {t}.',
+      c_budgetNone: 'There is no budget data for this month yet.', c_toSettings: 'See the budget in Settings',
+      c_kUsed: 'Already used', c_kWaiting: 'If you approve what waits', c_ifAll: 'If you approve what waits ({w}), you would reach {all} ({p}).', c_ifAllOver: 'If you approve what waits ({w}), you would reach {all}: {over} over.',
+      c_paidMore: 'and {n} more vendors',
+      unblockLine1: '1 invoice ({usd}) waits for someone to confirm the new account of {who}.', unblockLineN: '{n} invoices ({usd}) wait for someone to confirm new accounts: {who}.', unblockSee: 'See which', unblockGo: 'Go to Vendors', facetAccount: 'Showing: waiting for an account to be confirmed',
+      dueNow: 'due now', dueH: 'due in {h} h', dueD: 'due in {d} days',
+      p_title: "The invoice's path", p_received: 'Received', p_read: 'Read', p_readOk: 'Both readers agreed', p_readTie: 'A third reader broke the tie', p_readSecond: 'A third reader stood in for the second',
+      p_readDiff: 'The readings do not match', p_readFail: 'Could not be read', p_readNone: 'No reading', p_rules: 'Your rules', p_rulesV: '{p} of {n} met', p_rulesNone: 'Not checked yet',
+      p_result: 'Result', p_paid: 'Paid by {rail} (simulated)', p_wait: 'Waits for a person', p_waitUntil: 'Waits for a person until {d}', p_held: 'Held: not paid',
+      p_rejected: 'Rejected', p_expired: 'Expired unpaid', p_voided: 'Payment voided', p_error: 'Could not be processed',
+      poLine: '{used} of {total} used ({p}).', poWait: '{w} more waits for a decision.', poWaitOver: '{w} more waits for a decision, and the balance would not cover it.',
+      waiting1u: '1 invoice ({usd}) waits for this account.', waitingNu: '{n} invoices ({usd}) wait for this account.',
       attention: 'Heads up:', alertOut: 'There are {n} payments outside the rules. Check them in History.', alertChain: 'The history does not add up. See the technical details in History.',
       upload: 'Upload invoice', uploadHint: 'or drop it here. PDF, photo, email or chat, up to 10 MB.', uploadOff: 'Invoices cannot be uploaded in this demo.', reading: 'Reading the invoice…', tooBig: 'The file is over 10 MB. Try a smaller one.',
       uploadedToast: 'Invoice checked: {st}.', emptyFilter: 'No invoices in this group.', emptyAll: 'No invoices yet. Upload the first one and PagoClaro will tell you whether it pays it, stops it or leaves it for your review.',
@@ -208,6 +237,9 @@
       versionLine: 'Version {v}, saved by {who} on {d}.', versionOnly: 'Version {v}.', savedToast: 'Settings saved. New invoices are checked with them.',
       wiNone: 'With these settings none of the agent’s {n} decisions would change.', wiSome1: 'With these settings 1 of the agent’s {n} decisions would change:', wiSomeN: 'With these settings {c} of the agent’s {n} decisions would change:', wiRow: '{inv}: today it {from}; with these settings it {to}.',
       o_now_PAY: 'is paid', o_now_HOLD: 'is stopped', o_now_ESCALATE: 'asks for review', o_new_PAY: 'would be paid', o_new_HOLD: 'would be stopped', o_new_ESCALATE: 'would ask for review',
+      o_k_PAY: 'Paid on their own', o_k_ESCALATE: 'Ask for review', o_k_HOLD: 'Stopped', o_new_PAY_pl: 'would be paid on their own', o_new_ESCALATE_pl: 'would ask for review', o_new_HOLD_pl: 'would be stopped', o_new_PAY_1: 'would be paid on its own', o_new_ESCALATE_1: 'would ask for review', o_new_HOLD_1: 'would be stopped',
+      wiToday: 'Today', wiWith: 'With these settings', wiMore: '{n} more {what}', wiLess: '{n} fewer {what}', wiDelta: 'With these settings, {list}.',
+      hitNone: 'Has not stopped any invoice.', hit1: 'Stopped 1 of {total} invoices · see', hitN: 'Stopped {n} of {total} invoices · see', hitAria: '{n} of {total} invoices have this reason. See them in Invoices.',
       capLtAuto: '“Pay without review up to” cannot be higher than the “Cap per invoice”.', badNumber: 'Type a number between {min} and {max}.', badInt: 'Type a whole number between {min} and {max}.',
       fxTitle: 'Exchange rates PagoClaro uses', fxLine: 'Table from {d}. {src}.',
       hTitle: 'History', hLead: 'Everything that happened, in order: what PagoClaro decided, what each person decided and what changed.', chainOk: 'Complete and unaltered', chainBad: 'Does not add up from record {n}', chainCount1: '1 record', chainCountN: '{n} records',
@@ -519,30 +551,63 @@
       <div class="paid-total"><span class="f-label">${esc(t('amountPaid'))}</span><span class="f-num">${moneyHtml(m.usd_paid ?? 0, 'USD')}</span>
       <span class="trust${out ? ' bad' : ''}">${out ? ICON.stop : ICON.ok}${esc(tf('outOfRules', { n: out }))}</span></div>`;
   }
-  /** A chart's filter on top of the state filter: one reason, or one vendor that was paid. */
+  /**
+   * A chart's filter on top of the state filter: one reason (only what still needs a person, from the
+   * Panorama, or every invoice it touched, from Ajustes), one vendor that was paid, or the invoices
+   * waiting on an account to be confirmed.
+   */
   function inFacet(inv) {
     const f = S.facet;
     if (!f) return true;
-    if (f.kind === 'reason') return (inv.reasons || []).includes(f.value) && WHY_STATES.has(inv.status);
+    if (f.kind === 'reason') return (inv.reasons || []).includes(f.value) && (f.scope === 'all' || WHY_STATES.has(inv.status));
+    if (f.kind === 'account') return inv.status === 'PENDING' && (inv.reasons || []).includes('ACCOUNT_PENDING');
     return inv.status === 'PAID' && (inv.issuer_name || inv.filename) === f.value;
   }
+  /** Pending first, the one that expires soonest on top. */
   function sortedInvoices() {
     const inv = (S.summary.invoices || []).filter((i) => inGroup(i, S.filter) && inFacet(i));
-    return [...inv.filter((i) => i.status === 'PENDING'), ...inv.filter((i) => i.status !== 'PENDING')];
+    const pend = inv.filter((i) => i.status === 'PENDING').sort((a, b) => String(a.expires_at || '9').localeCompare(String(b.expires_at || '9')));
+    return [...pend, ...inv.filter((i) => i.status !== 'PENDING')];
+  }
+  /** The clock the data is read against: now, or the moment the static snapshot was taken. */
+  function nowRef() {
+    if (S.mode !== 'static') return Date.now();
+    const ats = (S.summary?.invoices || []).map((i) => Date.parse(i.received_at)).filter(Number.isFinite);
+    return ats.length ? Math.max(...ats) : Date.now();
+  }
+  function expiresIn(iso) {
+    const h = Math.round((Date.parse(iso) - nowRef()) / 3_600_000);
+    if (!Number.isFinite(h)) return '';
+    if (h <= 0) return t('dueNow');
+    return h < 48 ? tf('dueH', { h }) : tf('dueD', { d: Math.round(h / 24) });
   }
 
   // ---- charts: plain HTML and CSS, every number also written in words
   const WHY_STATES = new Set(['PENDING', 'HELD']);
   const pct = (n, total) => (total ? Math.round((n / total) * 100) : 0);
   const usdShort = (n) => `${Number(n).toLocaleString(locale(), { maximumFractionDigits: 0 })} USD`;
+  const usdCompact = (n) => (n >= 1000 ? `${Number(n / 1000).toLocaleString(locale(), { maximumFractionDigits: n >= 10000 ? 0 : 1 })}k` : String(Math.round(n)));
+  const pctTxt = (p) => `${p}${S.lang === 'es' ? ' ' : ''}%`;
+  /** By number and by money: half of the invoices can be a quarter of the money. */
   function decidedChart(inv, m) {
+    const groups = ['paid', 'review', 'stopped'].map((g) => {
+      const mine = inv.filter((i) => inGroup(i, g));
+      return { g, n: mine.length, usd: mine.reduce((a, i) => a + Number(i.amount_usd || 0), 0) };
+    });
     const total = inv.length;
-    const segs = ['paid', 'review', 'stopped'].map((g) => ({ g, n: inv.filter((i) => inGroup(i, g)).length })).filter((s) => s.n);
-    const bar = segs.map((s) => `<button type="button" class="seg t-${GROUP_TONE[s.g]}" style="flex-grow:${s.n}" data-filter="${s.g}" aria-pressed="${S.filter === s.g}"
-        aria-label="${esc(tf('c_segAria', { g: t(`f_${s.g}`), n: s.n, p: pct(s.n, total) }))}"><span>${s.n}</span></button>`).join('');
-    const legend = segs.map((s) => `<li class="t-${GROUP_TONE[s.g]}"><i aria-hidden="true"></i>${esc(t(`f_${s.g}`))} <b>${pct(s.n, total)}${S.lang === 'es' ? ' ' : ''}%</b></li>`).join('');
+    const totalUsd = groups.reduce((a, s) => a + s.usd, 0);
+    const bar = (key, label) => groups.filter((s) => s[key] > 0).map((s) => `<button type="button" class="seg t-${GROUP_TONE[s.g]}" style="flex-grow:${s[key]}" data-filter="${s.g}" aria-pressed="${S.filter === s.g}"
+        aria-label="${esc(tf(key === 'n' ? 'c_segAria' : 'c_segUsdAria', { g: t(`f_${s.g}`), n: s.n, usd: usdShort(s.usd), p: pct(s[key], key === 'n' ? total : totalUsd) }))}"><span>${esc(label(s))}</span></button>`).join('');
+    const legend = groups.filter((s) => s.n).map((s) => `<li class="t-${GROUP_TONE[s.g]}"><i aria-hidden="true"></i>${esc(t(`f_${s.g}`))} <b>${s.n}</b> <span class="usd">· ${esc(usdShort(s.usd))}</span></li>`).join('');
     const alone = m.processed ? `<p class="c-note">${esc(tf('c_alone', { n: m.decided_by_agent ?? 0, t: m.processed, p: plainNum(m.autonomy_pct ?? 0) }))}</p>` : '';
-    return `<div class="c-cell"><h4>${esc(t('c_decided'))}</h4><div class="stack">${bar}</div><ul class="legend">${legend}</ul>${alone}</div>`;
+    const read = inv.filter((i) => i.readers);
+    const agree = read.filter((i) => i.readers === 'agree').length;
+    const tie = read.filter((i) => i.readers === 'tiebreak' || i.readers === 'second_reader').length;
+    const readers = read.length ? `<p class="c-note">${esc(tie ? tf('c_readersTie', { a: agree, n: read.length, t: tie }) : tf('c_readers', { a: agree, n: read.length }))}</p>` : '';
+    return `<div class="c-cell"><h4>${esc(t('c_decided'))}</h4>
+      <p class="rowlab"><span>${esc(t('c_byCount'))}</span></p><div class="stack">${bar('n', (s) => s.n)}</div>
+      ${totalUsd > 0 ? `<p class="rowlab"><span>${esc(t('c_byMoney'))}</span></p><div class="stack money">${bar('usd', (s) => usdCompact(s.usd))}</div>` : ''}
+      <ul class="legend">${legend}</ul>${alone}${readers}</div>`;
   }
   function hbars(rows, max) {
     return `<ul class="hbars">${rows.map((r) => `<li><button type="button" class="hbar${r.tone ? ` t-${r.tone}` : ''}" ${r.data} aria-pressed="${r.on}" aria-label="${esc(r.aria)}">
@@ -552,10 +617,11 @@
   function whyChart(inv) {
     const count = {};
     for (const i of inv) if (WHY_STATES.has(i.status)) for (const c of new Set(i.reasons || [])) if (c !== 'NOT_APPROVABLE') count[c] = (count[c] || 0) + 1;
-    const all = Object.entries(count).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    // What stops a payment for good reads first, then what a person can still clear.
+    const all = Object.entries(count).sort((a, b) => Number(HOLD_REASONS.has(b[0])) - Number(HOLD_REASONS.has(a[0])) || b[1] - a[1] || a[0].localeCompare(b[0]));
     if (!all.length) return `<div class="c-cell"><h4>${esc(t('c_why'))}</h4><p class="c-empty">${esc(t('c_whyNone'))}</p></div>`;
-    const top = all.slice(0, 6);
-    const max = top[0][1];
+    const top = all.slice(0, 5);
+    const max = Math.max(...top.map(([, n]) => n));
     const rows = top.map(([code, n]) => {
       const label = SHORT[S.lang][code] || reasonText(code);
       return { label, value: String(n), n, tone: HOLD_REASONS.has(code) ? 'stop' : 'warn', data: `data-facet="reason" data-value="${esc(code)}"`, on: S.facet?.kind === 'reason' && S.facet.value === code, aria: tf('c_whyAria', { r: label, n }) };
@@ -563,17 +629,27 @@
     const more = all.length > top.length ? `<p class="c-note">${esc(tf('c_whyMore', { n: all.length - top.length }))}</p>` : '';
     return `<div class="c-cell"><h4>${esc(t('c_why'))}</h4>${hbars(rows, max)}${more}</div>`;
   }
-  function budgetChart(m) {
+  /** What is already used, and where approving everything that waits would take the month. */
+  function budgetChart(m, inv) {
     const b = m.budget;
-    if (!b || !b.budget_usd) return '';
+    const head = `<h4>${esc(t('c_budget'))}${b?.period ? ` <span class="c-period">${esc(dt(`${b.period}-15T12:00:00`, { month: 'long', year: 'numeric' }))}</span>` : ''}</h4>`;
+    if (!b || !b.budget_usd) return `<div class="c-cell">${head}<p class="c-empty">${esc(t('c_budgetNone'))}</p><a class="c-link" href="#ajustes">${esc(t('c_toSettings'))}</a></div>`;
+    const waiting = inv.filter((i) => i.status === 'PENDING').reduce((a, i) => a + Number(i.amount_usd || 0), 0);
     const p = pct(b.committed_usd, b.budget_usd);
+    const ifAll = b.committed_usd + waiting;
+    const pAll = pct(ifAll, b.budget_usd);
     const tone = p >= 100 ? 'stop' : p >= 80 ? 'warn' : 'ok';
+    const scale = Math.max(b.budget_usd, ifAll);
+    const w = (v) => `${((v / scale) * 100).toFixed(2)}%`;
     const left = b.budget_usd - b.committed_usd;
-    const line2 = left >= 0 ? tf('c_budgetLeft', { left: usdShort(left) }) : tf('c_budgetOver', { over: usdShort(-left) });
-    return `<div class="c-cell"><h4>${esc(t('c_budget'))} <span class="c-period">${esc(dt(`${b.period}-15T12:00:00`, { month: 'long', year: 'numeric' }))}</span></h4>
+    const line1 = tf('c_budgetLine', { used: usdShort(b.committed_usd), budget: usdShort(b.budget_usd) }) + ' ' + (left >= 0 ? tf('c_budgetLeft', { left: usdShort(left) }) : tf('c_budgetOver', { over: usdShort(-left) }));
+    const line2 = waiting > 0 ? (ifAll > b.budget_usd ? tf('c_ifAllOver', { w: usdShort(waiting), all: usdShort(ifAll), over: usdShort(ifAll - b.budget_usd) }) : tf('c_ifAll', { w: usdShort(waiting), all: usdShort(ifAll), p: pctTxt(pAll) })) : '';
+    return `<div class="c-cell">${head}
       <p class="c-big"><span class="money">${esc(plainNum(p))}<span class="cur"> %</span></span></p>
-      <div class="meter t-${tone}" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.min(p, 100)}" aria-label="${esc(tf('c_budgetAria', { p }))}"><span style="--w:${Math.min(p, 100)}%"></span></div>
-      <p class="c-note">${esc(tf('c_budgetLine', { used: usdShort(b.committed_usd), budget: usdShort(b.budget_usd) }))} ${esc(line2)}</p></div>`;
+      <div class="bullet t-${tone}${ifAll > b.budget_usd ? ' over' : ''}" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.min(p, 100)}" aria-label="${esc(tf('c_budgetAria', { p }))}">
+        <span class="b-used" style="--w:${w(b.committed_usd)}"></span>${waiting > 0 ? `<span class="b-wait" style="--w:${w(waiting)}"></span>` : ''}</div>
+      <p class="b-key"><span class="t-${tone}"><i aria-hidden="true"></i>${esc(t('c_kUsed'))}</span>${waiting > 0 ? `<span><i class="wait" aria-hidden="true"></i>${esc(t('c_kWaiting'))}</span>` : ''}</p>
+      <p class="c-note">${esc(line1)}${line2 ? ` ${esc(line2)}` : ''}</p></div>`;
   }
   function paidChart(inv) {
     const by = new Map();
@@ -593,7 +669,18 @@
       const nTxt = e.n === 1 ? t('c_paidN1') : tf('c_paidNn', { n: e.n });
       return { label: name, value: usdShort(e.usd), n: e.usd, tone: 'ok', data: `data-facet="vendor" data-value="${esc(name)}"`, on: S.facet?.kind === 'vendor' && S.facet.value === name, aria: tf('c_paidAria', { v: name, amt: usdShort(e.usd), n: nTxt }) };
     });
-    return `<div class="c-cell"><h4>${esc(t('c_paidTo'))}</h4>${hbars(rows, max)}</div>`;
+    const more = all.length > top.length ? `<p class="c-note">${esc(tf('c_paidMore', { n: all.length - top.length }))}</p>` : '';
+    return `<div class="c-cell"><h4>${esc(t('c_paidTo'))}</h4>${hbars(rows, max)}${more}</div>`;
+  }
+  /** The person's real work: confirming new accounts, not reading invoices. */
+  function unblockLine(inv) {
+    const waiting = inv.filter((i) => i.status === 'PENDING' && (i.reasons || []).includes('ACCOUNT_PENDING'));
+    if (!waiting.length) return '';
+    const usd = waiting.reduce((a, i) => a + Number(i.amount_usd || 0), 0);
+    const who = listJoin([...new Set(waiting.map((i) => i.issuer_name || i.filename))]).replace(/\.$/, '');
+    const line = waiting.length === 1 ? tf('unblockLine1', { usd: usdShort(usd), who }) : tf('unblockLineN', { n: waiting.length, usd: usdShort(usd), who });
+    return `<div class="unblock"><p>${ICON.warn}<span>${esc(line)}</span></p>
+      <span class="actions"><button type="button" class="btn small" data-facet="account" data-value="ACCOUNT_PENDING" aria-pressed="${S.facet?.kind === 'account'}">${esc(t('unblockSee'))}</button><a class="btn primary small" href="#proveedores">${esc(t('unblockGo'))}</a></span></div>`;
   }
   function renderInsights() {
     const el = $('#insights');
@@ -601,14 +688,14 @@
     if (!inv.length) { el.hidden = true; el.innerHTML = ''; return; }
     const m = S.summary.metrics || {};
     el.hidden = false;
-    el.innerHTML = `<div class="ins-head"><h3 id="ins-h">${esc(t('insTitle'))}</h3><p>${esc(t('insHint'))}</p></div>
-      <div class="ins-grid">${decidedChart(inv, m)}${whyChart(inv)}${budgetChart(m)}${paidChart(inv)}</div>`;
+    el.innerHTML = `<div class="ins-head"><h3 id="ins-h">${esc(t('insTitle'))}</h3><p>${esc(t('insHint'))}</p></div>${unblockLine(inv)}
+      <div class="ins-grid">${decidedChart(inv, m)}${whyChart(inv)}${budgetChart(m, inv)}${paidChart(inv)}</div>`;
   }
   function renderFacet() {
     const el = $('#facet');
     const f = S.facet;
     if (!f) { el.hidden = true; el.innerHTML = ''; return; }
-    const label = f.kind === 'reason' ? tf('facetReason', { r: SHORT[S.lang][f.value] || reasonText(f.value) }) : tf('facetVendor', { v: f.value });
+    const label = f.kind === 'reason' ? tf('facetReason', { r: SHORT[S.lang][f.value] || reasonText(f.value) }) : f.kind === 'account' ? t('facetAccount') : tf('facetVendor', { v: f.value });
     el.hidden = false;
     el.innerHTML = `<p>${ICON.info}<span>${esc(label)}</span></p><button type="button" class="btn quiet small" data-action="facet-clear">${esc(t('facetClear'))}</button>`;
   }
@@ -618,6 +705,34 @@
     $$('[data-facet]').forEach((b) => b.setAttribute('aria-pressed', String(!!S.facet && S.facet.kind === b.dataset.facet && S.facet.value === b.dataset.value)));
     renderFacet();
     renderRows();
+  }
+  /** What the agent did with the invoice, in order, in four steps a person reads at a glance. */
+  function pathStrip(d) {
+    const inv = d.invoice;
+    const r = inv.readings || {};
+    const ok = (x) => !!x && x.ok;
+    const reasons = inv.pending?.reasons?.length ? inv.pending.reasons : inv.reasons || [];
+    const steps = [{ tone: 'ok', k: t('p_received'), v: [dayShort(inv.received_at), inv.document?.kind ? t(`kind_${inv.document.kind}`) : ''].filter(Boolean).join(' · ') }];
+    let read = ['neutral', t('p_readNone')];
+    if (reasons.includes('UNREADABLE') || reasons.includes('READER_FAILED')) read = ['stop', t('p_readFail')];
+    else if (reasons.includes('READINGS_DISAGREE')) read = ['warn', t('p_readDiff')];
+    else if (r.tiebreak_role === 'tiebreak') read = ['ok', t('p_readTie')];
+    else if (r.tiebreak_role === 'second_reader') read = ['ok', t('p_readSecond')];
+    else if (ok(r.primary) && ok(r.check)) read = ['ok', t('p_readOk')];
+    steps.push({ tone: read[0], k: t('p_read'), v: read[1] });
+    const rules = inv.evaluation?.rules || [];
+    if (rules.length) {
+      const fails = rules.filter((x) => x.result === 'FAIL');
+      const tone = fails.some((x) => x.outcome_if_fail === 'HOLD') ? 'stop' : fails.length ? 'warn' : 'ok';
+      steps.push({ tone, k: t('p_rules'), v: tf('p_rulesV', { p: rules.length - fails.length, n: rules.length }) });
+    } else steps.push({ tone: 'neutral', k: t('p_rules'), v: t('p_rulesNone') });
+    const res = {
+      PAID: ['ok', tf('p_paid', { rail: RAIL[inv.payment?.rail] || inv.payment?.rail || '' })],
+      PENDING: ['warn', inv.pending?.expires_at ? tf('p_waitUntil', { d: when(inv.pending.expires_at) }) : t('p_wait')],
+      HELD: ['stop', t('p_held')], REJECTED: ['neutral', t('p_rejected')], EXPIRED: ['neutral', t('p_expired')], VOIDED: ['neutral', t('p_voided')], ERROR: ['stop', t('p_error')],
+    }[inv.status] || ['neutral', stWord(inv.status)];
+    steps.push({ tone: res[0], k: t('p_result'), v: res[1] });
+    return `<ol class="path" aria-label="${esc(t('p_title'))}">${steps.map((s) => `<li class="t-${s.tone}"><span class="p-dot">${ICON[s.tone]}</span><span class="p-k">${esc(s.k)}</span><span class="p-v">${esc(s.v)}</span></li>`).join('')}</ol>`;
   }
   /** The invoice against the no-review amount and the cap per invoice, with today's settings. */
   function limitsBlock(inv) {
@@ -663,7 +778,7 @@
       return `<li><button type="button" class="row" data-id="${esc(i.id)}" aria-current="${S.selected === i.id}">
         <span class="who-line">${esc(i.issuer_name || i.filename)}</span>
         <span class="amount">${moneyHtml(i.total, i.currency)}</span>
-        <span class="sub">${esc([i.invoice_number, dayShort(i.received_at)].filter(Boolean).join(' · '))}</span>
+        <span class="sub">${esc([i.invoice_number, dayShort(i.received_at)].filter(Boolean).join(' · '))}${i.status === 'PENDING' && i.expires_at ? ` · <b class="due">${esc(expiresIn(i.expires_at))}</b>` : ''}</span>
         <span class="sub r">${esc(usd)}</span>
         <span class="state">${chip(i.status)}<span class="why">${esc(listLine(i))}</span></span>
       </button></li>`;
@@ -914,6 +1029,7 @@
     html.push(`<button class="btn quiet small back" type="button" data-action="back">${esc(t('backToList'))}</button>`);
     html.push(`<div class="d-top"><div><h3 id="d-title">${esc(inv.issuer_name || inv.document?.filename || '')}</h3><p class="d-meta">${esc(meta)}</p></div>${chip(st)}</div>`);
     html.push(`<div class="d-money"><span class="big">${moneyHtml(inv.total, inv.currency)}</span>${usd}</div>`);
+    html.push(pathStrip(d));
     html.push(`<div class="verdict t-${tone}">${ICON[tone]}<div><p>${esc(v.text)}</p>${v.items.length ? `<ul>${v.items.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
       ${susp.length ? `<div class="quote"><span class="eyebrow">${esc(t('suspicious'))}</span>${susp.map((x) => `<q>${esc(x)}</q>`).join('')}</div>` : ''}</div></div>`);
     if (pend) html.push(decideBlock(d, pend));
@@ -1037,6 +1153,19 @@
       </div>
       <div class="actions"><button class="btn primary" type="submit">${esc(t('addSave'))}</button><button class="btn quiet" type="button" data-action="v-close">${esc(t('cancel'))}</button></div></form>`;
   }
+  /** How much of a purchase order is used, and what waits for a decision on top of it. */
+  function poBar(a, v) {
+    if (a.kind !== 'PURCHASE_ORDER' || a.total == null || a.remaining == null || !(a.total > 0)) return '';
+    const used = Math.max(0, a.total - a.remaining);
+    const waiting = (S.summary?.invoices || []).filter((i) => i.status === 'PENDING' && i.vendor_id === v.id && i.currency === a.currency).reduce((s, i) => s + Number(i.total || 0), 0);
+    const over = used + waiting > a.total;
+    const scale = Math.max(a.total, used + waiting);
+    const w = (x) => `${((x / scale) * 100).toFixed(2)}%`;
+    const pUsed = pct(used, a.total);
+    const tone = over ? 'stop' : pUsed >= 80 ? 'warn' : 'ok';
+    const line = tf('poLine', { used: moneyText(used, a.currency), total: moneyText(a.total, a.currency), p: pctTxt(pUsed) }) + (waiting ? ` ${tf(over ? 'poWaitOver' : 'poWait', { w: moneyText(waiting, a.currency) })}` : '');
+    return `<div class="bullet t-${tone}${over ? ' over' : ''}" role="img" aria-label="${esc(line)}"><span class="b-used" style="--w:${w(used)}"></span>${waiting ? `<span class="b-wait" style="--w:${w(waiting)}"></span>` : ''}</div><p class="po-line">${esc(line)}</p>`;
+  }
   function vendorRow(raw, agreements) {
     const v = normVendor(raw);
     const off = v.status === 'inactive';
@@ -1047,13 +1176,15 @@
     const parts = [];
     parts.push(`<div><div class="v-name">${esc(v.name)}${off ? ` <span class="chip t-neutral">${esc(t('inactive'))}</span>` : ''}</div><div class="v-sub">${esc([t(`c_${v.country}`) === `c_${v.country}` ? v.country : t(`c_${v.country}`), v.currency, `${tax} ${v.tax_id}`.trim()].filter(Boolean).join(' · '))}</div></div>`);
     parts.push(`<div><div class="v-k">${esc(tf('paidBy', { rail: RAIL[v.rail] || v.rail }))}</div><div class="v-v money">${esc(v.account || t('noAccount'))}</div></div>`);
-    parts.push(`<div><div class="v-k">${esc(t('agreementK'))}</div><div class="v-v">${esc(agr.length ? agr.map(agreementText).join(' · ') : t('agrNone'))}</div></div>`);
+    parts.push(`<div><div class="v-k">${esc(t('agreementK'))}</div>${agr.length ? agr.map((a) => `<div class="v-v">${esc(agreementText(a))}</div>${poBar(a, v)}`).join('') : `<div class="v-v">${esc(t('agrNone'))}</div>`}</div>`);
     parts.push(`<div class="v-actions"><button class="btn small" type="button" data-action="v-account" data-id="${esc(v.id)}"${canW ? '' : ' disabled'}>${esc(t('changeAccount'))}</button>
       <button class="btn small${off ? '' : ' danger'}" type="button" data-action="v-toggle" data-id="${esc(v.id)}" data-to="${off ? 'active' : 'inactive'}"${canW ? '' : ' disabled'}>${esc(off ? t('reactivate') : t('deactivate'))}</button></div>`);
     if (v.pending_account) {
       const by = v.pending_changed_by ? tf('pendingBy', { who: v.pending_changed_by, d: v.pending_changed_at ? when(v.pending_changed_at) : '' }) : '';
       const why = v.pending_reason ? tf('pendingWhy', { r: quoted(v.pending_reason) }) : '';
-      const wait = v.waiting_invoices ? `<span class="waiting">${esc(v.waiting_invoices === 1 ? t('waiting1') : tf('waitingN', { n: v.waiting_invoices }))}</span>` : '';
+      const wUsd = (S.summary?.invoices || []).filter((i) => i.status === 'PENDING' && i.vendor_id === v.id && (i.reasons || []).includes('ACCOUNT_PENDING')).reduce((s, i) => s + Number(i.amount_usd || 0), 0);
+      const waitTxt = v.waiting_invoices === 1 ? (wUsd ? tf('waiting1u', { usd: usdShort(wUsd) }) : t('waiting1')) : wUsd ? tf('waitingNu', { n: v.waiting_invoices, usd: usdShort(wUsd) }) : tf('waitingN', { n: v.waiting_invoices });
+      const wait = v.waiting_invoices ? `<span class="waiting">${esc(waitTxt)}</span>` : '';
       const mine = canW && v.pending_changed_by && normName(v.pending_changed_by) === normName($('#actor').value) ? ` ${t('youChanged')}` : '';
       parts.push(`<div class="wide pending-acc"><div><p><b>${esc(tf('pendingAcc', { acc: v.pending_account }))}</b></p><p class="small">${esc([by, why].filter(Boolean).join(' '))}${esc(mine)}</p>${wait ? `<p class="small">${wait}</p>` : ''}</div>
         ${editing === 'confirm' ? '' : `<button class="btn primary small" type="button" data-action="v-confirm" data-id="${esc(v.id)}"${canW ? '' : ' disabled'}>${esc(t('confirmAccount'))}</button>`}</div>`);
@@ -1163,10 +1294,10 @@
       const [a, b, c] = t('s_no_agreement_sentence');
       return `<div class="setting sentence-setting" data-keys="no_agreement_max_per_invoice_usd no_agreement_max_per_month_usd"><span class="field-label" id="lbl-noagr">${esc(t('s_no_agreement'))}<span class="changed" hidden>${esc(t('changed'))}</span></span>
         <div class="sentence"><span id="lbl-noagr-a">${esc(a)}</span>${unitInput('no_agreement_max_per_invoice_usd', cur.no_agreement_max_per_invoice_usd, 'lbl-noagr lbl-noagr-a')}<span id="lbl-noagr-b">${esc(b)}</span>${unitInput('no_agreement_max_per_month_usd', cur.no_agreement_max_per_month_usd, 'lbl-noagr lbl-noagr-b')}<span>${esc(c)}</span></div>
-        <small class="hint">${esc(t('sh_no_agreement'))}</small></div>`;
+        <small class="hint">${esc(t('sh_no_agreement'))}</small>${ruleHit('no_agreement')}</div>`;
     }
     if (!(key in cur)) return '';
-    return `<div class="setting" data-keys="${key}"><label for="set-${key}">${esc(t(`s_${key}`))}<span class="changed" hidden>${esc(t('changed'))}</span></label>${unitInput(key, cur[key])}<small class="hint">${esc(t(`sh_${key}`))}</small></div>`;
+    return `<div class="setting" data-keys="${key}"><label for="set-${key}">${esc(t(`s_${key}`))}<span class="changed" hidden>${esc(t('changed'))}</span></label>${unitInput(key, cur[key])}<small class="hint">${esc(t(`sh_${key}`))}</small>${ruleHit(key)}</div>`;
   }
   function drawSettings() {
     const el = $('#view-ajustes');
@@ -1249,6 +1380,17 @@
     first?.focus();
     return ok ? rules : null;
   }
+  /** Today against these settings, as two bars of the agent's own decisions. */
+  function compareBars(r) {
+    if (!r.before || !r.after) return '';
+    const KEYS = [['PAY', 'ok'], ['ESCALATE', 'warn'], ['HOLD', 'stop']];
+    const bar = (label, c) => `<p class="rowlab"><span>${esc(label)}</span></p><div class="stack static" role="img" aria-label="${esc(`${label}: ${KEYS.map(([k]) => `${c[k]} ${t(`o_k_${k}`)}`).join(', ')}`)}">
+      ${KEYS.filter(([k]) => c[k] > 0).map(([k, tone]) => `<span class="seg t-${tone}" style="flex-grow:${c[k]}"><span>${c[k]}</span></span>`).join('')}</div>`;
+    const deltas = KEYS.map(([k]) => [k, r.after[k] - r.before[k]]).filter(([, d]) => d !== 0)
+      .map(([k, d]) => tf(d > 0 ? 'wiMore' : 'wiLess', { n: Math.abs(d), what: t(`o_new_${k}_${Math.abs(d) === 1 ? '1' : 'pl'}`) }));
+    const key = `<ul class="legend">${KEYS.map(([k, tone]) => `<li class="t-${tone}"><i aria-hidden="true"></i>${esc(t(`o_k_${k}`))}</li>`).join('')}</ul>`;
+    return `<div class="compare">${bar(t('wiToday'), r.before)}${bar(t('wiWith'), r.after)}${key}${deltas.length ? `<p class="c-note"><b>${esc(tf('wiDelta', { list: listJoin(deltas) }))}</b></p>` : ''}</div>`;
+  }
   function drawWhatIf(r) {
     const out = $('#whatIfOut');
     if (!out) return;
@@ -1256,7 +1398,21 @@
     const c = r.changed ?? (r.changes || []).length;
     const head = c === 0 ? tf('wiNone', { n }) : c === 1 ? tf('wiSome1', { n }) : tf('wiSomeN', { c, n });
     const items = (r.changes || []).map((x) => `<li>${esc(tf('wiRow', { inv: x.invoice_number || x.invoice_id, from: t(`o_now_${x.from}`), to: t(`o_new_${x.to}`) }))}</li>`).join('');
-    out.innerHTML = `<section class="sheet whatif" aria-live="polite"><p>${esc(head)}</p>${items ? `<ul>${items}</ul>` : ''}</section>`;
+    out.innerHTML = `<section class="sheet whatif" aria-live="polite">${compareBars(r)}<p>${esc(head)}</p>${items ? `<ul>${items}</ul>` : ''}</section>`;
+  }
+  /** Which reason each setting produces, to show how many invoices it stopped. */
+  const SETTING_REASON = {
+    auto_approve_up_to_usd: 'APPROVAL_THRESHOLD', contract_tolerance_pct: 'AGREEMENT_MISMATCH', no_agreement: 'NO_AGREEMENT', hard_cap_per_invoice_usd: 'HARD_CAP',
+    monthly_budget_usd: 'BUDGET_EXCEEDED', possible_duplicate_window_days: 'POSSIBLE_DUPLICATE', split_window_days: 'SPLIT_SUSPECTED', stale_after_days: 'STALE_DATE', pending_timeout_hours: 'EXPIRED',
+  };
+  function ruleHit(key) {
+    const code = SETTING_REASON[key];
+    const inv = S.summary?.invoices || [];
+    if (!code || !inv.length) return '';
+    const n = inv.filter((i) => (i.reasons || []).includes(code)).length;
+    if (!n) return `<p class="rule-hit none">${esc(t('hitNone'))}</p>`;
+    return `<button type="button" class="rule-hit" data-facet="reason" data-value="${code}" data-scope="all" aria-label="${esc(tf('hitAria', { n, total: inv.length }))}">
+      <span class="h-track" aria-hidden="true"><span class="h-fill" style="--w:${Math.max(4, (n / inv.length) * 100).toFixed(1)}%"></span></span><span>${esc(tf(n === 1 ? 'hit1' : 'hitN', { n, total: inv.length }))}</span></button>`;
   }
   async function runWhatIf(btn) {
     if (S.mode === 'static') { toast(t('readOnly'), true); return; }
@@ -1361,9 +1517,17 @@
       return;
     }
     const fc = e.target.closest('[data-facet]');
+    if (fc && !fc.closest('#view-facturas')) {
+      // From Ajustes: open Facturas already filtered by what that setting stopped.
+      S.facet = { kind: fc.dataset.facet, value: fc.dataset.value, scope: fc.dataset.scope || 'why' };
+      S.filter = 'all';
+      S.selected = null;
+      location.hash = '#facturas';
+      return;
+    }
     if (fc) {
       const same = S.facet && S.facet.kind === fc.dataset.facet && S.facet.value === fc.dataset.value;
-      S.facet = same ? null : { kind: fc.dataset.facet, value: fc.dataset.value };
+      S.facet = same ? null : { kind: fc.dataset.facet, value: fc.dataset.value, scope: fc.dataset.scope || 'why' };
       S.filter = 'all';
       syncFilters();
       toList(fc);

@@ -41,14 +41,19 @@ Every text pair reaches a contrast of 5:1 or more.
 ## Sections
 
 1. **Facturas**: the metrics are also the filters (todas, por revisar, pagadas, frenadas), the
-   paid amount and "Pagos fuera de reglas: 0"; a "Panorama" of four plain charts (how invoices were
-   decided, why a person was needed, the month's budget, who was paid), where every bar is a button
-   that filters the list and every number is also written out; alarms as a plain notice; pending
-   invoices first,
+   paid amount and "Pagos fuera de reglas: 0"; a "Panorama" of always four plain charts (how
+   invoices were decided, by number and by money; why a person was needed, holds first; the month's
+   budget with what waits striped on top; who was paid), four columns, two by two or one, never a
+   gap, where every bar is a button that filters the list and every number is also written out; a
+   notice when invoices wait on an account to be confirmed; no decorative motion; alarms as a plain
+   notice; pending invoices first, soonest to expire on top with "vence en N h",
    each with its state in words and one sentence; the detail explains the decision in one or two
    sentences, quotes any suspicious text as data, holds "Tu decisión" (approve or reject with
-   a note, choosing the reading when they disagree, with the suggested one preselected), and shows
-   the amount against the no-review limit and the cap per invoice on one bar.
+   a note, choosing the reading when they disagree, with the suggested one preselected), shows the
+   invoice's path in four steps (received, read, your rules, result) and the amount against the
+   no-review limit and the cap per invoice on one bar. Ajustes compares "Hoy" with "Con estos
+   ajustes" when simulating and says next to each rule how many invoices it stopped; Proveedores
+   shows how much of each purchase order is used.
 2. **Proveedores autorizados**: add, deactivate or reactivate, change an account with a reason,
    and confirm a pending account with a verification note; "N facturas esperan por esta cuenta"
    and "Tú hiciste este cambio" when the actor is the one who changed it.

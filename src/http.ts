@@ -88,6 +88,35 @@ function latestSummary(s: State, invoiceId: string): { summary_es: string | null
   return { summary_es: e?.summary_es ?? null, summary_en: e?.summary_en ?? null };
 }
 
+/**
+ * One row of the invoice list: what the list and the charts need, accounts never included.
+ * `readers` says how the reading was settled: both readers agreed, the tie-break settled it, or the
+ * tie-break stood in for a failed check reader.
+ */
+export function summaryInvoice(i: InvoiceRecord, s: State) {
+  const p = i.pending_id ? s.pending[i.pending_id] : null;
+  const role = i.readings.tiebreak_role ?? null;
+  const agreed = !!i.readings.primary?.ok && !!i.readings.check?.ok;
+  return {
+    id: i.id,
+    status: i.status,
+    reasons: i.reasons,
+    issuer_name: i.issuer_name,
+    invoice_number: i.invoice_number,
+    total: i.total,
+    currency: i.currency,
+    amount_usd: i.amount_usd,
+    received_at: i.received_at,
+    kind: i.document.kind,
+    filename: i.document.filename,
+    uploaded_by: i.uploaded_by,
+    vendor_id: i.vendor_id,
+    expires_at: p && !p.resolved_at && i.status === 'PENDING' ? p.expires_at : null,
+    readers: role ?? (agreed ? 'agree' : null),
+    ...latestSummary(s, i.id),
+  };
+}
+
 export function publicInvoice(i: InvoiceRecord, s: State) {
   const ev = i.evaluation_id ? s.evaluations[i.evaluation_id] : null;
   const pay = i.payment_id ? s.payments[i.payment_id] : null;
@@ -176,21 +205,7 @@ export async function buildHttp(deps: HttpDeps): Promise<FastifyInstance> {
       rules: s.rules_versions.length ? currentRules(s) : null,
       invoices: Object.values(s.invoices)
         .sort((a, b) => b.received_at.localeCompare(a.received_at))
-        .map((i) => ({
-          id: i.id,
-          status: i.status,
-          reasons: i.reasons,
-          issuer_name: i.issuer_name,
-          invoice_number: i.invoice_number,
-          total: i.total,
-          currency: i.currency,
-          amount_usd: i.amount_usd,
-          received_at: i.received_at,
-          kind: i.document.kind,
-          filename: i.document.filename,
-          uploaded_by: i.uploaded_by,
-          ...latestSummary(s, i.id),
-        })),
+        .map((i) => summaryInvoice(i, s)),
     };
   });
 

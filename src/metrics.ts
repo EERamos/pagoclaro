@@ -63,6 +63,9 @@ function budgetOf(s: State): { period: string; budget_usd: number; committed_usd
 /** Re-runs the engine over every stored decision with other rules. Writes nothing. */
 export function whatIf(s: State, rules: Rules) {
   const changes: { invoice_id: string; invoice_number: string | null; from: string; to: string }[] = [];
+  // How the agent's own decisions split today and with the other rules, for the before/after bars.
+  const before = { PAY: 0, HOLD: 0, ESCALATE: 0 };
+  const after = { PAY: 0, HOLD: 0, ESCALATE: 0 };
   let compared = 0;
   for (const i of Object.values(s.invoices)) {
     if (!i.facts || !i.evaluation_id) continue;
@@ -70,7 +73,9 @@ export function whatIf(s: State, rules: Rules) {
     if (!ev || ev.approval) continue;
     compared++;
     const res = evaluate(i.facts, rules, null);
+    before[ev.outcome]++;
+    after[res.outcome]++;
     if (res.outcome !== ev.outcome) changes.push({ invoice_id: i.id, invoice_number: i.invoice_number, from: ev.outcome, to: res.outcome });
   }
-  return { compared, changed: changes.length, changes };
+  return { compared, changed: changes.length, changes, before, after };
 }
