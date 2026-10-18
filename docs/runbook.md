@@ -13,6 +13,14 @@ How to stop the agent now, fastest first. Give the exact command or the exact to
   bajar `MODEL_SPEND_CAP_USD` a `0`: sin llave o con el tope en cero, ningún lector llama a un modelo
   y las facturas nuevas se escalan con READER_FAILED.
 
+- **En la demo de Cloud Run** (proyecto `pagoclaro-demo`, región `us-central1`): cerrarla al
+  público con `gcloud run services remove-iam-policy-binding pagoclaro --project pagoclaro-demo
+  --region us-central1 --member=allUsers --role=roles/run.invoker`, o dejar los lectores sin gasto con
+  `gcloud run services update pagoclaro --project pagoclaro-demo --region us-central1
+  --update-env-vars MODEL_SPEND_CAP_USD=0`. Ahí el contador de gasto vuelve a cero con cada
+  contenedor nuevo: el tope que no se reinicia es el límite del workspace de la llave en
+  console.anthropic.com.
+
 - **Stop paying one vendor:** si se sospecha de un proveedor o de un cambio de cuenta, desactivarlo
   en "Proveedores autorizados" (o `PATCH /api/vendors/<id>` con `{"actor": "...", "status":
   "inactive"}`): sus facturas dejan de pagarse solas y escalan; sus pagos anteriores no se tocan.
@@ -43,6 +51,9 @@ An agent without a queue says so and names what stands in for one.
   reglas vigente (`GET /api/rules`).
 - **Roll back:** `git checkout <commit-anterior>` (lo corre el dueño) y `npm ci && npm start`; para
   reglas, guardar en el tablero los valores de la versión anterior (crea una versión nueva, no borra).
+  En Cloud Run, listar las revisiones y mandar todo el tráfico a la anterior:
+  `gcloud run revisions list --service pagoclaro --project pagoclaro-demo --region us-central1`
+  `gcloud run services update-traffic pagoclaro --project pagoclaro-demo --region us-central1 --to-revisions <revisión-anterior>=100`
 - **State compatibility:** el v3 solo agrega campos opcionales a `data/state.json` (la lectura de
   desempate, la lectura sugerida del pendiente, la cuenta por confirmar del proveedor y la frase de
   cada entrada del registro); un estado del v2 carga igual y sus entradas sin frase siguen

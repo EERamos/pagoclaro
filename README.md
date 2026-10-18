@@ -6,6 +6,11 @@ Hackathon 30X (octubre 2026): *agentes que pagan por la empresa*.
 
 > El modelo lee. Las reglas deciden. Nada se paga fuera de las reglas sin una persona.
 
+**Pruébalo:** https://pagoclaro-899432572111.us-central1.run.app (en vivo en Google Cloud Run). Con
+el código de acceso `jueces-30x-blinka` puedes subir facturas, aprobar, rechazar, cambiar reglas y
+confirmar cuentas; los lectores reales tienen un tope de gasto y la demo vuelve a su estado inicial
+cuando el servidor se reinicia. Copia de solo lectura: https://eeramos.github.io/pagoclaro/.
+
 [English summary below](#english-summary)
 
 ## Qué hace
@@ -135,6 +140,11 @@ avisa: banner en el tablero, `alerts` en `/health` y una línea `[ALERTA]` en la
 | Lectura doble con desempate, motor de reglas, registro encadenado con frases en palabras comunes, aprobación humana, lista de proveedores autorizados con cuentas por confirmar, reglas versionadas con simulación, API HTTP, tablero bilingüe con gráficas que filtran la lista, telemetría sin contenido, idempotencia, tope de gasto | Ejecución real de pagos con una plataforma (Blinka) detrás de una interfaz de riel, autenticación con identidad (hoy: código de acceso y nombre), retención configurable del primer pago y aviso al contacto anterior al cambiar una cuenta, acuerdos editables, una tercera lectura por muestreo, Postgres en lugar de JSON, ingesta desde un buzón real, tipo de cambio en vivo |
 
 ## English summary
+
+**Try it:** https://pagoclaro-899432572111.us-central1.run.app (live on Google Cloud Run; access
+code `jueces-30x-blinka` to upload, approve, reject, change rules and confirm accounts; the real
+readers have a spending cap and the demo resets whenever the server restarts). Read-only copy:
+https://eeramos.github.io/pagoclaro/.
 
 PagoClaro is an accounts-payable agent for the Blinka challenge of Hackathon 30X. Two models read
 every invoice independently (Claude Opus 5.5 and Claude Haiku 5.5, closed-schema outputs, no
