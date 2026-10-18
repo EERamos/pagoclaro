@@ -34,7 +34,7 @@ Lo construí con un proceso de ingeniería de agentes: diseño, spec con 54 esce
 
 - Repositorio público de GitHub: https://github.com/EERamos/pagoclaro
 - Demo (URL): https://pagoclaro-899432572111.us-central1.run.app (en vivo en Google Cloud Run; código de acceso para escribir: `jueces-30x-blinka`). Copia de solo lectura: https://eeramos.github.io/pagoclaro/ (GitHub Pages desde docs/ en main)
-- Video demo (URL): subir el video a YouTube como "no listado" y pegar el enlace
+- Video demo (URL): subir el video a Google Drive, compartirlo como "Cualquier persona con el enlace · Lector" y pegar ese enlace
 
 ## Cómo grabar el video
 
@@ -56,7 +56,7 @@ El video se graba en local para que cada toma empiece igual; la demo en Cloud Ru
    Abre http://localhost:3000. En "Tu nombre" deja `luis.tesoreria` y en "Código de acceso" escribe el `PAGOCLARO_ACCESS_CODE` de tu `.env`.
 3. Costo: la primera vez que subas PIN-0418, Opus 5.5 y Haiku 5.5 la leen en vivo, unos 0.02 USD (0.03 si hiciera falta el desempate con Sonnet). La lectura queda guardada y las tomas siguientes la repiten sin costo.
 4. Para repetir una toma desde cero: Ctrl+C en la terminal, `npm run video:prep` y arrancar de nuevo. Al terminar, cierra esa terminal para que las variables no se queden puestas.
-5. Para grabar: Recortes de Windows (Win+Shift+R) o Clipchamp, que viene con Windows 11. Ventana del navegador a 1280x720 o más y zoom de 110 a 125 % para que se lean las cifras. Sube el video a YouTube como "No listado".
+5. Para grabar: Recortes de Windows (Win+Shift+R) o Clipchamp, que viene con Windows 11. Ventana del navegador a 1280x720 o más y zoom de 110 a 125 % para que se lean las cifras. Sube el video a Google Drive y compártelo como "Cualquier persona con el enlace · Lector"; antes de pegar el enlace, ábrelo en una ventana de incógnito para confirmar que se ve sin iniciar sesión.
 
 ## Guion del video (unos 3:00)
 
