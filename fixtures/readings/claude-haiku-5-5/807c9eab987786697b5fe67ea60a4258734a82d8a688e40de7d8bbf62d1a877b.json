@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "reading": {
+    "issuer_name": "Tradu Pro Serviços Linguísticos Ltda.",
+    "issuer_tax_id": "98.765.432/0001-10",
+    "invoice_number": "TRP-221",
+    "issue_date": "2026-10-15",
+    "due_date": "2026-10-30",
+    "currency": "BRL",
+    "total": 2400,
+    "lines": [
+      {
+        "description": "Revisão e localização do portal de clientes",
+        "amount": 2400
+      }
+    ],
+    "payment_rail_hint": "PIX",
+    "payment_account": "7d9f3c2a-1b4e-4f6a-9c8d-2e5f7a1b3c4d",
+    "suspicious_text": []
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3803,
+    "output_tokens": 210,
+    "reasoning_tokens": 0,
+    "cost_usd": 0.00048530000000000003
+  }
+}

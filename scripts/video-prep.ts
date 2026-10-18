@@ -32,4 +32,4 @@ mkdirSync(out, { recursive: true });
 const r = await renderInvoice(ACM_5530);
 writeFileSync(join(out, r.filename), r.bytes);
 console.log(`Factura para subir en el video: ${join(out, r.filename)} (${r.bytes.length} bytes)`);
-console.log('Estado para grabar: data/video/state.json (23 facturas, PIN-0415 y AUR-2026-0923 pendientes)');
+console.log('Estado para grabar: data/video/state.json (24 facturas; PIN-0415, AUR-2026-0923 y TRP-221 pendientes; la llave Pix nueva de Tradu Pro por confirmar)');

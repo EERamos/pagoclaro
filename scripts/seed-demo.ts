@@ -58,6 +58,15 @@ const extra: Record<string, FixtureInvoice> = {
     total: 640, total_display: 'USD 640.00', tax_note: 'Sales tax: exempt (out-of-state shipment)',
     payment: { method: 'ACH', label: 'ACH routing / account', value: '000000002-000555666777', bank: 'Fictional Commerce Bank' },
   },
+  // Paid to the Pix key Tradu Pro asked for after "changing banks": waits until someone confirms it.
+  TRP221: {
+    file_name: 'TRP-221.pdf', kind: 'pdf', language: 'pt', number: 'TRP-221', issue_date: '2026-10-15', due_date: '2026-10-30', currency_code: 'BRL', currency_display: 'BRL',
+    issuer: { name: 'Tradu Pro Serviços Linguísticos Ltda.', tax_id_label: 'CNPJ', tax_id: '98.765.432/0001-10', address: 'Av. Paulista, 1578, São Paulo - SP', email: 'financeiro@tradupro.example.com' },
+    bill_to: BILL_TO,
+    lines: [{ description: 'Revisão e localização do portal de clientes', amount: 2400, amount_display: '2.400,00' }],
+    total: 2400, total_display: 'R$ 2.400,00', tax_note: null,
+    payment: { method: 'PIX', label: 'Chave Pix (aleatória)', value: '7d9f3c2a-1b4e-4f6a-9c8d-2e5f7a1b3c4d', bank: 'Banco Fictício Paulista' },
+  },
   LAD117: { ...fromCase('EVL-019'), file_name: 'LAD-117.pdf', number: 'LAD-117', issue_date: '2026-10-09', lines: [{ description: 'Sistema de íconos y guía de estilo', amount: 3500000, amount_display: '3.500.000' }], total: 3500000, total_display: 'COP 3.500.000' },
   PIN411: { ...fromCase('EVL-005'), file_name: 'PIN-0411.pdf', number: 'PIN-0411', issue_date: '2026-10-08', lines: [{ description: 'Manutenção mensal da integração, outubro 2026', amount: 4200, amount_display: '4.200,00' }], total: 4200, total_display: 'R$ 4.200,00' },
 };
@@ -131,6 +140,23 @@ async function main() {
     console.log(`${inv.number.padEnd(18)} ${res.status.padEnd(8)} ${res.reasons.join(', ')}`);
   }
   const byNumber = (n: string) => Object.values(store.read().invoices).find((i) => i.invoice_number?.replace(/[^A-Z0-9]/gi, '') === n.replace(/[^A-Z0-9]/gi, ''));
+
+  // The authorized vendor list (spec v3): luis.tesoreria adds the new beneficiary (CAN-001 keeps
+  // waiting for a person), ana.finanzas records Tradu Pro's new Pix key, and the next invoice to
+  // that key waits until someone else confirms it (the video confirms it live).
+  clock += 20 * 60_000;
+  const added = await agent.addVendor('luis.tesoreria', { name: 'Consultores Andinos S.A.S.', tax_id: '900111222-3', country: 'CO', currency: 'COP', rail: 'BRE_B', account: '5566778899' });
+  console.log(`alta de Consultores Andinos: ${added.ok ? 'cuenta por confirmar' : added.message}`);
+  clock += 20 * 60_000;
+  const changed = await agent.updateVendor('ven_tradupro', 'ana.finanzas', { account: '7d9f3c2a-1b4e-4f6a-9c8d-2e5f7a1b3c4d', reason: 'Tradu Pro avisó por correo que cambió su llave Pix' });
+  console.log(`cambio de llave Pix de Tradu Pro: ${changed.ok ? 'por confirmar' : changed.message}`);
+  clock += 37 * 60_000;
+  {
+    const r = await renderInvoice(extra.TRP221);
+    register?.(sha256(r.bytes), extra.TRP221);
+    const res = await agent.upload(r.filename, r.bytes, 'ana.finanzas');
+    console.log(`${extra.TRP221.number.padEnd(18)} ${res.status.padEnd(8)} ${res.reasons.join(', ')}`);
+  }
   clock += 3 * 3_600_000;
   const approvals: (readonly [string, string])[] = [
     ['PIN-0415', 'Fase 2 aprobada en el comité del 15 de octubre.'],
