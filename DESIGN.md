@@ -6,58 +6,54 @@ PagoClaro dashboard (`web/`). Plain HTML, CSS and JS, no build. Tokens live on `
 ## Scene
 
 A jury at the Hackathon 30X watches the demo projected in a lit meeting room, and a finance
-analyst reviews pending invoices on an office monitor in the morning. Light theme on purpose: dark
-themes and pale tints wash out on projectors.
+analyst reviews pending invoices on an office monitor in the morning. The analyst is not a
+developer: every screen speaks in common words, and anything technical sits one click away under
+"Ver detalle técnico".
 
 ## Visual theme
 
-Ledger, not SaaS: warm paper surfaces, near-black ink with a faint green cast, one mint "stamp"
-for the brand mark. Restrained strategy: the decision colors (pay, hold, escalate) are the only
-saturated color on the page, and every state carries a word next to its color.
+The palette and type of blinka.co (Edgar's request, 2026-10-17), without its name or logo:
+off-white paper, navy ink, one blue accent, and Blinka's green for paid. The decision colors are
+the only saturated color besides the accent, and every state carries a word next to its color.
+A dark mode follows `prefers-color-scheme` with the site's own dark surfaces.
 
-## Color (OKLCH)
+## Color (OKLCH, hex from blinka.co in comments in `web/styles.css`)
 
 | Role | Token | Value | Notes |
 |---|---|---|---|
-| Page | `--bg` | 97.4% 0.008 85 | warm paper |
-| Surface | `--surface` / `--surface-2` | 99.3% / 95.6% | panels, rule rows |
-| Lines | `--line` / `--line-strong` | 90.5% / 82.5% | |
-| Ink | `--ink` / `--ink-2` / `--muted` | 23% / 39% / 49%, hue 165 | muted is AA on `--bg` |
-| Structure | `--night` / `--night-2` | 22% / 30%, hue 168 | top bar, primary buttons, active tab |
-| Brand | `--mint` | 81% 0.15 160 | only on `--night` (mark, focus in the top bar) |
-| Pay | `--pay` / `--pay-soft` | 48% 0.12 155 / 95% | |
-| Hold | `--hold` / `--hold-soft` | 50% 0.17 25 / 95.5% | also differences between readings |
-| Escalate | `--esc` / `--esc-soft` | 45% 0.1 65 / 95.5% | |
-| Info | `--info` / `--info-soft` | 50% 0.12 255 / 95.5% | focus ring, selected row, simulated label |
+| Page | `--paper` | 97.5% 0.004 106 (#f7f7f4) | |
+| Surfaces | `--sheet` / `--sheet-2` | #fdfdfd / #eef0f2 | panels, quiet fills |
+| Lines | `--line` / `--line-2` | #dedfdc / #e4e6ef | |
+| Ink | `--ink` / `--ink-2` / `--muted` | #1c253a / #47525d / #656975 | muted is AA on paper |
+| Accent | `--accent` (+ hover, soft, tint) | 48% 0.208 267 (#2a4bd0) | primary buttons, focus, selection |
+| Paid | `--ok` / `--ok-soft` | #007456 | Blinka's green |
+| Needs review | `--warn` / `--warn-soft` | 50% 0.11 70 | derived at the green's lightness |
+| Held | `--stop` / `--stop-soft` | 50% 0.16 28 | derived at the green's lightness |
 
-No pure white or black anywhere: light text on dark is oklch(97% 0.006 165).
+Every text pair reaches a contrast of 5:1 or more.
 
 ## Typography
 
-- Inter for UI and data (tabular figures on); IBM Plex Mono for codes, rule names, hashes,
-  labels in caps (11 to 12.5 px, 0.06 to 0.08 em tracking).
-- Scale: 11 / 12.5 / 13.5 / 15 (base) / 17 / 20 / 24 / 26 px.
+- Inter for UI and figures (tabular numbers; currency code at 0.72 em and lower opacity), Geist
+  Mono for the technical details, both from Google Fonts, as blinka.co uses them.
+- Headings at weight 450 to 500 with slight negative tracking.
 
-## Components
+## Sections
 
-- **KPI band**: one panel split by 1 px rules, not a grid of cards.
-- **Decision badge**: dot plus word (Pagada, Frenada, Pendiente…), tinted background.
-- **Rule row**: glyph circle (✓ pass, × hold, ! escalate, ↑ lifted by an approval), rule code in
-  mono, then the bilingual message. Failures and approvals on top; passes folded in a
-  `<details>` (open when everything passed).
-- **Readings table**: primary vs check, a difference turns the cell red with ≠.
-- **Suspicious text**: quoted in mono inside a hold-tinted box, labeled "tratado como dato".
-- **Payment card**: rail, amount, USD, rate, beneficiary, masked account, "SIMULADA" label.
-- **Timeline**: dot and rule per audit entry with the hash prefix and its previous hash.
-- **Buttons**: default, primary (night), ok (pay green), danger (outlined hold), ghost; busy
-  state with a spinner and `aria-busy`; 44 px on coarse pointers.
+1. **Facturas**: the metrics are also the filters (todas, por revisar, pagadas, frenadas), the
+   paid amount and "Pagos fuera de reglas: 0"; alarms as a plain notice; pending invoices first,
+   each with its state in words and one sentence; the detail explains the decision in one or two
+   sentences, quotes any suspicious text as data, and holds "Tu decisión" (approve or reject with
+   a note, choosing the reading when they disagree, with the suggested one preselected).
+2. **Proveedores autorizados**: add, deactivate or reactivate, change an account with a reason,
+   and confirm a pending account with a verification note; "N facturas esperan por esta cuenta"
+   and "Tú hiciste este cambio" when the actor is the one who changed it.
+3. **Ajustes**: the rules with common names, "Ver qué cambiaría" and "Guardar".
+4. **Historial**: a timeline of plain sentences by day; the chain check reads "Completo y sin
+   alteraciones".
 
-## Layout
+## Layout and motion
 
-Max width 1520 px, 24 px gutters (16 px on phones). Inbox: list and detail side by side above
-1100 px, stacked below. Radius 14 px panels, 9 px controls.
-
-## Motion
-
-150 ms color transitions, 220 ms toast rise (ease-out-quart), spinner only while busy. Nothing
-animates layout; everything stops under `prefers-reduced-motion`.
+Max width around 1200 px, 16 px gutters on phones, no horizontal scroll at 375 px; 44 px targets on
+coarse pointers; visible focus; a skip link. Short color transitions only, all stopped under
+`prefers-reduced-motion`.
