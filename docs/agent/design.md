@@ -1,6 +1,6 @@
 ---
 agent_name: pagoclaro
-version: 1
+version: 2
 status: approved         # draft | approved — approved only by the owner at the gate
 date: 2026-10-17
 track: heavy
@@ -13,8 +13,8 @@ track: heavy
 | Element | Definition |
 |---|---|
 | **Performance** | De las facturas del set de prueba, el % que termina con la decisión correcta (pagar, frenar o escalar igual a la esperada) sin que intervenga una persona; meta ≥ 65 %, con cero facturas pagadas fuera de las reglas (restricción dura: una sola descalifica). Se reporta por separado en el set de construcción y en el set ciego. |
-| **Environment** | El equipo de finanzas de una empresa ficticia con sede en EE. UU. que paga en USD, MXN, COP y BRL a proveedores y contratistas de México, Colombia y Brasil. Usa un tablero web bilingüe (español e inglés) montado sobre una API HTTP documentada, la misma que puede llamar el sistema o el agente propio de la empresa. Sistemas conectados: API de Anthropic (Opus 5.5 y Haiku 5.5); almacenamiento propio de reglas, proveedores, acuerdos y libro de pagos; tabla fija de tipos de cambio con fecha y fuente. Sin bancos, sin correo real y sin plataforma de pagos. Facturas en español, inglés y portugués. |
-| **Actuators** | read_invoice_primary, read_invoice_check, find_vendor, find_agreement, query_ledger, convert_currency, evaluate_rules, record_payment, record_hold, escalate_to_human |
+| **Environment** | El equipo de finanzas de una empresa ficticia con sede en EE. UU. que paga en USD, MXN, COP y BRL a proveedores y contratistas de México, Colombia y Brasil. Usa un tablero web bilingüe (español e inglés) montado sobre una API HTTP documentada, la misma que puede llamar el sistema o el agente propio de la empresa. El tablero es para el usuario final de finanzas, no para desarrolladores: "muy muy simple y fácil de usar, sin ninguna terminología extraordinaria de developer o secciones" (Edgar, 2026-10-17); lo técnico (modelos, tokens, códigos de regla, hashes, rieles) se queda en la API, el registro y la telemetría. Sistemas conectados: API de Anthropic (Opus 5.5 y Haiku 5.5, y Sonnet 5.5 solo para desempatar); almacenamiento propio de reglas, proveedores, acuerdos y libro de pagos; tabla fija de tipos de cambio con fecha y fuente. Sin bancos, sin correo real y sin plataforma de pagos. Facturas en español, inglés y portugués. |
+| **Actuators** | read_invoice_primary, read_invoice_check, read_invoice_tiebreak, find_vendor, find_agreement, query_ledger, convert_currency, evaluate_rules, record_payment, record_hold, escalate_to_human |
 | **Sensors** | Facturas no confiables: PDF (media), imágenes JPG y PNG (media), correos .eml con adjuntos y mensajes de chat en texto; reglas de pago versionadas; catálogo de proveedores (identificación fiscal, cuenta registrada, moneda); acuerdos (contratos recurrentes y órdenes de compra con saldo); libro de pagos (decisiones, presupuesto consumido por periodo, huellas de facturas); tabla de tipos de cambio; decisiones de aprobación de personas desde el tablero. Ningún servidor MCP. |
 
 Goodhart notes:
@@ -22,17 +22,19 @@ Las dos trampas que Edgar marcó: (1) armar el set de facturas y sus respuestas 
 reglas y prompts, para que pasen el set y luego fallar con facturas nuevas; (2) subir la autonomía
 no escalando lecturas dudosas, de modo que un monto o una cuenta mal leídos parecen dentro de reglas
 y se paga algo equivocado. Contrapeso elegido por Edgar: un set ciego de facturas que no se usa al
-construir, se corre solo al final y se reporta aparte; y doble lectura: toda factura en la que
-Opus 5.5 y Haiku 5.5 no coinciden en beneficiario, identificación fiscal, cuenta, monto o moneda se
-escala, nunca se paga. Además, ninguna cifra de una decisión de pago puede venir de una suposición
-(sección 9).
+construir, se corre solo al final y se reporta aparte; y doble lectura con desempate: la lectura de
+Opus 5.5 es la referencia; cuando Haiku 5.5 no coincide con ella en identificación fiscal, número,
+moneda, monto o cuenta, Sonnet 5.5 lee la factura por su cuenta y revisa esos campos; si confirma a
+Opus en todos, la factura avanza a las reglas con la lectura de Opus; si no, se escala a una persona
+con la lectura de Opus precargada, nunca se paga. Además, ninguna cifra de una decisión de pago
+puede venir de una suposición (sección 9).
 
 ## 2. Environment classification
 
 | Dimension | Value | Architectural implication |
 |---|---|---|
 | Observable | partially | La factura puede mentir o venir alterada y no se verifica la identidad del emisor: el agente la compara contra su estado propio (catálogo de proveedores, acuerdos, libro) y escala lo que no puede confirmar. |
-| Deterministic | stochastic | La lectura con modelos puede fallar: doble lectura independiente, validación de esquema y chequeos cruzados (suma de líneas igual al total, moneda ISO); ante cualquier discrepancia el plan de contingencia es escalar. La decisión en sí la toma un motor determinista. |
+| Deterministic | stochastic | La lectura con modelos puede fallar: doble lectura independiente, validación de esquema y chequeos cruzados (suma de líneas igual al total, moneda ISO); ante una discrepancia, una tercera lectura con Sonnet 5.5 revisa los campos en duda, y si no confirma la lectura de Opus el plan de contingencia es escalar. La decisión en sí la toma un motor determinista. |
 | Episodic | sequential | Cada decisión consume presupuesto del periodo y alimenta la detección de duplicados y de fraccionamiento: las facturas se procesan en orden, una a la vez (mutex), y cada decisión guarda el estado que vio. |
 | Static | dynamic | Las reglas cambian, las aprobaciones llegan después y el presupuesto se reinicia por periodo: la aprobación humana vuelve a evaluar la factura con las reglas y el presupuesto vigentes, y cada decisión guarda la versión de reglas y el tipo de cambio usados. |
 | Agents | single | Un solo agente. Los emisores de facturas se tratan como adversarios potenciales: su texto es dato, nunca instrucción. |
@@ -42,25 +44,29 @@ escala, nunca se paga. Además, ninguna cifra de una decisión de pago puede ven
 - **Topology:** single-agent (default)
 - **Justification:** el trabajo es un flujo fijo por factura (leer dos veces, cruzar con el estado,
   evaluar reglas, registrar) y ninguna parte necesita permisos, accesos ni paralelismo distintos.
-  Los dos lectores son llamadas a modelos dentro de una herramienta, no agentes. Pasar a varios
+  Los tres lectores son llamadas a modelos dentro de una herramienta, no agentes. Pasar a varios
   agentes solo compraría algo si otra parte operara con credenciales propias, por ejemplo un agente
   que ejecute pagos reales con llaves bancarias, separado del que decide.
 - **Completeness check:** Model Opus 5.5 (`claude-opus-5-5`, nivel frontera) como lector principal y
-  Haiku 5.5 (`claude-haiku-5-5`, nivel pequeño) como segundo lector independiente; tool calling no
-  se usa: cada lectura es una sola llamada con salida estructurada nativa (`output_config.format`
-  con esquema JSON) y el modelo no recibe ninguna herramienta; reasoning native (pensamiento
-  adaptativo con esfuerzo bajo; Opus 5.5 no permite apagarlo); hosted (API de Anthropic, créditos
-  promocionales de Edgar, tope de gasto de 50 USD en código); dos muestras por factura, una por
-  modelo, con esta afirmación medible: en el set ciego y en los casos adversariales de lectura
-  alterada, ninguna factura con monto, moneda, cuenta o beneficiario mal leído termina en pagar. Si
-  Haiku 5.5 acepta PDF e imágenes con salida estructurada lo confirma la prueba del modelo en el
-  build (sección 7) · Tools 10, from §4 · Memory per turn: ninguna, cada lectura es una llamada
+  de referencia, Haiku 5.5 (`claude-haiku-5-5`, nivel pequeño) como segundo lector independiente y
+  Sonnet 5.5 (`claude-sonnet-5-5`, nivel medio) como lector de desempate, que solo se llama cuando
+  Haiku no coincide con Opus en algún campo clave; tool calling no se usa: cada lectura es una sola
+  llamada con salida estructurada nativa (`output_config.format` con esquema JSON) y el modelo no
+  recibe ninguna herramienta; reasoning native (pensamiento adaptativo con esfuerzo bajo; Opus 5.5
+  y Sonnet 5.5 no permiten apagarlo); hosted (API de Anthropic, créditos promocionales de Edgar,
+  tope de gasto de 50 USD en código); dos muestras por factura, una por modelo, y una tercera con
+  Sonnet 5.5 solo en discrepancia, con estas afirmaciones medibles: en el set ciego y en los casos
+  adversariales de lectura alterada, ninguna factura con monto, moneda, cuenta o beneficiario mal
+  leído termina en pagar; y de las facturas en que Haiku discrepa de Opus, avanzan sin persona solo
+  las que Sonnet confirma en todos los campos en discrepancia. Que Haiku 5.5 acepta PDF e imágenes
+  con salida estructurada lo confirmó la prueba del modelo del build; la de Sonnet 5.5 la confirma
+  la prueba del modelo del siguiente build · Tools 11, from §4 · Memory per turn: ninguna, cada lectura es una llamada
   aislada con solo la factura, sin historial; across runs: store con consulta exacta (sin búsqueda
   semántica) sobre el libro de pagos (decisiones, instrucciones de pago, presupuesto consumido por
   periodo, huellas de facturas), el catálogo de proveedores, los acuerdos y las versiones de reglas
-  · Orchestration flujo fijo en código, sin bucle de modelo; por factura como máximo 2 llamadas a
-  modelos más 1 reintento por lector ante error transitorio, 90 s de reloj por factura, facturas en
-  serie · Deployment see §5
+  · Orchestration flujo fijo en código, sin bucle de modelo; por factura como máximo 3 llamadas a
+  modelos (la tercera solo en discrepancia) más 1 reintento por lector ante error transitorio, 90 s
+  de reloj por factura, facturas en serie · Deployment see §5
 
 ## 4. Preliminary tool inventory
 
@@ -68,6 +74,7 @@ escala, nunca se paga. Además, ninguna cifra de una decisión de pago puede ven
 |---|---|---|
 | read_invoice_primary | Lee una factura (PDF, imagen, correo .eml o mensaje de chat) con Opus 5.5 y devuelve, con salida estructurada, emisor, identificación fiscal, cuenta de pago, número, fechas, moneda, monto, líneas y cualquier texto que parezca instrucción | safe |
 | read_invoice_check | Segunda lectura independiente de la misma factura con Haiku 5.5, sin ver la primera | safe |
+| read_invoice_tiebreak | Tercera lectura independiente de la misma factura con Sonnet 5.5, sin ver las otras dos; solo se llama cuando Haiku no coincide con Opus en algún campo clave, y confirma o no la lectura de Opus en esos campos | safe |
 | find_vendor | Busca al proveedor en el catálogo por identificación fiscal o cuenta registrada (el nombre solo como pista) | safe |
 | find_agreement | Busca el contrato recurrente u orden de compra del proveedor y su saldo restante | safe |
 | query_ledger | Consulta pagos previos, presupuesto consumido del periodo y huellas para duplicados y fraccionamiento | safe |
@@ -94,7 +101,8 @@ No schemas here — the spec owns contracts.
     atómica ahora, Postgres después sin tocar el dominio); el registro de auditoría es de solo
     agregar, encadenado con hash, y se exporta a JSONL.
   - Model: configuración agnóstica de proveedor: cada lector es una ruta `proveedor/modelo` en la
-    configuración (`anthropic/claude-opus-5-5`, `anthropic/claude-haiku-5-5`) detrás de una
+    configuración (`anthropic/claude-opus-5-5`, `anthropic/claude-haiku-5-5`,
+    `anthropic/claude-sonnet-5-5`) detrás de una
     interfaz Extractor con tres implementaciones: lecturas guardadas (pruebas y demo), Anthropic y
     Ollama local.
   - Telemetry: convenciones OTel GenAI con contadores de tokens; cada factura registra un evento
@@ -106,8 +114,9 @@ No schemas here — the spec owns contracts.
 
 - No mueve dinero real ni se conecta a bancos o plataformas de pago: solo emite instrucciones de
   pago simuladas.
-- Nunca paga, sin aprobación de una persona, una factura que falle una regla dura, cuyas dos
-  lecturas no coincidan o cuyas cifras dependan de una suposición.
+- Nunca paga, sin aprobación de una persona, una factura que falle una regla dura, cuyos campos
+  clave leídos por Opus no confirme otro lector (Haiku, o Sonnet en el desempate) o cuyas cifras
+  dependan de una suposición.
 - No decide cumplimiento, fraude ni identidad de empresas: una cuenta distinta a la registrada se
   escala como "no coincide con lo registrado".
 - No cambia reglas, catálogo de proveedores ni cuentas registradas, y no aprueba pendientes.
@@ -128,7 +137,7 @@ No schemas here — the spec owns contracts.
 
 ## 8. Voice and wake
 
-- **Voice:** formal
+- **Voice:** formal y sencilla: frases cortas en el lenguaje de finanzas del usuario final, sin términos técnicos
 - **Wake:** user invoke
 
 ## 9. Provenance policy
@@ -159,7 +168,7 @@ question.
 
 **Filter answers:**
 
-- **Language:** TypeScript (Node 20 o superior).
+- **Language:** TypeScript (Node 20 o superior), elección de Edgar.
 - **Provider switch:** no obligatorio; la interfaz Extractor (sección 5) permite cambiar de
   proveedor o usar Ollama local sin tocar el dominio.
 - **A2A:** no; el agente no habla con otros agentes. Otros sistemas lo llaman por su API HTTP.
@@ -173,7 +182,7 @@ design fact with its section.
 
 | Candidate | Pros (cited) | Cons (cited) |
 |---|---|---|
-| A. no-framework@n/a | Anthropic recomienda empezar con las APIs de los modelos directamente y advierte que los frameworks agregan capas de abstracción (https://www.anthropic.com/engineering/building-effective-agents); sin telemetría saliente por defecto, default_egress none (catalog/stacks/_index.md); el agente no tiene bucle de herramientas, solo dos llamadas con salida estructurada por factura (sección 3); cada línea que puede llevar a record_payment se puede revisar a mano, el caso en que la tarjeta recomienda este camino (catalog/stacks/no-framework.md, sección 5) | Los casos de borde del proveedor, como los motivos de paro y los bloques de pensamiento, son código propio (https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons); el binding de la tarjeta está escrito para Python y el build lo sigue por analogía en TypeScript (catalog/bindings/no-framework.md) |
+| A. no-framework@n/a | Anthropic recomienda empezar con las APIs de los modelos directamente y advierte que los frameworks agregan capas de abstracción (https://www.anthropic.com/engineering/building-effective-agents); sin telemetría saliente por defecto, default_egress none (catalog/stacks/_index.md); el agente no tiene bucle de herramientas, solo dos llamadas con salida estructurada por factura y una tercera en desempate (sección 3); cada línea que puede llevar a record_payment se puede revisar a mano, el caso en que la tarjeta recomienda este camino (catalog/stacks/no-framework.md, sección 5) | Los casos de borde del proveedor, como los motivos de paro y los bloques de pensamiento, son código propio (https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons); el binding de la tarjeta está escrito para Python y el build lo sigue por analogía en TypeScript (catalog/bindings/no-framework.md) |
 | B. off-catalog:ai@7.0.143 | Estandariza la salida estructurada entre proveedores con esquemas Zod (https://ai-sdk.dev/docs/ai-sdk-core/generating-structured-data); su proveedor de Anthropic acepta PDF e imágenes (https://ai-sdk.dev/providers/ai-sdk-providers/anthropic) | Las opciones propias de Anthropic (pensamiento, esfuerzo, caché) pasan por providerOptions y algunos modelos rechazan apagar el pensamiento (https://ai-sdk.dev/providers/ai-sdk-providers/anthropic); es una capa más sobre el SDK oficial, con versiones frecuentes (7.0.143 en npm al 2026-10-17); ninguna tarjeta ni binding del catálogo la cubre (catalog/stacks/_index.md) |
 
 - **Recommended:** A, porque el agente no tiene bucle de herramientas y el SDK oficial de
@@ -221,9 +230,9 @@ is `stack: <Trap>`.
 
 | Seam | Support | How |
 |---|---|---|
-| sessions | custom | Repositorio propio con archivos JSON de escritura atómica; libro y registro de auditoría de solo agregar con hash encadenado; exportación a JSONL |
+| sessions | custom | Repositorio propio (interfaz Store) con archivos JSON de escritura atómica; libro y registro de auditoría de solo agregar con hash encadenado; exportación a JSONL |
 | hitl_gate | custom | escalate_to_human deja la factura en una cola de pendientes; solo una persona la aprueba o la rechaza desde el tablero; la aprobación vuelve a evaluar reglas y presupuesto antes de record_payment, y nadie aprueba lo que él mismo subió |
-| step_cap | custom | Flujo fijo: como máximo 2 llamadas a modelos por factura más 1 reintento por lector |
+| step_cap | custom | Flujo fijo: como máximo 3 llamadas a modelos por factura (la tercera solo en desempate) más 1 reintento por lector |
 | tool_call_cap | custom | Cero: el modelo no recibe herramientas; el código llama las herramientas en un orden fijo |
 | model_provider | adapter | Interfaz Extractor con implementaciones de lecturas guardadas, Anthropic (`@anthropic-ai/sdk` 0.135.0, versión exacta) y Ollama; la ruta se fija en configuración y nunca la elige el modelo |
 | telemetry | custom | Un evento por factura con atributos gen_ai.* (modelo, tokens de entrada, salida y razonamiento) más costo y decisión; exportación OTLP opcional; sin contenido de facturas |
@@ -253,7 +262,7 @@ outcome is one agent: this one doing the whole job, its verdict `no delegation: 
 work added to an existing agent, which writes no file. Something that exists only to serve this
 agent is a subagent of its own stack, not a delegate.
 
-- **Verdict:** no delegation: PagoClaro hace todo el trabajo; sus dos lectores existen solo para servirle y no hay otros agentes en el repositorio
+- **Verdict:** no delegation: PagoClaro hace todo el trabajo; sus tres lectores existen solo para servirle y no hay otros agentes en el repositorio
 - **Routing:** no hay trabajo que repartir entre agentes: todas las facturas entran por la misma bandeja y siguen el mismo flujo
 
 Each reason holds with a fact from this case, or reads —.
@@ -263,7 +272,7 @@ Each reason holds with a fact from this case, or reads —.
 | reuse | — |
 | separate permissions | — |
 | context too large | — |
-| different models or costs | Opus 5.5 lee y Haiku 5.5 relee a menor costo, pero los dos son lectores internos de este agente, no delegados |
+| different models or costs | Opus 5.5 lee, Haiku 5.5 relee a menor costo y Sonnet 5.5 desempata cuando discrepan, pero los tres son lectores internos de este agente, no delegados |
 
 Each delegate is also a tool of section 4, named by its agent_name, and Agent root is its folder
 from the repository root, `agents/<domain>/<bot>`. The verdict no delegation holds one None row,
